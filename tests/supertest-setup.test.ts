@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { myapp } from '../app.ts';
+import { myapp } from '../app';
 import request from 'supertest';
 test('can import the app', async () => {
   const response = await request(myapp).get('/hello');
