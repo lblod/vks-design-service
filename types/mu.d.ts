@@ -15,6 +15,7 @@ declare module 'mu' {
     ? {
         head: {
           vars: string[];
+          link: [];
         };
         results: {
           bindings: BindingObject<ObjOrIsAsk>[];
