@@ -4,13 +4,15 @@ import { queryResultSchema } from '../database-validation/sparql-result-schema';
 import {
   dateTimeValue,
   stringValue,
+  uriList,
   uriValue,
 } from '../database-validation/sparql-value-schemas';
 
-const designSchema = z.strictObject({
+export const designSchema = z.strictObject({
   name: z.string(),
   date: z.date(),
   uri: z.string(),
+  signs: z.array(z.string()),
 });
 export type DesignResource = z.infer<typeof designSchema>;
 
@@ -19,35 +21,43 @@ const designBindings = z.array(
     name: stringValue,
     date: dateTimeValue,
     uri: uriValue,
+    signs: uriList,
   }),
 );
 
 const designResultSchema = queryResultSchema(designBindings);
-const designs = z.array(designSchema);
 const resultsToDesigns = designResultSchema
   .pipe(
-    z.transform<z.infer<typeof designResultSchema>, z.infer<typeof designs>>(
+    z.transform<z.infer<typeof designResultSchema>, DesignResource[]>(
       (result) =>
         result.results.bindings.map((b) => ({
           name: b.name.value,
           date: b.date.value,
           uri: b.uri.value,
+          signs: b.signs.value,
         })),
     ),
   )
-  .pipe(designs);
+  .pipe(z.array(designSchema));
 export async function getAllDesigns(): Promise<DesignResource[]> {
   const queryStr = `
   PREFIX mobiliteit: <https://data.vlaanderen.be/ns/mobiliteit#>
   PREFIX ontwerp: <https://data.vlaanderen.be/ns/mobiliteit#SignalisatieOntwerp.>
-  SELECT ?uri ?name ?date WHERE { 
+  PREFIX relatie: <https://wegenenverkeer.data.vlaanderen.be/ns/implementatieelement#RelatieObject.>
+  PREFIX onderdeel: <https://wegenenverkeer.data.vlaanderen.be/ns/onderdeel#>
+
+  SELECT DISTINCT ?uri ?name ?date (GROUP_CONCAT(?containsSign; SEPARATOR = ",") as ?signs) WHERE { 
     ?uri a mobiliteit:SignalisatieOntwerp;
        ontwerp:naam ?name;
        ontwerp:datum ?date.
-  }
+    ?rel a onderdeel:BevatVerkeersteken;
+       relatie:bron ?uri;
+      relatie:doel ?containsSign.
+  } GROUP BY ?uri ?name ?date 
 
   `;
   const rawResult = await query<{ name: string; s: string }>(queryStr);
+  // console.log(JSON.stringify(rawResult, undefined, 2));
   const result = resultsToDesigns.parse(rawResult);
 
   return result;
