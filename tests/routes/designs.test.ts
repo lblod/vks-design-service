@@ -2,6 +2,7 @@ import request from 'supertest';
 import { describe, expect, test } from 'vitest';
 import { myapp } from '../../app';
 import * as z from 'zod';
+import { validate } from '../validate-jsonapi';
 const jsonApiResponse = z.object({
   data: z.array(z.object()),
 });
@@ -14,6 +15,6 @@ describe('/designs route', () => {
     const response = await request(myapp).get('/designs');
     const body = response.body;
     expect(response.statusCode).toEqual(200);
-    expect(() => jsonApiResponse.parse(body)).not.toThrow();
+    expect(validate(body)).toBeTruthy();
   });
 });
