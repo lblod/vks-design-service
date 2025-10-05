@@ -144,4 +144,5 @@ export const oneDesignWithSigns = `
 <https://does.not.resolve/BevatVerkeersteken/1b100547-ee25-420c-9c3b-5204216b1f66/2025-09-12T15:29:33.095863741>	<https://wegenenverkeer.data.vlaanderen.be/ns/implementatieelement#RelatieObject.doel>	<https://data.vlaanderen.be/ns/mobiliteit#ontwerpverkeersteken/1b100547-ee25-420c-9c3b-5204216b1f66> .
 
 
+<https://does.not.resolve/ontwerp/O-kstKT>	<http://mu.semte.ch/vocabularies/core/uuid>	"04edd96e-0104-4e19-81be-54899b1111d6".
 `;

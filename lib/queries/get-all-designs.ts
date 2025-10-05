@@ -3,17 +3,21 @@ import * as z from 'zod';
 import { queryResultSchema } from '../database-validation/sparql-result-schema';
 import {
   dateTimeValue,
+  plainString,
   stringValue,
   uriList,
   uriValue,
 } from '../database-validation/sparql-value-schemas';
 
-export const designSchema = z.strictObject({
-  name: z.string(),
-  date: z.date(),
-  uri: z.string(),
-  signs: z.array(z.string()),
-});
+export const designSchema = z
+  .object({
+    name: z.string(),
+    date: z.date(),
+    uri: z.string(),
+    id: z.uuid(),
+    signs: z.array(z.string()),
+  })
+  .strict();
 export type DesignResource = z.infer<typeof designSchema>;
 
 const designBindings = z.array(
@@ -21,6 +25,7 @@ const designBindings = z.array(
     name: stringValue,
     date: dateTimeValue,
     uri: uriValue,
+    id: plainString,
     signs: uriList,
   }),
 );
@@ -35,6 +40,7 @@ const resultsToDesigns = designResultSchema
           date: b.date.value,
           uri: b.uri.value,
           signs: b.signs.value,
+          id: b.id.value,
         })),
     ),
   )
@@ -45,15 +51,17 @@ export async function getAllDesigns(): Promise<DesignResource[]> {
   PREFIX ontwerp: <https://data.vlaanderen.be/ns/mobiliteit#SignalisatieOntwerp.>
   PREFIX relatie: <https://wegenenverkeer.data.vlaanderen.be/ns/implementatieelement#RelatieObject.>
   PREFIX onderdeel: <https://wegenenverkeer.data.vlaanderen.be/ns/onderdeel#>
+  PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
 
-  SELECT DISTINCT ?uri ?name ?date (GROUP_CONCAT(?containsSign; SEPARATOR = ",") as ?signs) WHERE { 
+  SELECT DISTINCT ?uri ?name ?date ?id (GROUP_CONCAT(?containsSign; SEPARATOR = ",") as ?signs) WHERE { 
     ?uri a mobiliteit:SignalisatieOntwerp;
+       mu:uuid ?id;
        ontwerp:naam ?name;
        ontwerp:datum ?date.
     ?rel a onderdeel:BevatVerkeersteken;
        relatie:bron ?uri;
       relatie:doel ?containsSign.
-  } GROUP BY ?uri ?name ?date 
+  } GROUP BY ?uri ?name ?date ?id
 
   `;
   const rawResult = await query<{ name: string; s: string }>(queryStr);

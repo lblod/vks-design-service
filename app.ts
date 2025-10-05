@@ -27,7 +27,7 @@ const designToJsonApi = z
   .array(designSchema)
   .pipe(
     z.transform<DesignResource[], JsonApiDataDoc>((designs) => ({
-      data: designs.map((design) => ({ id: design.uri, type: 'design' })),
+      data: designs.map((design) => ({ id: design.id, type: 'design' })),
     })),
   )
   .pipe(jsonApiSchema);
