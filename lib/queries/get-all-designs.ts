@@ -7,6 +7,13 @@ import {
   uriValue,
 } from '../database-validation/sparql-value-schemas';
 
+const designSchema = z.strictObject({
+  name: z.string(),
+  date: z.date(),
+  uri: z.string(),
+});
+export type DesignResource = z.infer<typeof designSchema>;
+
 const designBindings = z.array(
   z.strictObject({
     name: stringValue,
@@ -14,12 +21,6 @@ const designBindings = z.array(
     uri: uriValue,
   }),
 );
-
-const designSchema = z.strictObject({
-  name: z.string(),
-  date: z.date(),
-  uri: z.string(),
-});
 
 const designResultSchema = queryResultSchema(designBindings);
 const designs = z.array(designSchema);
@@ -35,7 +36,7 @@ const resultsToDesigns = designResultSchema
     ),
   )
   .pipe(designs);
-export async function getAllDesigns(): Promise<z.infer<typeof designs>> {
+export async function getAllDesigns(): Promise<DesignResource[]> {
   const queryStr = `
   PREFIX mobiliteit: <https://data.vlaanderen.be/ns/mobiliteit#>
   PREFIX ontwerp: <https://data.vlaanderen.be/ns/mobiliteit#SignalisatieOntwerp.>
