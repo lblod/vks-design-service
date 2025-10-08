@@ -1,0 +1,22 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX measureProps: <https://data.vlaanderen.be/ns/mobiliteit#Mobiliteitsmaatregelconcept.>
+PREFIX mobiliteit: <https://data.vlaanderen.be/ns/mobiliteit#>
+PREFIX schema: <http://schema.org/>
+
+CONSTRUCT {
+  ?measure ?pred ?obj .
+  ?template ?p1 ?v1 .
+  ?signListItem ?p2 ?v2 .
+  ?signConcept ?p3 ?v3 .
+}
+WHERE {
+  VALUES ?measure { <http://data.lblod.info/traffic-measure-concepts/61C04A18E324910008000067> }
+  ?measure ?pred ?obj .
+  ?measure measureProps:template ?template .
+  ?template ?p1 ?v1 .
+  ?measure mobiliteit:heeftVerkeerstekenLijstItem ?signListItem .
+  ?signListItem ?p2 ?v2 .
+  ?signListItem schema:item ?signConcept .
+  ?signConcept ?p3 ?v3 .
+}
