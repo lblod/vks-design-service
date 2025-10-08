@@ -5,18 +5,18 @@ x-logging: &default-logging
     max-file: "3"
 
 services:
-  vlag-crud:
-    image: semtech/mu-javascript-template
-    entrypoint: /bin/sh
-    environment:
-      NODE_ENV: "development"
-      LOG_SPARQL_ALL: false
-    stdin_open: true
-    tty: true
-    links:
-      - database:database
-    volumes:
-      - ..:/usr/src/app/app
+  # vlag-crud:
+  #   image: semtech/mu-javascript-template
+  #   entrypoint: /bin/sh
+  #   environment:
+  #     NODE_ENV: "development"
+  #     LOG_SPARQL_ALL: false
+  #   stdin_open: true
+  #   tty: true
+  #   links:
+  #     - database:database
+  #   volumes:
+  #     - ..:/usr/src/app/app
   # identifier:
   #   image: semtech/mu-identifier:1.10.3
   #   environment:
@@ -34,6 +34,8 @@ services:
   #   logging: *default-logging
   database:
     image: semtech/sparql-parser:0.0.14
+    ports:
+      - ${DB_PORT}:8890
     volumes:
       - ./config/authorization/:/config/
       - ./data/authorization/:/data/
@@ -46,7 +48,7 @@ services:
     environment:
       SPARQL_UPDATE: "true"
     volumes:
-      - ./data/db:/data
+      # - ./data/db:/data
       - ./config/virtuoso/virtuoso.ini:/data/virtuoso.ini
     labels:
       - "logging=true"

@@ -2,10 +2,11 @@ import js from '@eslint/js';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 import json from '@eslint/json';
-import { defineConfig } from 'eslint/config';
+import { defineConfig, globalIgnores } from 'eslint/config';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 
-export default defineConfig([
+const config: unknown = defineConfig([
+  globalIgnores(['./mu-pkg']),
   {
     files: ['**/*.{js,mjs,cjs,ts,mts,cts}'],
     plugins: { js },
@@ -22,3 +23,4 @@ export default defineConfig([
   // eslintConfigPrettier,
   eslintPluginPrettierRecommended,
 ]);
+export default config;

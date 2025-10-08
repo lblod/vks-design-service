@@ -1,14 +1,10 @@
-import { describe, expect, beforeEach, it, beforeAll } from 'vitest';
+import { describe, expect } from 'vitest';
 import { query, update } from 'mu';
-import { waitForDB, wipeDB } from './db-utils';
-describe('test the connection with the sparql-parser backend', () => {
-  beforeAll(async () => {
-    await waitForDB();
-  }, 50000);
-  beforeEach(async () => {
-    await wipeDB();
-  });
-  it('can connect to the backend and execute a basic query', async () => {
+import { dbtest } from './test-setup';
+
+describe.only('test the connection with the sparql-parser backend', () => {
+  dbtest('can connect to the backend and execute a basic query', async () => {
+    await update('DELETE { ?s ?p ?v. } WHERE {?s ?p ?v. }');
     const insertQueryStr = `
     PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
     INSERT DATA {
@@ -26,6 +22,7 @@ describe('test the connection with the sparql-parser backend', () => {
     }
     `;
 
+    console.log(process.env['MU_SPARQL_ENDPOINT']);
     await update(insertQueryStr);
     const queryStr = `
     SELECT * WHERE { ?s ?p ?v . } 
