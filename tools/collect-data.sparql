@@ -1,0 +1,90 @@
+# utility query to extract a tree of data from a database which implements our model
+
+PREFIX relatie: <https://wegenenverkeer.data.vlaanderen.be/ns/implementatieelement#RelatieObject.>
+PREFIX onderdeel: <https://wegenenverkeer.data.vlaanderen.be/ns/onderdeel#>
+PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
+PREFIX mobiliteit: <https://data.vlaanderen.be/ns/mobiliteit#>
+PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
+
+CONSTRUCT {
+  ?signDesign a mobiliteit:OntwerpVerkeersteken .
+  ?arDesign a mobiliteit:AanvullendReglementOntwerp .
+  ?measureDesign a mobiliteit:MobiliteitsmaatregelOntwerp .
+  ?signalisationDesign ?op1 ?ov1 .
+  ?containsSignRel ?op2 ?ov2 .
+  ?hasDesignRel ?op3 ?ov3 .
+  ?containsMeasureRel ?op4 ?ov4 .
+  ?basedOnRel ?op5 ?ov5 .
+  ?signDesign ?op6 ?ov6 .
+  ?arDesign ?op7 ?ov7 .
+  ?measureDesign ?op8 ?ov8 .
+  ?signalisationDesign mu:uuid ?signalisationDesignId .
+  ?signDesign mu:uuid ?signDesignId .
+  ?arDesign mu:uuid ?arDesignId .
+  ?measureDesign mu:uuid ?measureDesignId .
+}
+WHERE {
+  VALUES ?signalisationDesign { <https://does.not.resolve/ontwerp/O-sgD8j> }
+  {
+    ?containsSignRel relatie:bron ?signalisationDesign ;
+                     a onderdeel:BevatVerkeersteken ;
+                     relatie:doel ?signDesign .
+    ?signDesign a mobiliteit:OntwerpVerkeersteken .
+    ?containsSignRel ?op2 ?ov2 .
+    ?signalisationDesign ?op1 ?ov1 .
+    ?signDesign ?op6 ?ov6 .
+  }
+  UNION
+  {
+    ?containsSignRel relatie:bron ?signalisationDesign ;
+                     a onderdeel:BevatVerkeersteken ;
+                     relatie:doel ?signDesign .
+    ?signDesign a mobiliteit:OntwerpVerkeersteken .
+    ?hasDesignRel relatie:bron ?signDesign ;
+                  a onderdeel:HeeftOntwerp ;
+                  relatie:doel ?arDesign .
+    ?arDesign a mobiliteit:AanvullendReglementOntwerp .
+    ?hasDesignRel ?op3 ?ov3 .
+    ?arDesign ?op7 ?ov7 .
+  }
+  UNION
+  {
+    ?containsSignRel relatie:bron ?signalisationDesign ;
+                     a onderdeel:BevatVerkeersteken ;
+                     relatie:doel ?signDesign .
+    ?signDesign a mobiliteit:OntwerpVerkeersteken .
+    ?hasDesignRel relatie:bron ?signDesign ;
+                  a onderdeel:HeeftOntwerp ;
+                  relatie:doel ?arDesign .
+    ?arDesign a mobiliteit:AanvullendReglementOntwerp .
+    ?containsMeasureRel relatie:bron ?arDesign ;
+                        a onderdeel:BevatMaatregelOntwerp ;
+                        relatie:doel ?measureDesign .
+    ?measureDesign a mobiliteit:MobiliteitsmaatregelOntwerp .
+    ?containsMeasureRel ?op4 ?ov4 .
+    ?measureDesign ?op8 ?ov8 .
+  }
+  UNION
+  {
+    ?containsSignRel relatie:bron ?signalisationDesign ;
+                     a onderdeel:BevatVerkeersteken ;
+                     relatie:doel ?signDesign .
+    ?signDesign a mobiliteit:OntwerpVerkeersteken .
+    ?hasDesignRel relatie:bron ?signDesign ;
+                  a onderdeel:HeeftOntwerp ;
+                  relatie:doel ?arDesign .
+    ?arDesign a mobiliteit:AanvullendReglementOntwerp .
+    ?containsMeasureRel relatie:bron ?arDesign ;
+                        a onderdeel:BevatMaatregelOntwerp ;
+                        relatie:doel ?measureDesign .
+    ?measureDesign a mobiliteit:MobiliteitsmaatregelOntwerp .
+    ?basedOnRel relatie:bron ?measureDesign ;
+                a onderdeel:IsGebaseerdOp ;
+                relatie:doel ?measureConcept .
+    ?basedOnRel ?op5 ?ov5 .
+  }
+  BIND (MD5(str(?signalisationDesign)) AS ?signalisationDesignId)
+  BIND (MD5(str(?signDesign)) AS ?signDesignId)
+  BIND (MD5(str(?arDesign)) AS ?arDesignId)
+  BIND (MD5(str(?measureDesign)) AS ?measureDesignId)
+}

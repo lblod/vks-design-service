@@ -1,12 +1,12 @@
 import { describe, expect, beforeEach } from 'vitest';
 import { seedDB } from '../db-utils';
 import { getAllDesigns } from '../../lib/queries/get-all-designs';
-import { oneDesignWithSigns } from '../fixtures/one-design-with-signs';
 import { dbtest } from '../test-setup';
+import { signalisationDesignWithMeasure } from '../fixtures/signalisation-design-with-measure';
 
 describe('get all designs', () => {
   beforeEach(async () => {
-    await seedDB(oneDesignWithSigns);
+    await seedDB(signalisationDesignWithMeasure);
   });
   dbtest(`gets a result`, async () => {
     const result = await getAllDesigns();
@@ -16,9 +16,5 @@ describe('get all designs', () => {
     const result = await getAllDesigns();
 
     expect(result).toHaveLength(1);
-  });
-  dbtest('has contained signs', async () => {
-    const result = await getAllDesigns();
-    expect(result[0]?.signs).toHaveLength(16);
   });
 });

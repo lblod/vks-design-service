@@ -39,7 +39,7 @@ export const dbtest = baseTest.extend<{
       await use({ composeEnv, endpoint });
 
       // here we do the cleanup
-      await composeEnv.down({ timeout: 0 });
+      await composeEnv.down();
       process.env['MU_SPARQL_ENDPOINT'] = undefined;
     },
     { auto: true, scope: 'file' },

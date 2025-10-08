@@ -5,7 +5,6 @@ import {
   dateTimeValue,
   plainString,
   stringValue,
-  uriList,
   uriValue,
 } from '../database-validation/sparql-value-schemas';
 
@@ -14,8 +13,7 @@ export const designSchema = z
     name: z.string(),
     date: z.date(),
     uri: z.string(),
-    id: z.uuid(),
-    signs: z.array(z.string()),
+    id: z.string(),
   })
   .strict();
 export type DesignResource = z.infer<typeof designSchema>;
@@ -26,7 +24,6 @@ const designBindings = z.array(
     date: dateTimeValue,
     uri: uriValue,
     id: plainString,
-    signs: uriList,
   }),
 );
 
@@ -39,7 +36,6 @@ const resultsToDesigns = designResultSchema
           name: b.name.value,
           date: b.date.value,
           uri: b.uri.value,
-          signs: b.signs.value,
           id: b.id.value,
         })),
     ),
@@ -48,23 +44,22 @@ const resultsToDesigns = designResultSchema
 export async function getAllDesigns(): Promise<DesignResource[]> {
   const queryStr = `
   PREFIX mobiliteit: <https://data.vlaanderen.be/ns/mobiliteit#>
-  PREFIX ontwerp: <https://data.vlaanderen.be/ns/mobiliteit#SignalisatieOntwerp.>
+  PREFIX arOntwerp: <https://data.vlaanderen.be/ns/mobiliteit#AanvullendReglementOntwerp.>
   PREFIX relatie: <https://wegenenverkeer.data.vlaanderen.be/ns/implementatieelement#RelatieObject.>
   PREFIX onderdeel: <https://wegenenverkeer.data.vlaanderen.be/ns/onderdeel#>
   PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
+  PREFIX dct: <http://purl.org/dc/terms/>
 
-  SELECT DISTINCT ?uri ?name ?date ?id (GROUP_CONCAT(?containsSign; SEPARATOR = ",") as ?signs) WHERE { 
-    ?uri a mobiliteit:SignalisatieOntwerp;
+  SELECT DISTINCT ?uri ?name ?date ?id WHERE { 
+    ?uri a mobiliteit:AanvullendReglementOntwerp;
        mu:uuid ?id;
-       ontwerp:naam ?name;
-       ontwerp:datum ?date.
-    ?rel a onderdeel:BevatVerkeersteken;
-       relatie:bron ?uri;
-      relatie:doel ?containsSign.
-  } GROUP BY ?uri ?name ?date ?id
+       arOntwerp:naam ?name;
+       dct:issued ?date.
+  } 
 
   `;
-  const rawResult = await query<{ name: string; s: string }>(queryStr);
+  const rawResult = await query(queryStr);
+  console.log('raw', JSON.stringify(rawResult));
   const result = resultsToDesigns.parse(rawResult);
 
   return result;

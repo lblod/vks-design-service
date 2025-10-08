@@ -3,10 +3,10 @@ import { beforeEach, describe, expect } from 'vitest';
 import { myapp } from '../../app';
 import { validate } from '../validate-jsonapi';
 import { seedDB } from '../db-utils';
-import { oneDesignWithSigns } from '../fixtures/one-design-with-signs';
 import { dbtest } from '../test-setup';
+import { signalisationDesignWithMeasure } from '../fixtures/signalisation-design-with-measure';
 describe('/designs route', () => {
-  beforeEach(async () => seedDB(oneDesignWithSigns));
+  beforeEach(async () => seedDB(signalisationDesignWithMeasure));
   dbtest('route exists', async () => {
     const response = await request(myapp).get('/designs');
     expect(response.statusCode).toEqual(200);
