@@ -1,7 +1,7 @@
 import * as z from 'zod';
 import { query, sparqlEscapeUri } from 'mu';
 import { queryResultSchema } from '../database-validation/sparql-result-schema';
-import { stringValue } from '../database-validation/sparql-value-schemas';
+import { plainString } from '../database-validation/sparql-value-schemas';
 
 export async function getMeasureInfo(uri: string) {
   const queryStr = `
@@ -11,7 +11,7 @@ export async function getMeasureInfo(uri: string) {
   SELECT ?html WHERE {
     ${sparqlEscapeUri(uri)} a mobiliteit:Mobiliteitmaatregelconcept;
 	mrConcept:template ?template.
-      ?template ext:preview ?preview.
+      ?template ext:preview ?html.
   }
   `;
   const rawResponse = await query(queryStr);
@@ -19,7 +19,7 @@ export async function getMeasureInfo(uri: string) {
     z
       .array(
         z.object({
-          html: stringValue,
+          html: plainString,
         }),
       )
       .max(1),

@@ -10,10 +10,18 @@ export async function wipeDB() {
     throw e;
   }
 }
-export async function seedDB(nTriples: string) {
+export async function seedDB(nTriples: string | string[]) {
   try {
+    let queryStr: string;
+    if (typeof nTriples === 'string') {
+      queryStr = `INSERT DATA { ${nTriples} }`;
+    } else {
+      queryStr = nTriples
+        .map((triples) => `INSERT DATA { ${triples} }`)
+        .join(';');
+    }
     await wipeDB();
-    await update(`INSERT DATA { ${nTriples} }`);
+    await update(queryStr);
   } catch (e) {
     console.log(e);
     throw e;

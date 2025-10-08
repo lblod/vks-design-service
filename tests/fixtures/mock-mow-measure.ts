@@ -1,5 +1,5 @@
-export const mockMowMeasure = `
-
+export const mockMowMeasure = [
+  `
 <http://data.vlaanderen.be/id/concept/Verkeersbordconcept/950eeeaa70a8d7b9c29056a248fa0e673881f37a10fdce925e969828af827272>	<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>	<https://data.vlaanderen.be/ns/mobiliteit#Verkeerstekenconcept> .
 <http://data.lblod.info/traffic-measure-concepts/61C04A18E324910008000067>	<http://www.w3.org/2004/02/skos/core#prefLabel>	"C43-C45" .
 <http://data.vlaanderen.be/id/concept/Verkeersbordconcept/1c6110b80aad28134ee6cc79cf506a65a0488d1c649841e152ffbdb5031bb5ee>	<http://mu.semte.ch/vocabularies/ext/versionedUri>	<http://mu.semte.ch/services/ldes-time-fragmenter/versioned/2EDFBB50-E97E-11EF-9C88-B0E1771A909F> .
@@ -19,8 +19,9 @@ export const mockMowMeasure = `
 <http://data.vlaanderen.be/id/concept/Verkeersbordconcept/950eeeaa70a8d7b9c29056a248fa0e673881f37a10fdce925e969828af827272>	<http://www.w3.org/2004/02/skos/core#inScheme>	<http://data.vlaanderen.be/id/conceptscheme/Verkeersbordconcept> .
 <http://data.lblod.info/templates/61C04A18E324910008000069>	<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>	<https://data.vlaanderen.be/ns/mobiliteit#Template> .
 <http://data.lblod.info/templates/61C04A18E324910008000069>	<https://data.vlaanderen.be/ns/mobiliteit#variabele>	<http://data.lblod.info/mappings/61C04D87E32491000800009A> .
-<http://data.lblod.info/traffic-signal-list-items/6820c200-9258-11f0-a587-ad6e78ccafc6>	<http://mu.semte.ch/vocabularies/core/uuid>	"6820c200-9258-11f0-a587-ad6e78ccafc6" .
-<http://data.vlaanderen.be/id/concept/Verkeersbordconcept/950eeeaa70a8d7b9c29056a248fa0e673881f37a10fdce925e969828af827272>	<http://mu.semte.ch/vocabularies/ext/template>	<http://data.lblod.info/templates/b21ff80f-ca2a-4e22-84c4-7e340bdc599f> .
+<http://data.lblod.info/traffic-signal-list-items/6820c200-9258-11f0-a587-ad6e78ccafc6>	<http://mu.semte.ch/vocabularies/core/uuid>	"6820c200-9258-11f0-a587-ad6e78ccafc6" .`,
+
+  `<http://data.vlaanderen.be/id/concept/Verkeersbordconcept/950eeeaa70a8d7b9c29056a248fa0e673881f37a10fdce925e969828af827272>	<http://mu.semte.ch/vocabularies/ext/template>	<http://data.lblod.info/templates/b21ff80f-ca2a-4e22-84c4-7e340bdc599f> .
 <http://data.lblod.info/templates/61C04A18E324910008000069>	<http://mu.semte.ch/vocabularies/ext/versionedUri>	<http://mu.semte.ch/services/ldes-time-fragmenter/versioned/2D9F8414-E97E-11EF-9C88-B0E1771A909F> .
 <http://data.lblod.info/templates/61C04A18E324910008000069>	<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>	<http://xmlns.com/foaf/0.1/Document> .
 <http://data.lblod.info/templates/61C04A18E324910008000069>	<https://data.vlaanderen.be/ns/mobiliteit#variabele>	<http://data.lblod.info/mappings/61C04A1AE32491000800006E> .
@@ -49,8 +50,9 @@ export const mockMowMeasure = `
 <http://data.vlaanderen.be/id/concept/Verkeersbordconcept/950eeeaa70a8d7b9c29056a248fa0e673881f37a10fdce925e969828af827272>	<http://www.w3.org/2004/02/skos/core#definition>	"Einde van de snelheidsbeperking opgelegd door het verkeersbord C43." .
 <http://data.lblod.info/traffic-measure-concepts/61C04A18E324910008000067>	<http://mu.semte.ch/vocabularies/ext/versionedUri>	<http://mu.semte.ch/services/ldes-time-fragmenter/versioned/2D4672D4-E97E-11EF-9C88-B0E1771A909F> .
 <http://data.vlaanderen.be/id/concept/Verkeersbordconcept/950eeeaa70a8d7b9c29056a248fa0e673881f37a10fdce925e969828af827272>	<http://www.w3.org/2003/06/sw-vocab-status/ns#termStatus>	<http://mow.lblod.info/VerkeersbordconceptStatus/5c23cacab88553dc54d133265e7701fffc3ba37f41218642221c6767a1bb91e7> .
-<http://data.lblod.info/traffic-measure-concepts/61C04A18E324910008000067>	<http://mu.semte.ch/vocabularies/core/uuid>	"61C04A18E324910008000067" .
-<http://data.lblod.info/traffic-signal-list-items/6820c200-9258-11f0-a587-ad6e78ccafc6>	<http://schema.org/item>	<http://data.vlaanderen.be/id/concept/Verkeersbordconcept/1c6110b80aad28134ee6cc79cf506a65a0488d1c649841e152ffbdb5031bb5ee> .
+<http://data.lblod.info/traffic-measure-concepts/61C04A18E324910008000067>	<http://mu.semte.ch/vocabularies/core/uuid>	"61C04A18E324910008000067" .`,
+
+  `<http://data.lblod.info/traffic-signal-list-items/6820c200-9258-11f0-a587-ad6e78ccafc6>	<http://schema.org/item>	<http://data.vlaanderen.be/id/concept/Verkeersbordconcept/1c6110b80aad28134ee6cc79cf506a65a0488d1c649841e152ffbdb5031bb5ee> .
 <http://data.vlaanderen.be/id/concept/Verkeersbordconcept/1c6110b80aad28134ee6cc79cf506a65a0488d1c649841e152ffbdb5031bb5ee>	<http://www.w3.org/2004/02/skos/core#scopeNote>	"Vanaf het verkeersbord tot en met het volgend kruispunt, verbod te rijden met een grotere snelheid dan deze die is aangeduid." .
 <http://data.vlaanderen.be/id/concept/Verkeersbordconcept/950eeeaa70a8d7b9c29056a248fa0e673881f37a10fdce925e969828af827272>	<http://www.w3.org/2004/02/skos/core#scopeNote>	"Einde van de snelheidsbeperking opgelegd door het verkeersbord C43." .
 <http://data.vlaanderen.be/id/concept/Verkeersbordconcept/950eeeaa70a8d7b9c29056a248fa0e673881f37a10fdce925e969828af827272>	<http://mu.semte.ch/vocabularies/ext/versionedUri>	<http://mu.semte.ch/services/ldes-time-fragmenter/versioned/2EA16756-E97E-11EF-9C88-B0E1771A909F> .
@@ -65,7 +67,7 @@ export const mockMowMeasure = `
 <http://data.lblod.info/traffic-measure-concepts/61C04A18E324910008000067>	<http://mu.semte.ch/vocabularies/ext/valid>	"true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
 <http://data.lblod.info/traffic-signal-list-items/6822bdd0-9258-11f0-a587-ad6e78ccafc6>	<http://mu.semte.ch/vocabularies/core/uuid>	"6822bdd0-9258-11f0-a587-ad6e78ccafc6" .
 <http://data.vlaanderen.be/id/concept/Verkeersbordconcept/950eeeaa70a8d7b9c29056a248fa0e673881f37a10fdce925e969828af827272>	<http://mu.semte.ch/vocabularies/core/uuid>	"950eeeaa70a8d7b9c29056a248fa0e673881f37a10fdce925e969828af827272" .
-<http://data.lblod.info/templates/61C04A18E324910008000069>	<http://mu.semte.ch/vocabularies/ext/preview>	"${locatie} \n${C43}.\n${locatie2} \nhet einde van de opgelegde snelheidsbeperking wordt aangeduid. " .
+<http://data.lblod.info/templates/61C04A18E324910008000069>	<http://mu.semte.ch/vocabularies/ext/preview>	"""\${locatie} \n\${C43}.\n\${locatie2} \nhet einde van de opgelegde snelheidsbeperking wordt aangeduid. """ .
 <http://data.vlaanderen.be/id/concept/Verkeersbordconcept/950eeeaa70a8d7b9c29056a248fa0e673881f37a10fdce925e969828af827272>	<http://www.w3.org/2004/02/skos/core#prefLabel>	"C45" .
 <http://data.vlaanderen.be/id/concept/Verkeersbordconcept/1c6110b80aad28134ee6cc79cf506a65a0488d1c649841e152ffbdb5031bb5ee>	<http://www.w3.org/2003/06/sw-vocab-status/ns#termStatus>	<http://mow.lblod.info/VerkeersbordconceptStatus/ba6929ca9a3a4a34e8e8b3cf091264191606a4d188424a66c4e609f3f6ab9b74> .
 <http://data.vlaanderen.be/id/concept/Verkeersbordconcept/1c6110b80aad28134ee6cc79cf506a65a0488d1c649841e152ffbdb5031bb5ee>	<http://purl.org/dc/terms/type>	<http://data.vlaanderen.be/id/concept/Verkeersbordcategorie/955a9adc73d076a2a424754cd540b73da8d15fb002ab6c9f115d080edddb57e8> .
@@ -90,5 +92,6 @@ export const mockMowMeasure = `
 <http://data.lblod.info/traffic-signal-list-items/6820c200-9258-11f0-a587-ad6e78ccafc6>	<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>	<https://data.vlaanderen.be/ns/mobiliteit#MaatregelVerkeerstekenLijstItem> .
 <http://data.vlaanderen.be/id/concept/Verkeersbordconcept/950eeeaa70a8d7b9c29056a248fa0e673881f37a10fdce925e969828af827272>	<https://data.vlaanderen.be/ns/mobiliteit#ARplichtig>	"true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
 <http://data.vlaanderen.be/id/concept/Verkeersbordconcept/950eeeaa70a8d7b9c29056a248fa0e673881f37a10fdce925e969828af827272>	<http://purl.org/dc/terms/modified>	"2025-10-03T09:34:47.419756"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
-<http://data.lblod.info/templates/61C04A18E324910008000069>	<http://www.w3.org/1999/02/22-rdf-syntax-ns#value>	"${locatie} \n${C43}.\n${locatie2} \n${C45}. " .
-`;
+<http://data.lblod.info/templates/61C04A18E324910008000069>	<http://www.w3.org/1999/02/22-rdf-syntax-ns#value>	"""\${locatie} \n\${C43}.\n\${locatie2} \n\${C45}. """ .
+`,
+];
