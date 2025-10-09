@@ -3,31 +3,33 @@ import { query, sparqlEscapeUri } from 'mu';
 import { queryResultSchema } from '../database-validation/sparql-result-schema';
 import { plainString } from '../database-validation/sparql-value-schemas';
 
-export async function getMeasureInfo(uri: string) {
-  const measures = await getMultipleMeasureInfos([uri]);
+export async function getMeasureConceptInfo(uri: string) {
+  const measures = await getMultipleMeasureConceptInfos([uri]);
   return measures[0];
 }
-export async function getMultipleMeasureInfos(uris: string[]) {
+export async function getMultipleMeasureConceptInfos(uris: string[]) {
   if (uris.length === 0) {
     return [];
   }
-  console.log('fetching uris', uris);
   const queryStr = `
   PREFIX mobiliteit: <https://data.vlaanderen.be/ns/mobiliteit#>
   PREFIX mrConcept: <https://data.vlaanderen.be/ns/mobiliteit#Mobiliteitsmaatregelconcept.>
   PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
-  SELECT ?html WHERE {
+  PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
+  SELECT ?html ?id WHERE {
     VALUES ?uri { ${uris.map((uri) => sparqlEscapeUri(uri)).join(' ')} }
     ?uri a mobiliteit:Mobiliteitmaatregelconcept;
+        mu:uuid ?id;
 	mrConcept:template ?template.
       ?template ext:preview ?html.
   }
   `;
 
   const rawResponse = await query(queryStr);
-  console.log('response', JSON.stringify(rawResponse, undefined, 2));
   const response = queryResultSchema(
-    z.array(z.object({ html: plainString })).length(uris.length),
+    z
+      .array(z.object({ html: plainString, id: plainString }))
+      .length(uris.length),
   ).parse(rawResponse);
   return response.results.bindings ?? null;
 }

@@ -8,8 +8,8 @@ import {
 import { getDesignById } from '../../queries/get-design-by-id';
 import { uuid } from 'mu';
 import {
-  getMeasureInfo,
-  getMultipleMeasureInfos,
+  getMeasureConceptInfo,
+  getMultipleMeasureConceptInfos,
 } from '../../queries/get-measure-info';
 import { describe } from 'node:test';
 
@@ -129,13 +129,15 @@ designMeasuresRouter.get('/design/:id/measures', async function (req, res) {
       res.status(404);
       res.send();
     } else {
-      const measures = await getMultipleMeasureInfos(design.measures.value);
+      const measureConcepts = await getMultipleMeasureConceptInfos(
+        design.measures.value,
+      );
       const jsonResponse = previewJsonSchema.safeDecode({
-        data: measures.map((measure) => ({
+        data: measureConcepts.map((measureConcept) => ({
           type: 'measures',
           id: uuid(),
           attributes: {
-            templateString: measure.html.value,
+            templateString: measureConcept.html.value,
           },
           relationships: {
             design: {

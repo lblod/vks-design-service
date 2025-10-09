@@ -3,8 +3,8 @@ import { seedDB } from '../db-utils';
 import { dbtest } from '../test-setup';
 import { mockMowMeasure } from '../fixtures/mock-mow-measure';
 import {
-  getMeasureInfo,
-  getMultipleMeasureInfos,
+  getMeasureConceptInfo,
+  getMultipleMeasureConceptInfos,
 } from '../../lib/queries/get-measure-info';
 describe('get-measure-info', () => {
   beforeEach(async () => {
@@ -14,7 +14,7 @@ describe('get-measure-info', () => {
   dbtest(
     'fetching a measure concept returns the right info',
     async () => {
-      const response = await getMeasureInfo(
+      const response = await getMeasureConceptInfo(
         'http://data.lblod.info/traffic-measure-concepts/61C04A18E324910008000067',
       );
       expect(response?.html.value).toEqual(
@@ -26,7 +26,7 @@ describe('get-measure-info', () => {
   dbtest(
     'fetching multiple measures return the right info',
     async () => {
-      const response = await getMultipleMeasureInfos([
+      const response = await getMultipleMeasureConceptInfos([
         'http://data.lblod.info/traffic-measure-concepts/61C04A18E324910008000067',
       ]);
       expect(response?.[0]?.html.value).toEqual(
