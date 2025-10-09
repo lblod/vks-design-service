@@ -16,13 +16,29 @@ export async function getMeasureInfo(uri: string) {
   `;
   const rawResponse = await query(queryStr);
   const response = queryResultSchema(
-    z
-      .array(
-        z.object({
-          html: plainString,
-        }),
-      )
-      .max(1),
+    z.array(z.object({ html: plainString })).max(1),
   ).parse(rawResponse);
   return response.results.bindings[0] ?? null;
+}
+export async function getMultipleMeasureInfos(uris: string[]) {
+  if (uris.length === 0) {
+    return [];
+  }
+  const queryStr = `
+  PREFIX mobiliteit: <https://data.vlaanderen.be/ns/mobiliteit#>
+  PREFIX mrConcept: <https://data.vlaanderen.be/ns/mobiliteit#Mobiliteitsmaatregelconcept.>
+  PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
+  SELECT ?html WHERE {
+    VALUES ?uri { ${uris.map((uri) => sparqlEscapeUri(uri))} }
+    ?uri a mobiliteit:Mobiliteitmaatregelconcept;
+	mrConcept:template ?template.
+      ?template ext:preview ?html.
+  }
+  `;
+
+  const rawResponse = await query(queryStr);
+  const response = queryResultSchema(
+    z.array(z.object({ html: plainString })).length(uris.length),
+  ).parse(rawResponse);
+  return response.results.bindings ?? null;
 }

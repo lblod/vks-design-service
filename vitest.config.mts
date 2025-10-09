@@ -4,6 +4,7 @@ export default defineConfig({
   test: {
     // ... Specify options here.
     testTimeout: 30000,
+    hookTimeout: 30000,
     env: {
       MU_SPARQL_ENDPOINT: 'http://database:8890/sparql',
       // DEBUG: 'testcontainers:*',
