@@ -24,7 +24,7 @@ const designJsonSchema = jsonApiSchema(
       .strict(),
     relationships: z
       .object({
-        preview: jsonApiRelationship(),
+        measures: jsonApiRelationship(),
       })
       .strict(),
   }),
@@ -46,7 +46,7 @@ const designToJsonApi = z
               name: design.name,
             },
             relationships: {
-              preview: { links: { related: `/design/${design.id}/preview` } },
+              measures: { links: { related: `/design/${design.id}/measures` } },
             },
           })),
         }) as const,

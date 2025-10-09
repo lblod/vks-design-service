@@ -26,7 +26,7 @@ export const ZONALITY_OPTIONS = {
     'http://lblod.data.gift/concepts/b651931b-923c-477c-8da9-fc7dd841fdcc',
 };
 
-export const designPreviewRouter = Router();
+export const designMeasuresRouter = Router();
 
 export const RoadSignCategorySchema = z.object({
   uri: z.string(),
@@ -104,7 +104,7 @@ export const VariableSchema = z.discriminatedUnion('type', [
 ]);
 const previewJsonSchema = jsonApiSchema(
   jsonApiResourceObject({
-    type: 'preview',
+    type: 'measures',
     attributes: z
       .object({
         measureConcept: measureConceptSchema,
@@ -119,7 +119,7 @@ const previewJsonSchema = jsonApiSchema(
   }),
 );
 
-designPreviewRouter.get('/design/:id/preview', async function (req, res) {
+designMeasuresRouter.get('/design/:id/measures', async function (req, res) {
   try {
     const design = await getDesignById(req.params.id);
     if (!design) {
@@ -128,7 +128,7 @@ designPreviewRouter.get('/design/:id/preview', async function (req, res) {
     } else {
       const jsonResponse = previewJsonSchema.safeDecode({
         data: {
-          type: 'preview',
+          type: 'measures',
           id: uuid(),
           attributes: {
             templateString: '<span>test</span>',
