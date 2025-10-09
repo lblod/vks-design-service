@@ -7,7 +7,10 @@ import {
 } from '../../jsonapi-schema';
 import { getDesignById } from '../../queries/get-design-by-id';
 import { uuid } from 'mu';
-import { getMeasureInfo } from '../../queries/get-measure-info';
+import {
+  getMeasureInfo,
+  getMultipleMeasureInfos,
+} from '../../queries/get-measure-info';
 import { describe } from 'node:test';
 
 export const TRAFFIC_SIGNAL_CONCEPT_TYPES = {
@@ -107,10 +110,10 @@ const previewJsonSchema = jsonApiSchema(
     type: 'measures',
     attributes: z
       .object({
-        measureConcept: measureConceptSchema,
+        // measureConcept: measureConceptSchema,
         templateString: z.string(),
-        temporal: z.boolean(),
-        variables: z.record(z.string(), VariableSchema),
+        // temporal: z.boolean(),
+        // variables: z.record(z.string(), VariableSchema),
       })
       .strict(),
     relationships: z.object({
@@ -126,12 +129,13 @@ designMeasuresRouter.get('/design/:id/measures', async function (req, res) {
       res.status(404);
       res.send();
     } else {
+      const measures = await getMultipleMeasureInfos(design.measures.value);
       const jsonResponse = previewJsonSchema.safeDecode({
-        data: {
+        data: measures.map((measure) => ({
           type: 'measures',
           id: uuid(),
           attributes: {
-            templateString: '<span>test</span>',
+            templateString: measure.html.value,
           },
           relationships: {
             design: {
@@ -140,11 +144,11 @@ designMeasuresRouter.get('/design/:id/measures', async function (req, res) {
               },
             },
           },
-        },
+        })),
       });
       if (jsonResponse.success) {
         res.status(200);
-        res.send(jsonResponse);
+        res.send(jsonResponse.data);
       } else {
         res.status(500);
         res.send({ error: 'failed to encode into jsonapi' });

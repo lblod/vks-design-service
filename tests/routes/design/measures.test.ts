@@ -5,8 +5,11 @@ import { validate } from '../../validate-jsonapi';
 import { seedDB } from '../../db-utils';
 import { dbtest } from '../../test-setup';
 import { signalisationDesignWithMeasure } from '../../fixtures/signalisation-design-with-measure';
+import { mockMowMeasure } from '../../fixtures/mock-mow-measure';
 describe('/design/:id/measures route', () => {
-  beforeEach(async () => seedDB(signalisationDesignWithMeasure));
+  beforeEach(async () =>
+    seedDB([signalisationDesignWithMeasure, ...mockMowMeasure]),
+  );
 
   dbtest('route returns 404 with invalid id', async () => {
     const response = await request(myapp).get('/design/00invalid00/measures');
