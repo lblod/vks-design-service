@@ -7,10 +7,7 @@ import {
 } from '../../jsonapi-schema';
 import { getDesignById } from '../../queries/get-design-by-id';
 import { uuid } from 'mu';
-import {
-  getMultipleMeasureConceptInfos,
-  getMultipleMeasureConceptsWithVariables,
-} from '../../queries/get-measure-info';
+import { getMultipleMeasureConceptsWithVariables } from '../../queries/get-measure-info';
 
 export const TRAFFIC_SIGNAL_CONCEPT_TYPES = {
   TRAFFIC_SIGNAL:
@@ -75,27 +72,32 @@ const TextVariableSchema = BaseVariableSchema.extend({
   type: z.literal('text'),
   defaultValue: z.string().optional(),
 });
+type TextVariable = z.infer<typeof TextVariableSchema>;
 
 const NumberVariableSchema = BaseVariableSchema.extend({
   type: z.literal('number'),
   defaultValue: z.coerce.number().optional(),
 });
+type NumberVariable = z.infer<typeof NumberVariableSchema>;
 
 const DateVariableSchema = BaseVariableSchema.extend({
   type: z.literal('date'),
   defaultValue: z.coerce.date().optional(),
 });
+type DateVariable = z.infer<typeof DateVariableSchema>;
 
 const CodelistVariableSchema = BaseVariableSchema.extend({
   type: z.literal('codelist'),
   defaultValue: z.string().optional(),
   codelistUri: z.string(),
 });
+type CodelistVariable = z.infer<typeof CodelistVariableSchema>;
 
 const LocationVariableSchema = BaseVariableSchema.extend({
   type: z.literal('location'),
   defaultValue: z.string().optional(),
 });
+type LocationVariable = z.infer<typeof LocationVariableSchema>;
 
 export const VariableSchema = z.discriminatedUnion('type', [
   TextVariableSchema,
@@ -131,10 +133,54 @@ function collectVariables(
   const result: Record<string, Variable> = {};
 
   for (const item of variableResponse.variables) {
-    result[item.title.value] = {
-      type: 
-      
-    };
+    switch (item.type.value) {
+      case 'text':
+        result[item.title.value] = {
+          label: item.title.value,
+          type: 'text',
+          uri: item.uri.value,
+        } satisfies TextVariable;
+
+        break;
+      case 'number':
+        result[item.title.value] = {
+          label: item.title.value,
+          type: 'number',
+          uri: item.uri.value,
+        } satisfies NumberVariable;
+        break;
+      case 'date':
+        result[item.title.value] = {
+          label: item.title.value,
+          type: 'date',
+          uri: item.uri.value,
+        } satisfies DateVariable;
+        break;
+      case 'codelist':
+        if (!item.codelist?.value) {
+          throw new Error('Codelist variable without attached codelist');
+        }
+        result[item.title.value] = {
+          label: item.title.value,
+          type: 'codelist',
+          uri: item.uri.value,
+          codelistUri: item.codelist.value,
+        } satisfies CodelistVariable;
+        break;
+      case 'location':
+        result[item.title.value] = {
+          label: item.title.value,
+          type: 'location',
+          uri: item.uri.value,
+        } satisfies LocationVariable;
+        break;
+
+      case 'instruction':
+        // intentionally ignoring instructions
+        break;
+      default:
+        throw new Error('unrecognized variable type');
+    }
   }
   return result;
 }

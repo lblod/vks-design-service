@@ -2,6 +2,7 @@ import * as z from 'zod';
 import { query, sparqlEscapeUri } from 'mu';
 import { queryResultSchema } from '../database-validation/sparql-result-schema';
 import {
+  literalResult,
   plainString,
   uriValue,
 } from '../database-validation/sparql-value-schemas';
@@ -13,12 +14,20 @@ export async function getMultipleVariableInfos(uris: string[]) {
   PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
   PREFIX variable: <http://lblod.data.gift/vocabularies/variables/>
   PREFIX dct: <http://purl.org/dc/terms/>
+  PREFIX mobiliteit: <https://data.vlaanderen.be/ns/mobiliteit#>
 
-  SELECT ?id ?title ?type  WHERE {
+  SELECT ?uri ?title ?type ?codelist WHERE {
     VALUES ?uri { ${uris.map((uri) => sparqlEscapeUri(uri)).join(' ')} }
-    ?uri a variable:Variable;
-	dct:type ?type
-	dct:title ?title.
+     { ?uri a variable:Variable;
+	  dct:type ?type;
+	  dct:title ?title. 
+      } UNION {
+	?uri a variable:Variable;
+	   mobiliteit:codelijst ?codelist.
+      }
+
+
+    
   } 
   `;
 
@@ -27,9 +36,19 @@ export async function getMultipleVariableInfos(uris: string[]) {
     z
       .array(
         z.object({
-          id: plainString,
           title: plainString,
-	  type: ,
+          uri: uriValue,
+          type: literalResult(
+            z.literal([
+              'text',
+              'number',
+              'date',
+              'codelist',
+              'location',
+              'instruction',
+            ]),
+          ),
+          codelist: uriValue.optional(),
         }),
       )
       .length(uris.length),
