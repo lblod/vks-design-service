@@ -59,7 +59,6 @@ export async function getAllDesigns(): Promise<DesignResource[]> {
 
   `;
   const rawResult = await query(queryStr);
-  console.log('raw', JSON.stringify(rawResult));
   const result = resultsToDesigns.parse(rawResult);
 
   return result;

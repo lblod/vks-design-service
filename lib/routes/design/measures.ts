@@ -8,10 +8,9 @@ import {
 import { getDesignById } from '../../queries/get-design-by-id';
 import { uuid } from 'mu';
 import {
-  getMeasureConceptInfo,
   getMultipleMeasureConceptInfos,
+  getMultipleMeasureConceptsWithVariables,
 } from '../../queries/get-measure-info';
-import { describe } from 'node:test';
 
 export const TRAFFIC_SIGNAL_CONCEPT_TYPES = {
   TRAFFIC_SIGNAL:
@@ -105,15 +104,16 @@ export const VariableSchema = z.discriminatedUnion('type', [
   CodelistVariableSchema,
   LocationVariableSchema,
 ]);
-const previewJsonSchema = jsonApiSchema(
+const measuresJsonSchema = jsonApiSchema(
   jsonApiResourceObject({
     type: 'measures',
     attributes: z
       .object({
         // measureConcept: measureConceptSchema,
+        rawTemplateString: z.string(),
         templateString: z.string(),
         // temporal: z.boolean(),
-        // variables: z.record(z.string(), VariableSchema),
+        variables: z.record(z.string(), VariableSchema),
       })
       .strict(),
     relationships: z.object({
@@ -121,7 +121,23 @@ const previewJsonSchema = jsonApiSchema(
     }),
   }),
 );
+type Variable = z.infer<typeof VariableSchema>;
 
+function collectVariables(
+  variableResponse: Awaited<
+    ReturnType<typeof getMultipleMeasureConceptsWithVariables>
+  >[number],
+): Record<string, Variable> {
+  const result: Record<string, Variable> = {};
+
+  for (const item of variableResponse.variables) {
+    result[item.title.value] = {
+      type: 
+      
+    };
+  }
+  return result;
+}
 designMeasuresRouter.get('/design/:id/measures', async function (req, res) {
   try {
     const design = await getDesignById(req.params.id);
@@ -129,15 +145,17 @@ designMeasuresRouter.get('/design/:id/measures', async function (req, res) {
       res.status(404);
       res.send();
     } else {
-      const measureConcepts = await getMultipleMeasureConceptInfos(
+      const measureConcepts = await getMultipleMeasureConceptsWithVariables(
         design.measures.value,
       );
-      const jsonResponse = previewJsonSchema.safeDecode({
+      const jsonResponse = measuresJsonSchema.safeDecode({
         data: measureConcepts.map((measureConcept) => ({
           type: 'measures',
           id: uuid(),
           attributes: {
-            templateString: measureConcept.html.value,
+            templateString: measureConcept.measure.templateString.value,
+            rawTemplateString: measureConcept.measure.rawTemplateString.value,
+            variables: collectVariables(measureConcept),
           },
           relationships: {
             design: {

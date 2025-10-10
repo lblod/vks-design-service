@@ -17,7 +17,7 @@ describe('get-measure-info', () => {
       const response = await getMeasureConceptInfo(
         'http://data.lblod.info/traffic-measure-concepts/61C04A18E324910008000067',
       );
-      expect(response?.html.value).toEqual(
+      expect(response?.templateString.value).toEqual(
         '${locatie} \n${C43}.\n${locatie2} \nhet einde van de opgelegde snelheidsbeperking wordt aangeduid. ',
       );
     },
@@ -29,7 +29,7 @@ describe('get-measure-info', () => {
       const response = await getMultipleMeasureConceptInfos([
         'http://data.lblod.info/traffic-measure-concepts/61C04A18E324910008000067',
       ]);
-      expect(response?.[0]?.html.value).toEqual(
+      expect(response?.[0]?.templateString.value).toEqual(
         '${locatie} \n${C43}.\n${locatie2} \nhet einde van de opgelegde snelheidsbeperking wordt aangeduid. ',
       );
     },

@@ -94,4 +94,40 @@ export const mockMowMeasure = [
 <http://data.vlaanderen.be/id/concept/Verkeersbordconcept/950eeeaa70a8d7b9c29056a248fa0e673881f37a10fdce925e969828af827272>	<http://purl.org/dc/terms/modified>	"2025-10-03T09:34:47.419756"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
 <http://data.lblod.info/templates/61C04A18E324910008000069>	<http://www.w3.org/1999/02/22-rdf-syntax-ns#value>	"""\${locatie} \n\${C43}.\n\${locatie2} \n\${C45}. """ .
 `,
+  `
+<http://data.lblod.info/mappings/61C04A19E32491000800006C>	<http://mu.semte.ch/vocabularies/core/uuid>	"61C04A19E32491000800006C" .
+<http://data.lblod.info/mappings/61C04A1AE32491000800006D>	<http://purl.org/dc/terms/modified>	"2025-10-03T09:34:48.228368"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+<http://data.lblod.info/mappings/61C04A1AE32491000800006D>	<https://data.vlaanderen.be/ns/mobiliteit#template>	<http://data.lblod.info/templates/e1f75938-5f9d-477c-8c45-79d362968ecf> .
+<http://data.lblod.info/mappings/61C04A1AE32491000800006E>	<http://lblod.data.gift/vocabularies/variables/required>	"true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<http://data.lblod.info/mappings/61C04D87E32491000800009A>	<http://purl.org/dc/terms/title>	"locatie2" .
+<http://data.lblod.info/mappings/61C04A1AE32491000800006E>	<http://purl.org/dc/terms/modified>	"2025-10-03T09:34:48.228368"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+<http://data.lblod.info/mappings/61C04D87E32491000800009A>	<http://lblod.data.gift/vocabularies/variables/required>	"true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<http://data.lblod.info/mappings/61C04D87E32491000800009A>	<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>	<http://lblod.data.gift/vocabularies/variables/Variable> .
+<http://data.lblod.info/mappings/61C04D87E32491000800009A>	<http://purl.org/dc/terms/type>	"location" .
+<http://data.lblod.info/mappings/61C04D87E32491000800009A>	<http://purl.org/dc/terms/modified>	"2025-10-03T09:34:48.228368"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+<http://data.lblod.info/mappings/61C04A1AE32491000800006E>	<http://purl.org/dc/terms/title>	"C45" .
+<http://data.lblod.info/mappings/61C04A1AE32491000800006E>	<http://mu.semte.ch/vocabularies/ext/versionedUri>	<http://mu.semte.ch/services/ldes-time-fragmenter/versioned/2E100F22-E97E-11EF-9C88-B0E1771A909F> .
+<http://data.lblod.info/mappings/61C04D87E32491000800009A>	<http://mu.semte.ch/vocabularies/ext/versionedUri>	<http://mu.semte.ch/services/ldes-time-fragmenter/versioned/2E100F40-E97E-11EF-9C88-B0E1771A909F> .
+<http://data.lblod.info/mappings/61C04A1AE32491000800006E>	<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>	<http://lblod.data.gift/vocabularies/variables/Variable> .
+<http://data.lblod.info/mappings/61C04A19E32491000800006C>	<http://lblod.data.gift/vocabularies/variables/required>	"true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<http://data.lblod.info/mappings/61C04A1AE32491000800006E>	<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>	<http://mu.semte.ch/vocabularies/ext/InstructionVariable> .
+<http://data.lblod.info/mappings/61C04A1AE32491000800006D>	<http://purl.org/dc/terms/type>	"instruction" .
+<http://data.lblod.info/mappings/61C04A1AE32491000800006E>	<http://mu.semte.ch/vocabularies/core/uuid>	"61C04A1AE32491000800006E" .
+<http://data.lblod.info/mappings/61C04D87E32491000800009A>	<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>	<http://lblod.data.gift/vocabularies/variables/VariableWithLocation> .
+<http://data.lblod.info/mappings/61C04A1AE32491000800006D>	<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>	<http://lblod.data.gift/vocabularies/variables/Variable> .
+<http://data.lblod.info/mappings/61C04A1AE32491000800006D>	<http://lblod.data.gift/vocabularies/variables/required>	"true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<http://data.lblod.info/mappings/61C04A19E32491000800006C>	<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>	<http://lblod.data.gift/vocabularies/variables/Variable> .
+<http://data.lblod.info/mappings/61C04A19E32491000800006C>	<http://purl.org/dc/terms/title>	"locatie" .
+<http://data.lblod.info/mappings/61C04A19E32491000800006C>	<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>	<http://lblod.data.gift/vocabularies/variables/VariableWithLocation> .
+<http://data.lblod.info/mappings/61C04A1AE32491000800006D>	<http://purl.org/dc/terms/title>	"C43" .
+<http://data.lblod.info/mappings/61C04A1AE32491000800006E>	<https://data.vlaanderen.be/ns/mobiliteit#template>	<http://data.lblod.info/templates/0bd15f73-932d-4db8-b804-4d37fc9a9683> .
+<http://data.lblod.info/mappings/61C04A1AE32491000800006D>	<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>	<http://mu.semte.ch/vocabularies/ext/InstructionVariable> .
+<http://data.lblod.info/mappings/61C04A1AE32491000800006E>	<http://purl.org/dc/terms/type>	"instruction" .
+<http://data.lblod.info/mappings/61C04A1AE32491000800006D>	<http://mu.semte.ch/vocabularies/core/uuid>	"61C04A1AE32491000800006D" .
+<http://data.lblod.info/mappings/61C04A19E32491000800006C>	<http://purl.org/dc/terms/type>	"location" .
+<http://data.lblod.info/mappings/61C04A19E32491000800006C>	<http://mu.semte.ch/vocabularies/ext/versionedUri>	<http://mu.semte.ch/services/ldes-time-fragmenter/versioned/2E100F18-E97E-11EF-9C88-B0E1771A909F> .
+<http://data.lblod.info/mappings/61C04D87E32491000800009A>	<http://mu.semte.ch/vocabularies/core/uuid>	"61C04D87E32491000800009A" .
+<http://data.lblod.info/mappings/61C04A1AE32491000800006D>	<http://mu.semte.ch/vocabularies/ext/versionedUri>	<http://mu.semte.ch/services/ldes-time-fragmenter/versioned/2E100F19-E97E-11EF-9C88-B0E1771A909F> .
+<http://data.lblod.info/mappings/61C04A19E32491000800006C>	<http://purl.org/dc/terms/modified>	"2025-10-03T09:34:48.228368"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+`,
 ];

@@ -45,3 +45,4 @@ export const uriList = literalResult(
   z.string().transform((strList) => strList.split(',')),
 );
 export const plainString = literalResult(z.string());
+export const plain
