@@ -6,7 +6,7 @@ import {
   jsonApiSchema,
 } from '../../jsonapi-schema';
 import { searchDesignDetails } from '../../queries/ar-designs';
-import { getMeasureDetails } from '../../queries/get-measure-info';
+import { getMeasureDetailsByUri } from '../../queries/measures';
 
 export const TRAFFIC_SIGNAL_CONCEPT_TYPES = {
   TRAFFIC_SIGNAL:
@@ -191,11 +191,10 @@ designMeasuresRouter.get('/ar-designs/:id/measures', async function (req, res) {
       res.send();
     } else {
       console.log(design.measures.value);
-      const measureConcepts = await getMeasureDetails(design.measures.value);
+      const measureConcepts = await getMeasureDetailsByUri(design.measures.value);
       const jsonResponse = measuresJsonSchema.safeDecode({
         data: measureConcepts.map((measureConcept) => {
-          const { id, templateString, rawTemplateString, variables } =
-            measureConcept;
+          const { id, templateString, rawTemplateString } = measureConcept;
           return {
             type: 'measures',
             id: id.value,

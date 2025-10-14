@@ -12,7 +12,7 @@ const measureConceptSparqlSchema = z.object({
   rawTemplateString: plainString,
   variables: uriList,
 });
-export async function getMeasureDetails(uris: string[]) {
+export async function getMeasureDetailsByUri(uris: string[]) {
   if (uris.length === 0) {
     return [];
   }
