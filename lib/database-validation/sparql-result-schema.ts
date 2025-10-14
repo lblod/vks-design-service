@@ -1,14 +1,18 @@
 import * as z from 'zod';
-export function queryResultSchema<S extends z.ZodType>(bindingSchema: S) {
-  return z.strictObject({
-    head: z.strictObject({
-      link: z.array(z.strictObject({})),
-      vars: z.array(z.string()),
-    }),
-    results: z.strictObject({
-      distinct: z.boolean(),
-      ordered: z.boolean(),
-      bindings: bindingSchema,
-    }),
-  });
+export function queryResultSchema<S extends z.ZodNonOptional<z.ZodArray>>(
+  bindingSchema: S,
+) {
+  return z
+    .object({
+      head: z.object({
+        link: z.array(z.object({})),
+        vars: z.array(z.string()),
+      }),
+      results: z.object({
+        bindings: bindingSchema.nonoptional(),
+        distinct: z.boolean(),
+        ordered: z.boolean(),
+      }),
+    })
+    .strict();
 }

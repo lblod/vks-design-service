@@ -1,10 +1,6 @@
 import * as z from 'zod';
 import { Router } from 'express';
-import {
-  designSchema,
-  getAllDesigns,
-  type DesignResource,
-} from '../queries/get-all-designs';
+import { getAllDesigns } from '../queries/get-all-designs';
 import { stringToDate } from '../database-validation/sparql-value-schemas';
 import {
   jsonApiRelationship,
@@ -29,39 +25,29 @@ const designJsonSchema = jsonApiSchema(
       .strict(),
   }),
 );
-type DesignDoc = z.infer<typeof designJsonSchema>;
-
-const designToJsonApi = z
-  .array(designSchema)
-  .pipe(
-    z.transform<DesignResource[], DesignDoc>(
-      (designs) =>
-        ({
-          data: designs.map((design) => ({
-            id: design.id,
-            type: 'ar-designs',
-            attributes: {
-              date: stringToDate.encode(design.date),
-              uri: design.uri,
-              name: design.name,
-            },
-            relationships: {
-              measures: {
-                links: { related: `/ar-designs/${design.id}/measures` },
-              },
-            },
-          })),
-        }) as const,
-    ),
-  )
-  .pipe(designJsonSchema);
 
 export const designsRouter = Router();
 designsRouter.get('/ar-designs', async function (_req, res) {
   try {
     const designs = await getAllDesigns();
 
-    const result = designToJsonApi.parse(designs);
+    const result = designJsonSchema.decode({
+      data: designs.map((design) => {
+        const { uri, id, name, date } = design;
+        return {
+          type: 'ar-designs' as const,
+          id: id.value,
+          attributes: {
+            uri: uri.value,
+            name: name.value,
+            date: stringToDate.encode(date.value),
+          },
+          relationships: {
+            measures: { links: { related: `ar-designs/${id}/measures` } },
+          },
+        };
+      }),
+    });
     res.status(200);
     res.send(result);
   } catch (e) {
