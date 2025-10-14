@@ -4,6 +4,7 @@ import {
   uriList,
 } from '../database-validation/sparql-value-schemas';
 import { schemaQuery, uriValuesClause } from './schema-query';
+import { getMowEndpoint } from '../environment';
 
 const measureConceptSparqlSchema = z.object({
   id: plainString,
@@ -36,5 +37,6 @@ export async function getMeasureDetails(uris: string[]) {
   return schemaQuery(
     z.array(measureConceptSparqlSchema).length(uris.length),
     queryStr,
+    { endpoint: getMowEndpoint() },
   );
 }

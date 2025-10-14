@@ -5,11 +5,7 @@ import {
   jsonApiResourceObject,
   jsonApiSchema,
 } from '../../jsonapi-schema';
-import { uuid } from 'mu';
-import {
-  getDesignDetails,
-  searchDesignDetails,
-} from '../../queries/ar-designs';
+import { searchDesignDetails } from '../../queries/ar-designs';
 import { getMeasureDetails } from '../../queries/get-measure-info';
 
 export const TRAFFIC_SIGNAL_CONCEPT_TYPES = {

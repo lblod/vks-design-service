@@ -33,8 +33,13 @@ declare module 'mu' {
    * objects. If this is an ASK query, pass `true` instead as the return of this query will be
    * different.
    */
+  export interface UserOptions {
+    sudo?: boolean;
+    scope?: string;
+  }
   export const query: <ObjOrIsAsk extends ObjectToBind | true = ObjectToBind>(
     query: string,
+    opts?: UserOptions,
   ) => Promise<SparqlResponse<ObjOrIsAsk>>;
   export const update: (query: string) => Promise<void>;
   export const uuid: () => string;

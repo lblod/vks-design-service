@@ -18,6 +18,7 @@ describe('/ar-designs/:id/measures route', () => {
     expect(response.statusCode).toEqual(404);
   });
   dbtest('route exists if given valid id', async () => {
+    process.env.MOW_ENDPOINT = 'https://roadsigns.lblod.info/sparql';
     const response = await request(myapp).get(
       '/ar-designs/f9d96c3cba89ed71e9441d929095b7cf/measures',
     );
