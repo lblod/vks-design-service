@@ -184,7 +184,7 @@ function collectVariables(
   }
   return result;
 }
-designMeasuresRouter.get('/design/:id/measures', async function (req, res) {
+designMeasuresRouter.get('/ar-designs/:id/measures', async function (req, res) {
   try {
     const design = await getDesignById(req.params.id);
     if (!design) {
@@ -206,7 +206,7 @@ designMeasuresRouter.get('/design/:id/measures', async function (req, res) {
           relationships: {
             design: {
               links: {
-                related: `/designs/${req.params.id}`,
+                related: `/ar-designs/${req.params.id}`,
               },
             },
           },

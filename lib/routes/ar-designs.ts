@@ -14,7 +14,7 @@ import {
 
 const designJsonSchema = jsonApiSchema(
   jsonApiResourceObject({
-    type: 'design',
+    type: 'ar-designs',
     attributes: z
       .object({
         name: z.string(),
@@ -39,14 +39,16 @@ const designToJsonApi = z
         ({
           data: designs.map((design) => ({
             id: design.id,
-            type: 'design',
+            type: 'ar-designs',
             attributes: {
               date: stringToDate.encode(design.date),
               uri: design.uri,
               name: design.name,
             },
             relationships: {
-              measures: { links: { related: `/design/${design.id}/measures` } },
+              measures: {
+                links: { related: `/ar-designs/${design.id}/measures` },
+              },
             },
           })),
         }) as const,
@@ -55,7 +57,7 @@ const designToJsonApi = z
   .pipe(designJsonSchema);
 
 export const designsRouter = Router();
-designsRouter.get('/designs', async function (_req, res) {
+designsRouter.get('/ar-designs', async function (_req, res) {
   try {
     const designs = await getAllDesigns();
 
