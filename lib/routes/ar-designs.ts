@@ -1,6 +1,6 @@
 import * as z from 'zod';
 import { Router } from 'express';
-import { getAllDesigns } from '../queries/get-all-designs';
+import { getAllDesigns } from '../queries/ar-designs';
 import { stringToDate } from '../database-validation/sparql-value-schemas';
 import {
   jsonApiRelationship,
@@ -43,7 +43,13 @@ designsRouter.get('/ar-designs', async function (_req, res) {
             date: stringToDate.encode(date.value),
           },
           relationships: {
-            measures: { links: { related: `ar-designs/${id}/measures` } },
+            measures: {
+              links: { related: `/ar-designs/${id.value}/measures` },
+              data: design.measures.value.map((measure) => ({
+                type: 'measures',
+                id: measure,
+              })),
+            },
           },
         };
       }),

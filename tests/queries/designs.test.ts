@@ -1,6 +1,6 @@
 import { describe, expect, beforeEach } from 'vitest';
 import { seedDB } from '../db-utils';
-import { getAllDesigns } from '../../lib/queries/get-all-designs';
+import { getAllDesigns } from '../../lib/queries/ar-designs';
 import { dbtest } from '../test-setup';
 import { signalisationDesignWithMeasure } from '../fixtures/signalisation-design-with-measure';
 

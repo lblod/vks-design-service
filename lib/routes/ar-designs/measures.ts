@@ -5,9 +5,12 @@ import {
   jsonApiResourceObject,
   jsonApiSchema,
 } from '../../jsonapi-schema';
-import { getDesignById } from '../../queries/get-design-by-id';
 import { uuid } from 'mu';
-import { getMultipleMeasureConceptsWithVariables } from '../../queries/get-measure-info';
+import {
+  getDesignDetails,
+  searchDesignDetails,
+} from '../../queries/ar-designs';
+import { getMeasureDetails } from '../../queries/get-measure-info';
 
 export const TRAFFIC_SIGNAL_CONCEPT_TYPES = {
   TRAFFIC_SIGNAL:
@@ -115,11 +118,11 @@ const measuresJsonSchema = jsonApiSchema(
         rawTemplateString: z.string(),
         templateString: z.string(),
         // temporal: z.boolean(),
-        variables: z.record(z.string(), VariableSchema),
       })
       .strict(),
     relationships: z.object({
       design: jsonApiRelationship(),
+      variables: jsonApiRelationship(),
     }),
   }),
 );
@@ -186,31 +189,38 @@ function collectVariables(
 }
 designMeasuresRouter.get('/ar-designs/:id/measures', async function (req, res) {
   try {
-    const design = await getDesignById(req.params.id);
+    const design = (await searchDesignDetails([req.params.id]))[0];
     if (!design) {
       res.status(404);
       res.send();
     } else {
-      const measureConcepts = await getMultipleMeasureConceptsWithVariables(
-        design.measures.value,
-      );
+      console.log(design.measures.value);
+      const measureConcepts = await getMeasureDetails(design.measures.value);
       const jsonResponse = measuresJsonSchema.safeDecode({
-        data: measureConcepts.map((measureConcept) => ({
-          type: 'measures',
-          id: uuid(),
-          attributes: {
-            templateString: measureConcept.measure.templateString.value,
-            rawTemplateString: measureConcept.measure.rawTemplateString.value,
-            variables: collectVariables(measureConcept),
-          },
-          relationships: {
-            design: {
-              links: {
-                related: `/ar-designs/${req.params.id}`,
+        data: measureConcepts.map((measureConcept) => {
+          const { id, templateString, rawTemplateString, variables } =
+            measureConcept;
+          return {
+            type: 'measures',
+            id: id.value,
+            attributes: {
+              templateString: templateString.value,
+              rawTemplateString: rawTemplateString.value,
+            },
+            relationships: {
+              design: {
+                links: {
+                  related: `/ar-designs/${req.params.id}`,
+                },
+              },
+              variables: {
+                links: {
+                  related: `/measures/${id.value}/variables`,
+                },
               },
             },
-          },
-        })),
+          };
+        }),
       });
       if (jsonResponse.success) {
         res.status(200);

@@ -1,24 +1,17 @@
 import * as z from 'zod';
-import { query, sparqlEscapeUri } from 'mu';
-import { queryResultSchema } from '../database-validation/sparql-result-schema';
 import {
   plainString,
   uriList,
 } from '../database-validation/sparql-value-schemas';
-import { getMultipleVariableInfos } from './get-variable-info';
+import { schemaQuery, uriValuesClause } from './schema-query';
 
-export async function getMeasureConceptInfo(uri: string) {
-  const measures = await getMultipleMeasureConceptInfos([uri]);
-  return measures[0];
-}
 const measureConceptSparqlSchema = z.object({
   id: plainString,
   templateString: plainString,
   rawTemplateString: plainString,
   variables: uriList,
 });
-type SparqlMeasureConcept = z.infer<typeof measureConceptSparqlSchema>;
-export async function getMultipleMeasureConceptInfos(uris: string[]) {
+export async function getMeasureDetails(uris: string[]) {
   if (uris.length === 0) {
     return [];
   }
@@ -29,7 +22,7 @@ export async function getMultipleMeasureConceptInfos(uris: string[]) {
   PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
   PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
   SELECT ?id ?rawTemplateString ?templateString (GROUP_CONCAT(str(?variable); SEPARATOR = ',') as ?variables) WHERE {
-    VALUES ?uri { ${uris.map((uri) => sparqlEscapeUri(uri)).join(' ')} }
+    ${uriValuesClause(uris)}
     ?uri a mobiliteit:Mobiliteitmaatregelconcept;
         mu:uuid ?id;
 	mrConcept:template ?template.
@@ -40,20 +33,8 @@ export async function getMultipleMeasureConceptInfos(uris: string[]) {
   } GROUP BY ?id ?rawTemplateString ?templateString
   `;
 
-  const rawResponse = await query(queryStr);
-  const response = queryResultSchema(
+  return schemaQuery(
     z.array(measureConceptSparqlSchema).length(uris.length),
-  ).parse(rawResponse);
-  return response.results.bindings ?? null;
-}
-export async function getMultipleMeasureConceptsWithVariables(uris: string[]) {
-  const measures = await getMultipleMeasureConceptInfos(uris);
-  const promises = measures.map((measure) =>
-    variablesForMeasureConcept(measure),
+    queryStr,
   );
-  return Promise.all(promises);
-}
-async function variablesForMeasureConcept(measure: SparqlMeasureConcept) {
-  const variables = await getMultipleVariableInfos(measure.variables.value);
-  return { variables, measure };
 }

@@ -32,6 +32,7 @@ export function jsonApiRelationship() {
   return z
     .object({
       links: z.object({ related: z.string() }).strict(),
+      data: z.array(z.object({ type: z.string(), id: z.string() })).optional(),
     })
     .strict();
 }
