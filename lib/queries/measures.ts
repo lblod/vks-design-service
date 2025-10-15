@@ -3,7 +3,13 @@ import {
   plainString,
   uriList,
 } from '../database-validation/sparql-value-schemas';
-import { schemaQuery, uriValuesClause } from './schema-query';
+import {
+  idValuesClause,
+  maybeCheckedArray,
+  schemaQuery,
+  uriValuesClause,
+  type GetQueryOpts,
+} from './schema-query';
 import { getMowEndpoint } from '../environment';
 
 const measureConceptSparqlSchema = z.object({
@@ -12,8 +18,12 @@ const measureConceptSparqlSchema = z.object({
   rawTemplateString: plainString,
   variables: uriList,
 });
-export async function getMeasureDetailsByUri(uris: string[]) {
-  if (uris.length === 0) {
+async function getMeasureDetailsByIdsOrUris(
+  uriOrId: 'uri' | 'id',
+  items: string[],
+  opts?: GetQueryOpts,
+) {
+  if (items.length === 0) {
     return [];
   }
   const queryStr = `
@@ -23,7 +33,7 @@ export async function getMeasureDetailsByUri(uris: string[]) {
   PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
   PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
   SELECT ?id ?rawTemplateString ?templateString (GROUP_CONCAT(str(?variable); SEPARATOR = ',') as ?variables) WHERE {
-    ${uriValuesClause(uris)}
+    ${uriOrId === 'uri' ? uriValuesClause(items) : idValuesClause(items)}
     ?uri a mobiliteit:Mobiliteitmaatregelconcept;
         mu:uuid ?id;
 	mrConcept:template ?template.
@@ -35,8 +45,26 @@ export async function getMeasureDetailsByUri(uris: string[]) {
   `;
 
   return schemaQuery(
-    z.array(measureConceptSparqlSchema).length(uris.length),
+    maybeCheckedArray(z.array(measureConceptSparqlSchema), items.length, opts),
     queryStr,
     { endpoint: getMowEndpoint() },
   );
+}
+export async function getMeasureDetailsByUris(
+  uris: string[],
+  opts?: GetQueryOpts,
+) {
+  return getMeasureDetailsByIdsOrUris('uri', uris, opts);
+}
+export async function searchMeasureDetailsByUris(uris: string[]) {
+  return getMeasureDetailsByUris(uris, { allowEmpty: true });
+}
+export async function getMeasureDetailsByIds(
+  ids: string[],
+  opts?: GetQueryOpts,
+) {
+  return getMeasureDetailsByIdsOrUris('id', ids, opts);
+}
+export async function searchMeasureDetailsByIds(ids: string[]) {
+  return getMeasureDetailsByUris(ids, { allowEmpty: true });
 }

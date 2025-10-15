@@ -8,7 +8,13 @@ import {
 } from '../database-validation/sparql-value-schemas';
 import type { PageOpts } from '../pagination';
 import { NotImplementedError } from '../errors';
-import { listQuery, schemaQuery, idValuesClause } from './schema-query';
+import {
+  listQuery,
+  schemaQuery,
+  idValuesClause,
+  maybeCheckedArray,
+  type GetQueryOpts,
+} from './schema-query';
 
 export async function getDesignList(pagination?: PageOpts) {
   if (pagination) throw new NotImplementedError();
@@ -31,15 +37,9 @@ const designDetailSchema = z
     measures: uriList,
   })
   .strict();
-export async function getDesignDetails(
-  ids: string[],
-  opts?: { allowEmpty?: boolean },
-) {
-  const empty = opts?.allowEmpty;
+export async function getDesignDetails(ids: string[], opts?: GetQueryOpts) {
   return schemaQuery(
-    empty
-      ? z.array(designDetailSchema)
-      : z.array(designDetailSchema).length(ids.length),
+    maybeCheckedArray(z.array(designDetailSchema), ids.length, opts),
     `
   PREFIX mobiliteit: <https://data.vlaanderen.be/ns/mobiliteit#>
   PREFIX arOntwerp: <https://data.vlaanderen.be/ns/mobiliteit#AanvullendReglementOntwerp.>

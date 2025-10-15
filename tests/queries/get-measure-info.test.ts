@@ -2,7 +2,7 @@ import { beforeEach, describe, expect } from 'vitest';
 import { seedDB } from '../db-utils';
 import { dbtest } from '../test-setup';
 import { mockMowMeasure } from '../fixtures/mock-mow-measure';
-import { getMeasureDetailsByUri } from '../../lib/queries/measures';
+import { getMeasureDetailsByUris } from '../../lib/queries/measures';
 describe('get-measure-info', () => {
   beforeEach(async () => {
     return seedDB(mockMowMeasure);
@@ -11,7 +11,7 @@ describe('get-measure-info', () => {
   dbtest(
     'fetching a measure concept returns the right info',
     async () => {
-      const response = await getMeasureDetailsByUri([
+      const response = await getMeasureDetailsByUris([
         'http://data.lblod.info/traffic-measure-concepts/61C04A18E324910008000067',
       ]);
       expect(response[0]?.templateString.value).toEqual(
@@ -23,7 +23,7 @@ describe('get-measure-info', () => {
   dbtest(
     'fetching multiple measures return the right info',
     async () => {
-      const response = await getMeasureDetailsByUri([
+      const response = await getMeasureDetailsByUris([
         'http://data.lblod.info/traffic-measure-concepts/61C04A18E324910008000067',
       ]);
       expect(response?.[0]?.templateString.value).toEqual(

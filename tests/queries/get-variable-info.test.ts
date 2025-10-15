@@ -2,7 +2,7 @@ import { beforeEach, describe, expect } from 'vitest';
 import { seedDB } from '../db-utils';
 import { dbtest } from '../test-setup';
 import { mockMowMeasure } from '../fixtures/mock-mow-measure';
-import { getMultipleVariableInfos } from '../../lib/queries/get-variable-info';
+import { getVariableDetailsByUris } from '../../lib/queries/get-variable-info';
 describe('get-variable-info', () => {
   beforeEach(async () => {
     return seedDB(mockMowMeasure);
@@ -11,7 +11,7 @@ describe('get-variable-info', () => {
   dbtest(
     'fetching a variable returns the right info',
     async () => {
-      const response = await getMultipleVariableInfos([
+      const response = await getVariableDetailsByUris([
         'http://data.lblod.info/mappings/61C04A1AE32491000800006D',
       ]);
       expect(response?.[0]?.title.value).toEqual('C43');
@@ -21,7 +21,7 @@ describe('get-variable-info', () => {
   dbtest(
     'fetching a variable returns the right info',
     async () => {
-      const response = await getMultipleVariableInfos([
+      const response = await getVariableDetailsByUris([
         'http://data.lblod.info/mappings/61C04A1AE32491000800006E',
         'http://data.lblod.info/mappings/61C04A19E32491000800006C',
         'http://data.lblod.info/mappings/61C04A1AE32491000800006D',

@@ -35,3 +35,17 @@ export function uriValuesClause(uris: string[], variableName = '?uri') {
   }
   return `VALUES ${variableName} { ${uris.map((uri) => sparqlEscapeUri(uri)).join(' ')} }`;
 }
+export function maybeCheckedArray<S extends z.ZodArray>(
+  arraySchema: S,
+  expectedLength: number,
+  opts?: { allowEmpty?: boolean },
+) {
+  if (opts?.allowEmpty) {
+    return arraySchema;
+  } else {
+    return arraySchema.length(expectedLength);
+  }
+}
+export interface GetQueryOpts {
+  allowEmpty?: boolean;
+}
