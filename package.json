@@ -1,5 +1,5 @@
 {
-  "name": "vlag-crud-service",
+  "name": "vks-design-service",
   "version": "0.0.1",
   "description": "Mu-javascript service which implements the VLAG datamodel",
   "main": "app.ts",
