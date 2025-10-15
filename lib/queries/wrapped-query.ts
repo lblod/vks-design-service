@@ -2,6 +2,9 @@ import { query, type ObjectToBind, type UserOptions } from 'mu';
 
 export type WrappedQueryOpts = UserOptions & { endpoint?: string };
 
+/**
+ * Hacky wrapper around `query` from `mu` to allow endpoint selection
+ */
 export async function wrappedQuery<
   ObjOrIsAsk extends ObjectToBind | true = ObjectToBind,
 >(queryStr: string, opts?: WrappedQueryOpts) {

@@ -2,7 +2,7 @@ import { beforeEach, describe, expect } from 'vitest';
 import { seedDB } from '../db-utils';
 import { dbtest } from '../test-setup';
 import { mockMowMeasure } from '../fixtures/mock-mow-measure';
-import { getVariableDetailsByUris } from '../../lib/queries/get-variable-info';
+import { getVariableDetailsByUris } from '../../lib/queries/variables';
 describe('get-variable-info', () => {
   beforeEach(async () => {
     return seedDB(mockMowMeasure);

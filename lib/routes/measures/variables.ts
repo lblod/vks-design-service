@@ -1,9 +1,36 @@
 import * as z from 'zod';
 import { Router } from 'express';
 import { searchMeasureDetailsByIds } from '../../queries/measures';
-import { getVariableDetailsByUris } from '../../queries/get-variable-info';
-const measureVariablesRouter = Router();
+import { getVariableDetailsByUris } from '../../queries/variables';
+export const measureVariablesRouter = Router();
 
+measureVariablesRouter.get(
+  '/measures/:id/variables',
+  async function (req, res) {
+    try {
+      const measure = (await searchMeasureDetailsByIds([req.params.id]))[0];
+      if (!measure) {
+        res.status(404);
+        res.send();
+      } else {
+        const variables = await getVariableDetailsByUris(
+          measure.variables.value,
+        );
+        // TODO: finish this: add a test
+      }
+    } catch (e) {
+      res.status(500);
+      if (e instanceof Error) {
+        res.send({ error: e.message });
+      } else {
+        res.send({ error: e });
+      }
+    }
+  },
+);
+
+// TODO: the below is a port of the variable schema as used by the roadsign plugin (and slightly adjusted)
+// It is currently not used because this route is unfinished, but I left the code in to help further work.
 const BaseVariableSchema = z.object({
   uri: z.string(),
   label: z.string(),
@@ -109,27 +136,3 @@ function collectVariables(
 }
 
 type Variable = z.infer<typeof VariableSchema>;
-measureVariablesRouter.get(
-  '/measures/:id/variables',
-  async function (req, res) {
-    try {
-      const measure = (await searchMeasureDetailsByIds([req.params.id]))[0];
-      if (!measure) {
-        res.status(404);
-        res.send();
-      } else {
-        const variables = await getVariableDetailsByUris(
-          measure.variables.value,
-        );
-        // TODO: finish this: add a test
-      }
-    } catch (e) {
-      res.status(500);
-      if (e instanceof Error) {
-        res.send({ error: e.message });
-      } else {
-        res.send({ error: e });
-      }
-    }
-  },
-);

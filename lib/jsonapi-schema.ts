@@ -4,6 +4,9 @@ export interface JsonApiResourceConfig<T, A, R> {
   attributes: A;
   relationships: R;
 }
+/**
+ * Defines the shape of the "data" of a jsonAPI document
+ */
 export function jsonApiResourceObject<
   T extends string,
   A extends z.ZodType,
@@ -20,6 +23,9 @@ export function jsonApiResourceObject<
     })
     .strict();
 }
+/**
+ * Defines the scaffolding of a jsonAPI document
+ */
 export function jsonApiSchema<R extends z.ZodType>(resourceSchema: R) {
   return z
     .object({
@@ -28,6 +34,9 @@ export function jsonApiSchema<R extends z.ZodType>(resourceSchema: R) {
     })
     .strict();
 }
+/**
+ * Defines the shape of a jsonAPI relationship
+ */
 export function jsonApiRelationship() {
   return z
     .object({
