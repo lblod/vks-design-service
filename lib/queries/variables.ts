@@ -3,14 +3,14 @@ import {
   literalResult,
   plainString,
   uriValue,
-} from '../database-validation/sparql-value-schemas';
+} from '../database-validation/sparql-value-schemas.ts';
 import {
   maybeCheckedArray,
   schemaQuery,
   uriValuesClause,
   type GetQueryOpts,
-} from './schema-query';
-import { getMowEndpoint } from '../environment';
+} from './schema-query.ts';
+import { getMowEndpoint } from '../environment.ts';
 const variableBinding = z.object({
   title: plainString,
   uri: uriValue,

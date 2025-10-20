@@ -1,11 +1,11 @@
 import request from 'supertest';
 import { beforeEach, describe, expect } from 'vitest';
-import { myapp } from '../../../app';
-import { validate } from '../../validate-jsonapi';
-import { seedDB } from '../../db-utils';
-import { dbtest } from '../../test-setup';
-import { signalisationDesignWithMeasure } from '../../fixtures/signalisation-design-with-measure';
-import { mockMowMeasure } from '../../fixtures/mock-mow-measure';
+import { myapp } from '../../../app.ts';
+import { validate } from '../../validate-jsonapi.ts';
+import { seedDB } from '../../db-utils.ts';
+import { dbtest } from '../../test-setup.ts';
+import { signalisationDesignWithMeasure } from '../../fixtures/signalisation-design-with-measure.ts';
+import { mockMowMeasure } from '../../fixtures/mock-mow-measure.ts';
 describe('/ar-designs/:id/measures route', () => {
   beforeEach(async () =>
     seedDB([signalisationDesignWithMeasure, ...mockMowMeasure]),

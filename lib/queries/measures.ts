@@ -2,15 +2,15 @@ import * as z from 'zod';
 import {
   plainString,
   uriList,
-} from '../database-validation/sparql-value-schemas';
+} from '../database-validation/sparql-value-schemas.ts';
 import {
   idValuesClause,
   maybeCheckedArray,
   schemaQuery,
   uriValuesClause,
   type GetQueryOpts,
-} from './schema-query';
-import { getMowEndpoint } from '../environment';
+} from './schema-query.ts';
+import { getMowEndpoint } from '../environment.ts';
 
 const measureConceptSparqlSchema = z.object({
   id: plainString,

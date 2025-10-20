@@ -8,7 +8,7 @@ import {
   StartedDockerComposeEnvironment,
   Wait,
 } from 'testcontainers';
-import { wipeDB } from './db-utils';
+import { wipeDB } from './db-utils.ts';
 
 export const dbtest = baseTest.extend<{
   stack?: { composeEnv: StartedDockerComposeEnvironment; endpoint: string };

@@ -1,7 +1,7 @@
 import * as z from 'zod';
 import { Router } from 'express';
-import { searchMeasureDetailsByIds } from '../../queries/measures';
-import { getVariableDetailsByUris } from '../../queries/variables';
+import { searchMeasureDetailsByIds } from '../../queries/measures.ts';
+import { getVariableDetailsByUris } from '../../queries/variables.ts';
 export const measureVariablesRouter = Router();
 
 measureVariablesRouter.get(

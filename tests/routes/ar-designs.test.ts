@@ -1,10 +1,10 @@
 import request from 'supertest';
 import { beforeEach, describe, expect } from 'vitest';
-import { myapp } from '../../app';
-import { validate } from '../validate-jsonapi';
-import { seedDB } from '../db-utils';
-import { dbtest } from '../test-setup';
-import { signalisationDesignWithMeasure } from '../fixtures/signalisation-design-with-measure';
+import { myapp } from '../../app.ts';
+import { validate } from '../validate-jsonapi.ts';
+import { seedDB } from '../db-utils.ts';
+import { dbtest } from '../test-setup.ts';
+import { signalisationDesignWithMeasure } from '../fixtures/signalisation-design-with-measure.ts';
 describe('/ar-designs route', () => {
   beforeEach(async () => seedDB(signalisationDesignWithMeasure));
   dbtest('route exists', async () => {

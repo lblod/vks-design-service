@@ -2,6 +2,7 @@
   "name": "vks-design-service",
   "version": "0.0.1",
   "description": "Mu-javascript service which implements the VLAG datamodel",
+  "type": "module",
   "main": "app.ts",
   "scripts": {
     "test": "vitest"
@@ -30,7 +31,7 @@
     "zod": "^4.1.11"
   },
   "dependencies": {
-    "mu": "file:mu-pkg",
+    "mu": "file:./mu-pkg",
     "zod": "^4.1.11"
   },
   "volta": {

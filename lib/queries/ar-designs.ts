@@ -5,16 +5,16 @@ import {
   stringValue,
   uriList,
   uriValue,
-} from '../database-validation/sparql-value-schemas';
-import type { PageOpts } from '../pagination';
-import { NotImplementedError } from '../errors';
+} from '../database-validation/sparql-value-schemas.ts';
+import type { PageOpts } from '../pagination.ts';
+import { NotImplementedError } from '../errors.ts';
 import {
   listQuery,
   schemaQuery,
   idValuesClause,
   maybeCheckedArray,
   type GetQueryOpts,
-} from './schema-query';
+} from './schema-query.ts';
 
 export async function getDesignList(pagination?: PageOpts) {
   if (pagination) throw new NotImplementedError();

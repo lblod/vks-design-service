@@ -4,9 +4,9 @@ import {
   jsonApiRelationship,
   jsonApiResourceObject,
   jsonApiSchema,
-} from '../../jsonapi-schema';
-import { searchDesignDetails } from '../../queries/ar-designs';
-import { getMeasureDetailsByUris } from '../../queries/measures';
+} from '../../jsonapi-schema.ts';
+import { searchDesignDetails } from '../../queries/ar-designs.ts';
+import { getMeasureDetailsByUris } from '../../queries/measures.ts';
 
 export const TRAFFIC_SIGNAL_CONCEPT_TYPES = {
   TRAFFIC_SIGNAL:

@@ -1,6 +1,6 @@
 import { describe, expect } from 'vitest';
 import { query, update } from 'mu';
-import { dbtest } from './test-setup';
+import { dbtest } from './test-setup.ts';
 
 describe.only('test the connection with the sparql-parser backend', () => {
   dbtest('can connect to the backend and execute a basic query', async () => {

@@ -1,9 +1,9 @@
 import { sparqlEscapeString, sparqlEscapeUri } from 'mu';
 import * as z from 'zod';
-import { queryResultSchema } from '../database-validation/sparql-result-schema';
-import { plainString } from '../database-validation/sparql-value-schemas';
-import { InvariantError } from '../errors';
-import { wrappedQuery, type WrappedQueryOpts } from './wrapped-query';
+import { queryResultSchema } from '../database-validation/sparql-result-schema.ts';
+import { plainString } from '../database-validation/sparql-value-schemas.ts';
+import { InvariantError } from '../errors.ts';
+import { wrappedQuery, type WrappedQueryOpts } from './wrapped-query.ts';
 /**
  * Execute a query with validation of the resulting response
  * @param schema The zod schema which describes the binding array. Must be an array-schema.

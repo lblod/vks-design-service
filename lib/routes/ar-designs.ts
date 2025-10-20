@@ -1,7 +1,7 @@
 import * as z from 'zod';
 import { Router } from 'express';
-import { getAllDesigns } from '../queries/ar-designs';
-import { stringToDate } from '../database-validation/sparql-value-schemas';
+import { getAllDesigns } from '../queries/ar-designs.ts';
+import { stringToDate } from '../database-validation/sparql-value-schemas.ts';
 import {
   jsonApiRelationship,
   jsonApiResourceObject,
