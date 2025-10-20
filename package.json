@@ -32,5 +32,8 @@
   "dependencies": {
     "mu": "file:mu-pkg",
     "zod": "^4.1.11"
+  },
+  "volta": {
+    "node": "22.20.0"
   }
 }
