@@ -31,7 +31,7 @@
     "zod": "^4.1.11"
   },
   "dependencies": {
-    "mu": "file:./mu-pkg",
+    "mu": "https://github.com/elpoelma/mu-helpers.git",
     "zod": "^4.1.11"
   },
   "volta": {
