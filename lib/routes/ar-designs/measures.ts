@@ -59,8 +59,8 @@ const measuresJsonSchema = jsonApiSchema(
     attributes: z
       .object({
         // measureConcept: measureConceptSchema,
-        rawTemplateString: z.string(),
-        templateString: z.string(),
+        'raw-template-string': z.string(),
+        'template-string': z.string(),
         // temporal: z.boolean(),
       })
       .strict(),
@@ -89,8 +89,8 @@ designMeasuresRouter.get('/ar-designs/:id/measures', async function (req, res) {
             type: 'measures',
             id: id.value,
             attributes: {
-              templateString: templateString.value,
-              rawTemplateString: rawTemplateString.value,
+              'template-string': templateString.value,
+              'raw-template-string': rawTemplateString.value,
             },
             relationships: {
               design: {

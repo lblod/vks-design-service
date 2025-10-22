@@ -38,32 +38,32 @@ const BaseVariableSchema = z.object({
 });
 const TextVariableSchema = BaseVariableSchema.extend({
   type: z.literal('text'),
-  defaultValue: z.string().optional(),
+  'default-value': z.string().optional(),
 });
 type TextVariable = z.infer<typeof TextVariableSchema>;
 
 const NumberVariableSchema = BaseVariableSchema.extend({
   type: z.literal('number'),
-  defaultValue: z.coerce.number().optional(),
+  'default-value': z.coerce.number().optional(),
 });
 type NumberVariable = z.infer<typeof NumberVariableSchema>;
 
 const DateVariableSchema = BaseVariableSchema.extend({
   type: z.literal('date'),
-  defaultValue: z.coerce.date().optional(),
+  'default-value': z.coerce.date().optional(),
 });
 type DateVariable = z.infer<typeof DateVariableSchema>;
 
 const CodelistVariableSchema = BaseVariableSchema.extend({
   type: z.literal('codelist'),
-  defaultValue: z.string().optional(),
-  codelistUri: z.string(),
+  'default-value': z.string().optional(),
+  'codelist-uri': z.string(),
 });
 type CodelistVariable = z.infer<typeof CodelistVariableSchema>;
 
 const LocationVariableSchema = BaseVariableSchema.extend({
   type: z.literal('location'),
-  defaultValue: z.string().optional(),
+  'default-value': z.string().optional(),
 });
 type LocationVariable = z.infer<typeof LocationVariableSchema>;
 
@@ -114,7 +114,7 @@ function collectVariables(
           label: item.title.value,
           type: 'codelist',
           uri: item.uri.value,
-          codelistUri: item.codelist.value,
+          'codelist-uri': item.codelist.value,
         } satisfies CodelistVariable;
         break;
       case 'location':
