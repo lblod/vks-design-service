@@ -7,3 +7,5 @@ export function getMowEndpoint() {
     'http://database:8890/sparql'
   );
 }
+
+export const DEFAULT_PAGINATION_SIZE = 20;

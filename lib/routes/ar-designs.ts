@@ -1,12 +1,12 @@
 import * as z from 'zod';
 import { Router } from 'express';
-import { getAllDesigns } from '../queries/ar-designs.ts';
 import { stringToDate } from '../database-validation/sparql-value-schemas.ts';
 import {
   jsonApiRelationship,
   jsonApiResourceObject,
   jsonApiSchema,
 } from '../jsonapi-schema';
+import { getDesigns } from '../queries/ar-designs.ts';
 
 const designJsonSchema = jsonApiSchema(
   jsonApiResourceObject({
@@ -29,7 +29,7 @@ const designJsonSchema = jsonApiSchema(
 export const designsRouter = Router();
 designsRouter.get('/ar-designs', async function (_req, res) {
   try {
-    const designs = await getAllDesigns();
+    const designs = await getDesigns();
 
     const result = designJsonSchema.decode({
       data: designs.map((design) => {

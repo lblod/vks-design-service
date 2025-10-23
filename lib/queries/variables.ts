@@ -5,7 +5,7 @@ import {
   uriValue,
 } from '../database-validation/sparql-value-schemas.ts';
 import {
-  maybeCheckedArray,
+  idValuesClause,
   schemaQuery,
   uriValuesClause,
   type GetQueryOpts,
@@ -29,13 +29,8 @@ const variableSparqlSchema = z.object({
   codelist: uriValue.optional(),
 });
 
-export async function getVariableDetailsByUris(
-  uris: string[],
-  opts?: GetQueryOpts,
-) {
-  if (uris.length === 0) {
-    return [];
-  }
+export async function getVariables(opts: GetQueryOpts = {}) {
+  const { uris, ids } = opts;
   const queryStr = /* sparql */ `
     PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
     PREFIX variable: <http://lblod.data.gift/vocabularies/variables/>
@@ -49,19 +44,19 @@ export async function getVariableDetailsByUris(
       ?type 
       ?codelist 
     WHERE {
-      ${uriValuesClause(uris)}
       ?uri 
         a variable:Variable;
+        mu:uuid ?id;
         dct:type ?type;
         dct:title ?title.
       OPTIONAL {
         ?uri mobiliteit:codelijst ?codelist.
       }
+      ${ids ? idValuesClause(ids) : ''}
+      ${uris ? uriValuesClause(uris) : ''}
     }
   `;
-  return schemaQuery(
-    maybeCheckedArray(z.array(variableSparqlSchema), uris.length, opts),
-    queryStr,
-    { endpoint: getMowEndpoint() },
-  );
+  return schemaQuery(z.array(variableSparqlSchema), queryStr, {
+    endpoint: getMowEndpoint(),
+  });
 }

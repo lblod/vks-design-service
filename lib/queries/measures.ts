@@ -5,7 +5,6 @@ import {
 } from '../database-validation/sparql-value-schemas.ts';
 import {
   idValuesClause,
-  maybeCheckedArray,
   schemaQuery,
   uriValuesClause,
   type GetQueryOpts,
@@ -18,14 +17,9 @@ const measureConceptSparqlSchema = z.object({
   rawTemplateString: plainString,
   variables: uriList,
 });
-async function getMeasureDetailsByIdsOrUris(
-  uriOrId: 'uri' | 'id',
-  items: string[],
-  opts?: GetQueryOpts,
-) {
-  if (items.length === 0) {
-    return [];
-  }
+
+export async function getMeasures(opts: GetQueryOpts = {}) {
+  const { ids, uris } = opts;
   const queryStr = /* sparql */ `
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX mobiliteit: <https://data.vlaanderen.be/ns/mobiliteit#>
@@ -33,12 +27,12 @@ async function getMeasureDetailsByIdsOrUris(
     PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
     PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
 
-    SELECT ssssssssssssssss
-      ?rawTemplateString sssssssssssssssssssssssssssssssssssssssssssssssssssssss
+    SELECT 
+      ?id 
+      ?rawTemplateString 
       ?templateString 
       (GROUP_CONCAT(str(?variable); SEPARATOR = ',') as ?variables) 
     WHERE {
-      ${uriOrId === 'uri' ? uriValuesClause(items) : idValuesClause(items)}
       ?uri 
         a mobiliteit:Mobiliteitmaatregelconcept;
         mu:uuid ?id;
@@ -48,31 +42,13 @@ async function getMeasureDetailsByIdsOrUris(
         mobiliteit:variabele ?variable;
         rdf:value ?rawTemplateString;
         ext:preview ?templateString.
+      ${ids ? idValuesClause(ids) : ''}
+      ${uris ? uriValuesClause(uris) : ''}
     } 
     GROUP BY ?id ?rawTemplateString ?templateString
   `;
 
-  return schemaQuery(
-    maybeCheckedArray(z.array(measureConceptSparqlSchema), items.length, opts),
-    queryStr,
-    { endpoint: getMowEndpoint() },
-  );
-}
-export async function getMeasureDetailsByUris(
-  uris: string[],
-  opts?: GetQueryOpts,
-) {
-  return getMeasureDetailsByIdsOrUris('uri', uris, opts);
-}
-export async function searchMeasureDetailsByUris(uris: string[]) {
-  return getMeasureDetailsByUris(uris, { allowEmpty: true });
-}
-export async function getMeasureDetailsByIds(
-  ids: string[],
-  opts?: GetQueryOpts,
-) {
-  return getMeasureDetailsByIdsOrUris('id', ids, opts);
-}
-export async function searchMeasureDetailsByIds(ids: string[]) {
-  return getMeasureDetailsByUris(ids, { allowEmpty: true });
+  return schemaQuery(z.array(measureConceptSparqlSchema), queryStr, {
+    endpoint: getMowEndpoint(),
+  });
 }

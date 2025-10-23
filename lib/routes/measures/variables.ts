@@ -1,21 +1,64 @@
 import * as z from 'zod';
 import { Router } from 'express';
-import { searchMeasureDetailsByIds } from '../../queries/measures.ts';
-import { getVariableDetailsByUris } from '../../queries/variables.ts';
+import { getVariables } from '../../queries/variables.ts';
+import { jsonApiResourceObject, jsonApiSchema } from '../../jsonapi-schema.ts';
+import { getMeasures } from '../../queries/measures.ts';
 export const measureVariablesRouter = Router();
 
+const variablesJsonSchema = jsonApiSchema(
+  jsonApiResourceObject({
+    type: 'variables',
+    attributes: z
+      .object({
+        uri: z.string(),
+        title: z.string(),
+        type: z.literal([
+          'text',
+          'number',
+          'date',
+          'codelist',
+          'location',
+          'instruction',
+        ]),
+        codelist: z.string().optional(),
+      })
+      .strict(),
+    relationships: z.object({}).strict(),
+  }),
+);
 measureVariablesRouter.get(
   '/measures/:id/variables',
   async function (req, res) {
     try {
-      const measure = (await searchMeasureDetailsByIds([req.params.id]))[0];
+      const measure = (await getMeasures({ ids: [req.params.id] }))[0];
       if (!measure) {
         res.status(404);
         res.send();
       } else {
-        const variables = await getVariableDetailsByUris(
-          measure.variables.value,
-        );
+        const variables = await getVariables({ uris: measure.variables.value });
+        const jsonResponse = variablesJsonSchema.safeDecode({
+          data: variables.map((variable) => {
+            const { id, title, uri, type, codelist } = variable;
+            return {
+              type: 'variables',
+              id: id.value,
+              attributes: {
+                uri: uri.value,
+                title: title.value,
+                type: type.value,
+                codelist: codelist?.value,
+              },
+              relationships: {},
+            };
+          }),
+        });
+        if (jsonResponse.success) {
+          res.status(200);
+          res.send(jsonResponse.data);
+        } else {
+          res.status(500);
+          res.send({ error: 'failed to encode into jsonapi' });
+        }
         // TODO: finish this: add a test
       }
     } catch (e) {
@@ -75,64 +118,64 @@ export const VariableSchema = z.discriminatedUnion('type', [
   LocationVariableSchema,
 ]);
 
-function collectVariables(
-  variableResponse: Awaited<
-    ReturnType<typeof getVariableDetailsByUris>
-  >[number],
-): Record<string, Variable> {
-  const result: Record<string, Variable> = {};
+// function collectVariables(
+//   variableResponse: Awaited<
+//     ReturnType<typeof getVariableDetailsByUris>
+//   >[number],
+// ): Record<string, Variable> {
+//   const result: Record<string, Variable> = {};
 
-  for (const item of variableResponse.variables) {
-    switch (item.type.value) {
-      case 'text':
-        result[item.title.value] = {
-          label: item.title.value,
-          type: 'text',
-          uri: item.uri.value,
-        } satisfies TextVariable;
+//   for (const item of variableResponse.variables) {
+//     switch (item.type.value) {
+//       case 'text':
+//         result[item.title.value] = {
+//           label: item.title.value,
+//           type: 'text',
+//           uri: item.uri.value,
+//         } satisfies TextVariable;
 
-        break;
-      case 'number':
-        result[item.title.value] = {
-          label: item.title.value,
-          type: 'number',
-          uri: item.uri.value,
-        } satisfies NumberVariable;
-        break;
-      case 'date':
-        result[item.title.value] = {
-          label: item.title.value,
-          type: 'date',
-          uri: item.uri.value,
-        } satisfies DateVariable;
-        break;
-      case 'codelist':
-        if (!item.codelist?.value) {
-          throw new Error('Codelist variable without attached codelist');
-        }
-        result[item.title.value] = {
-          label: item.title.value,
-          type: 'codelist',
-          uri: item.uri.value,
-          'codelist-uri': item.codelist.value,
-        } satisfies CodelistVariable;
-        break;
-      case 'location':
-        result[item.title.value] = {
-          label: item.title.value,
-          type: 'location',
-          uri: item.uri.value,
-        } satisfies LocationVariable;
-        break;
+//         break;
+//       case 'number':
+//         result[item.title.value] = {
+//           label: item.title.value,
+//           type: 'number',
+//           uri: item.uri.value,
+//         } satisfies NumberVariable;
+//         break;
+//       case 'date':
+//         result[item.title.value] = {
+//           label: item.title.value,
+//           type: 'date',
+//           uri: item.uri.value,
+//         } satisfies DateVariable;
+//         break;
+//       case 'codelist':
+//         if (!item.codelist?.value) {
+//           throw new Error('Codelist variable without attached codelist');
+//         }
+//         result[item.title.value] = {
+//           label: item.title.value,
+//           type: 'codelist',
+//           uri: item.uri.value,
+//           'codelist-uri': item.codelist.value,
+//         } satisfies CodelistVariable;
+//         break;
+//       case 'location':
+//         result[item.title.value] = {
+//           label: item.title.value,
+//           type: 'location',
+//           uri: item.uri.value,
+//         } satisfies LocationVariable;
+//         break;
 
-      case 'instruction':
-        // intentionally ignoring instructions
-        break;
-      default:
-        throw new Error('unrecognized variable type');
-    }
-  }
-  return result;
-}
+//       case 'instruction':
+//         // intentionally ignoring instructions
+//         break;
+//       default:
+//         throw new Error('unrecognized variable type');
+//     }
+//   }
+//   return result;
+// }
 
 type Variable = z.infer<typeof VariableSchema>;
