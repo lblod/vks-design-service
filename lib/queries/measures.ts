@@ -15,6 +15,7 @@ import { getMowEndpoint } from '../environment.ts';
 const measureConceptSparqlSchema = z.object({
   id: plainString,
   uri: uriValue,
+  label: plainString,
   templateString: plainString,
   rawTemplateString: plainString,
   variables: uriList,
@@ -28,10 +29,12 @@ export async function getMeasures(opts: GetQueryOpts = {}) {
     PREFIX mrConcept: <https://data.vlaanderen.be/ns/mobiliteit#Mobiliteitsmaatregelconcept.>
     PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
     PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
+    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 
     SELECT 
       ?id 
       ?uri
+      ?label
       ?rawTemplateString 
       ?templateString 
       (GROUP_CONCAT(str(?variable); SEPARATOR = ',') as ?variables) 
@@ -39,6 +42,7 @@ export async function getMeasures(opts: GetQueryOpts = {}) {
       ?uri 
         a mobiliteit:Mobiliteitmaatregelconcept;
         mu:uuid ?id;
+        skos:prefLabel ?label;
         mrConcept:template ?template.
       ?template 
         a mobiliteit:Template;
@@ -48,7 +52,7 @@ export async function getMeasures(opts: GetQueryOpts = {}) {
       ${ids ? idValuesClause(ids) : ''}
       ${uris ? uriValuesClause(uris) : ''}
     } 
-    GROUP BY ?id ?uri ?rawTemplateString ?templateString
+    GROUP BY ?id ?uri ?label ?rawTemplateString ?templateString
   `;
 
   return schemaQuery(z.array(measureConceptSparqlSchema), queryStr, {
