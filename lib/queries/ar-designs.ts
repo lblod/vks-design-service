@@ -42,31 +42,21 @@ export async function getDesigns(opts: GetQueryOpts = {}) {
       ?id 
       (GROUP_CONCAT(str(?measure); SEPARATOR=",") as ?measures) 
     WHERE {
-      {
-        ?uri 
-          a mobiliteit:AanvullendReglementOntwerp;
-          mu:uuid ?id;
-          arOntwerp:naam ?name;
-          dct:issued ?date.
-      } 
-      UNION 
-      {
-        ?uri 
-          a mobiliteit:AanvullendReglementOntwerp;
-	        mu:uuid ?id;
-	        arOntwerp:naam ?name;
-	        dct:issued ?date.
+      ?uri 
+        a mobiliteit:AanvullendReglementOntwerp;
+        mu:uuid ?id;
+        arOntwerp:naam ?name;
+        dct:issued ?date.
 
-        ?hasMeasureDesignRel 
-          relatie:bron ?uri;
-          a onderdeel:BevatMaatregelOntwerp;
-          relatie:doel ?measureDesign.
+      ?hasMeasureDesignRel 
+        relatie:bron ?uri;
+        a onderdeel:BevatMaatregelOntwerp;
+        relatie:doel ?measureDesign.
 
-        ?basedOnRel 
-          relatie:bron ?measureDesign;
-          a onderdeel:IsGebaseerdOp;
-          relatie:doel ?measure.
-      }
+      ?basedOnRel 
+        relatie:bron ?measureDesign;
+        a onderdeel:IsGebaseerdOp;
+        relatie:doel ?measure.
       ${ids ? idValuesClause(ids) : ''}
       ${uris ? uriValuesClause(uris) : ''}
     } 
