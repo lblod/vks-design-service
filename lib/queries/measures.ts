@@ -13,6 +13,7 @@ import { getMowEndpoint } from '../environment.ts';
 
 const measureConceptSparqlSchema = z.object({
   id: plainString,
+  uri: plainString,
   templateString: plainString,
   rawTemplateString: plainString,
   variables: uriList,
@@ -29,6 +30,7 @@ export async function getMeasures(opts: GetQueryOpts = {}) {
 
     SELECT 
       ?id 
+      ?uri
       ?rawTemplateString 
       ?templateString 
       (GROUP_CONCAT(str(?variable); SEPARATOR = ',') as ?variables) 
