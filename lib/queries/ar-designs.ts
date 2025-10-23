@@ -21,10 +21,19 @@ export async function getDesignList(pagination?: PageOpts) {
   return listQuery(`
   PREFIX mobiliteit: <https://data.vlaanderen.be/ns/mobiliteit#>
   PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
+  PREFIX relatie: <https://wegenenverkeer.data.vlaanderen.be/ns/implementatieelement#RelatieObject.>
+  PREFIX onderdeel: <https://wegenenverkeer.data.vlaanderen.be/ns/onderdeel#>
 
   SELECT DISTINCT ?id WHERE { 
     ?uri a mobiliteit:AanvullendReglementOntwerp;
 	 mu:uuid ?id.
+    ?hasMeasureDesignRel relatie:bron ?uri;
+       a onderdeel:BevatMaatregelOntwerp;
+       relatie:doel ?measureDesign.
+
+    ?basedOnRel relatie:bron ?measureDesign;
+      a onderdeel:IsGebaseerdOp;
+      relatie:doel ?measure.
   }`);
 }
 
