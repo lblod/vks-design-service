@@ -1,0 +1,19 @@
+steps:
+  install:
+    image: node:22-slim
+    commands:
+      - npm config set ignore-scripts true
+      - npm ci
+  lint:
+    image: node:22-slim
+    depends_on: [install]
+    commands:
+      - npm run lint
+  test:
+    image: node:22-slim
+    depends_on: [install]
+    commands:
+      - npm run test
+when:
+  event:
+    - pull_request
