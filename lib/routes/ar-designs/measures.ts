@@ -58,6 +58,7 @@ const measuresJsonSchema = jsonApiSchema(
     type: 'measures',
     attributes: z
       .object({
+        uri: z.string(),
         // measureConcept: measureConceptSchema,
         'raw-template-string': z.string(),
         'template-string': z.string(),
@@ -84,11 +85,12 @@ designMeasuresRouter.get('/ar-designs/:id/measures', async function (req, res) {
       });
       const jsonResponse = measuresJsonSchema.safeDecode({
         data: measureConcepts.map((measureConcept) => {
-          const { id, templateString, rawTemplateString } = measureConcept;
+          const { id, uri, templateString, rawTemplateString } = measureConcept;
           return {
             type: 'measures',
             id: id.value,
             attributes: {
+              uri: uri.value,
               'template-string': templateString.value,
               'raw-template-string': rawTemplateString.value,
             },
