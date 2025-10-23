@@ -9,8 +9,8 @@ export interface JsonApiResourceConfig<T, A, R> {
  */
 export function jsonApiResourceObject<
   T extends string,
-  A extends z.ZodType,
-  R extends z.ZodType,
+  A extends z.ZodObject,
+  R extends z.ZodObject,
 >({ type, attributes, relationships }: JsonApiResourceConfig<T, A, R>) {
   return z
     .object({
