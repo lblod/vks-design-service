@@ -28,7 +28,7 @@ export async function getDesignList(pagination?: PageOpts) {
   }`);
 }
 
-const designDetailSchema = z
+const arDesignSparqlSchema = z
   .object({
     name: stringValue,
     date: dateTimeValue,
@@ -37,9 +37,10 @@ const designDetailSchema = z
     measures: uriList,
   })
   .strict();
+
 export async function getDesignDetails(ids: string[], opts?: GetQueryOpts) {
   return schemaQuery(
-    maybeCheckedArray(z.array(designDetailSchema), ids.length, opts),
+    maybeCheckedArray(z.array(arDesignSparqlSchema), ids.length, opts),
     `
   PREFIX mobiliteit: <https://data.vlaanderen.be/ns/mobiliteit#>
   PREFIX arOntwerp: <https://data.vlaanderen.be/ns/mobiliteit#AanvullendReglementOntwerp.>

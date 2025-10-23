@@ -11,7 +11,9 @@ import {
   type GetQueryOpts,
 } from './schema-query.ts';
 import { getMowEndpoint } from '../environment.ts';
-const variableBinding = z.object({
+
+const variableSparqlSchema = z.object({
+  id: plainString,
   title: plainString,
   uri: uriValue,
   type: literalResult(
@@ -26,6 +28,7 @@ const variableBinding = z.object({
   ),
   codelist: uriValue.optional(),
 });
+
 export async function getVariableDetailsByUris(
   uris: string[],
   opts?: GetQueryOpts,
@@ -54,7 +57,7 @@ export async function getVariableDetailsByUris(
   } 
   `;
   return schemaQuery(
-    maybeCheckedArray(z.array(variableBinding), uris.length, opts),
+    maybeCheckedArray(z.array(variableSparqlSchema), uris.length, opts),
     queryStr,
     { endpoint: getMowEndpoint() },
   );
