@@ -19,7 +19,6 @@ export function jsonApiResourceObject<
       attributes: attributes,
       relationships: relationships,
       links: z.object().optional(),
-      meta: z.object().optional(),
     })
     .strict();
 }
