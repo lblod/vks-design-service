@@ -2,6 +2,7 @@ import * as z from 'zod';
 import {
   plainString,
   uriList,
+  uriValue,
 } from '../database-validation/sparql-value-schemas.ts';
 import {
   idValuesClause,
@@ -13,7 +14,7 @@ import { getMowEndpoint } from '../environment.ts';
 
 const measureConceptSparqlSchema = z.object({
   id: plainString,
-  uri: plainString,
+  uri: uriValue,
   templateString: plainString,
   rawTemplateString: plainString,
   variables: uriList,
@@ -47,7 +48,7 @@ export async function getMeasures(opts: GetQueryOpts = {}) {
       ${ids ? idValuesClause(ids) : ''}
       ${uris ? uriValuesClause(uris) : ''}
     } 
-    GROUP BY ?id ?rawTemplateString ?templateString
+    GROUP BY ?id ?uri ?rawTemplateString ?templateString
   `;
 
   return schemaQuery(z.array(measureConceptSparqlSchema), queryStr, {
