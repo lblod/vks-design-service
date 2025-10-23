@@ -19,7 +19,7 @@ const arDesignSparqlSchema = z
     date: dateTimeValue,
     uri: uriValue,
     id: plainString,
-    measures: uriList,
+    measureConcepts: uriList,
   })
   .strict();
 
@@ -40,7 +40,7 @@ export async function getDesigns(opts: GetQueryOpts = {}) {
       ?name 
       ?date 
       ?id 
-      (GROUP_CONCAT(str(?measure); SEPARATOR=",") as ?measures) 
+      (GROUP_CONCAT(str(?measureConcept); SEPARATOR=",") as ?measureConcepts) 
     WHERE {
       ?uri 
         a mobiliteit:AanvullendReglementOntwerp;
@@ -56,7 +56,7 @@ export async function getDesigns(opts: GetQueryOpts = {}) {
       ?basedOnRel 
         relatie:bron ?measureDesign;
         a onderdeel:IsGebaseerdOp;
-        relatie:doel ?measure.
+        relatie:doel ?measureConcept.
       ${ids ? idValuesClause(ids) : ''}
       ${uris ? uriValuesClause(uris) : ''}
     } 

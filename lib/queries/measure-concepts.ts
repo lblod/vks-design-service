@@ -21,7 +21,7 @@ const measureConceptSparqlSchema = z.object({
   variables: uriList,
 });
 
-export async function getMeasures(opts: GetQueryOpts = {}) {
+export async function getMeasureConcepts(opts: GetQueryOpts = {}) {
   const { ids, uris } = opts;
   const queryStr = /* sparql */ `
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>

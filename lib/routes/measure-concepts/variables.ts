@@ -2,8 +2,8 @@ import * as z from 'zod';
 import { Router } from 'express';
 import { getVariables } from '../../queries/variables.ts';
 import { jsonApiResourceObject, jsonApiSchema } from '../../jsonapi-schema.ts';
-import { getMeasures } from '../../queries/measures.ts';
-export const measureVariablesRouter = Router();
+import { getMeasureConcepts } from '../../queries/measure-concepts.ts';
+export const measureConceptsVariablesRouter = Router();
 
 const variablesJsonSchema = jsonApiSchema(
   jsonApiResourceObject({
@@ -26,11 +26,11 @@ const variablesJsonSchema = jsonApiSchema(
     relationships: z.object({}).strict(),
   }),
 );
-measureVariablesRouter.get(
-  '/measures/:id/variables',
+measureConceptsVariablesRouter.get(
+  '/measure-concepts/:id/variables',
   async function (req, res) {
     try {
-      const measure = (await getMeasures({ ids: [req.params.id] }))[0];
+      const measure = (await getMeasureConcepts({ ids: [req.params.id] }))[0];
       if (!measure) {
         res.status(404);
         res.send();

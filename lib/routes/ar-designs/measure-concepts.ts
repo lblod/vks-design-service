@@ -5,7 +5,7 @@ import {
   jsonApiResourceObject,
   jsonApiSchema,
 } from '../../jsonapi-schema.ts';
-import { getMeasures } from '../../queries/measures.ts';
+import { getMeasureConcepts } from '../../queries/measure-concepts.ts';
 import { getDesignById } from '../../queries/ar-designs.ts';
 
 export const TRAFFIC_SIGNAL_CONCEPT_TYPES = {
@@ -24,7 +24,7 @@ export const ZONALITY_OPTIONS = {
     'http://lblod.data.gift/concepts/b651931b-923c-477c-8da9-fc7dd841fdcc',
 };
 
-export const designMeasuresRouter = Router();
+export const designMeasureConceptsRouter = Router();
 
 export const RoadSignCategorySchema = z.object({
   uri: z.string(),
@@ -53,9 +53,9 @@ export const TrafficSignalConceptSchema = z
     ]),
   );
 
-const measuresJsonSchema = jsonApiSchema(
+const measureConceptsJsonSchema = jsonApiSchema(
   jsonApiResourceObject({
-    type: 'measures',
+    type: 'measure-concepts',
     attributes: z
       .object({
         uri: z.string(),
@@ -72,56 +72,59 @@ const measuresJsonSchema = jsonApiSchema(
   }),
 );
 
-designMeasuresRouter.get('/ar-designs/:id/measures', async function (req, res) {
-  try {
-    const design = await getDesignById(req.params.id);
-    if (!design) {
-      res.status(404);
-      res.send();
-    } else {
-      console.log(design.measures.value);
-      const measureConcepts = await getMeasures({
-        uris: design.measures.value,
-      });
-      const jsonResponse = measuresJsonSchema.safeDecode({
-        data: measureConcepts.map((measureConcept) => {
-          const { id, uri, label, templateString, rawTemplateString } =
-            measureConcept;
-          return {
-            type: 'measures',
-            id: id.value,
-            attributes: {
-              uri: uri.value,
-              label: label.value,
-              'template-string': templateString.value,
-              'raw-template-string': rawTemplateString.value,
-            },
-            relationships: {
-              design: {
-                links: {
-                  related: `/ar-designs/${req.params.id}`,
-                },
-              },
-              variables: {
-                links: {
-                  related: `/measures/${id.value}/variables`,
-                },
-              },
-            },
-          };
-        }),
-      });
-      if (jsonResponse.success) {
-        res.status(200);
-        res.send(jsonResponse.data);
+designMeasureConceptsRouter.get(
+  '/ar-designs/:id/measure-concepts',
+  async function (req, res) {
+    try {
+      const design = await getDesignById(req.params.id);
+      if (!design) {
+        res.status(404);
+        res.send();
       } else {
-        res.status(500);
-        res.send({ error: 'failed to encode into jsonapi' });
+        console.log(design.measureConcepts.value);
+        const measureConcepts = await getMeasureConcepts({
+          uris: design.measureConcepts.value,
+        });
+        const jsonResponse = measureConceptsJsonSchema.safeDecode({
+          data: measureConcepts.map((measureConcept) => {
+            const { id, uri, label, templateString, rawTemplateString } =
+              measureConcept;
+            return {
+              type: 'measure-concepts',
+              id: id.value,
+              attributes: {
+                uri: uri.value,
+                label: label.value,
+                'template-string': templateString.value,
+                'raw-template-string': rawTemplateString.value,
+              },
+              relationships: {
+                design: {
+                  links: {
+                    related: `/ar-designs/${req.params.id}`,
+                  },
+                },
+                variables: {
+                  links: {
+                    related: `/measure-concepts/${id.value}/variables`,
+                  },
+                },
+              },
+            };
+          }),
+        });
+        if (jsonResponse.success) {
+          res.status(200);
+          res.send(jsonResponse.data);
+        } else {
+          res.status(500);
+          res.send({ error: 'failed to encode into jsonapi' });
+        }
       }
+    } catch (e) {
+      console.log(e);
+      res.status(500);
+      res.send({ error: e });
     }
-  } catch (e) {
-    console.log(e);
-    res.status(500);
-    res.send({ error: e });
-  }
-});
+  },
+);

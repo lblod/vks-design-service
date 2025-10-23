@@ -44,7 +44,7 @@ designsRouter.get('/ar-designs', async function (_req, res) {
           },
           relationships: {
             measures: {
-              links: { related: `/ar-designs/${id.value}/measures` },
+              links: { related: `/ar-designs/${id.value}/measure-concepts` },
             },
           },
         };
