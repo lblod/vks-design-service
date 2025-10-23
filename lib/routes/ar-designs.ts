@@ -45,10 +45,6 @@ designsRouter.get('/ar-designs', async function (_req, res) {
           relationships: {
             measures: {
               links: { related: `/ar-designs/${id.value}/measures` },
-              data: design.measures.value.map((measure) => ({
-                type: 'measures',
-                id: measure,
-              })),
             },
           },
         };
