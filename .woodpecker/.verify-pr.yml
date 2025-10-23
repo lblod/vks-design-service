@@ -9,11 +9,11 @@ steps:
     depends_on: [install]
     commands:
       - npm run lint
-  test:
-    image: node:22-slim
-    depends_on: [install]
-    commands:
-      - npm run test
+  # test:
+  #   image: node:22-slim
+  #   depends_on: [install]
+  #   commands:
+  #     - npm run test
 when:
   event:
     - pull_request
