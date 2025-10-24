@@ -5,7 +5,8 @@
   "type": "module",
   "main": "app.ts",
   "scripts": {
-    "test": "vitest"
+    "test": "vitest",
+    "lint": "eslint"
   },
   "author": "redpencil.io",
   "license": "MIT",
