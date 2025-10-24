@@ -37,7 +37,7 @@ export async function getVariables(opts: GetQueryOpts = {}) {
     PREFIX dct: <http://purl.org/dc/terms/>
     PREFIX mobiliteit: <https://data.vlaanderen.be/ns/mobiliteit#>
 
-    SELECT 
+    SELECT DISTINCT
       ?uri 
       ?id 
       ?title 
