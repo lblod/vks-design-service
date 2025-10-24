@@ -19,6 +19,7 @@ const measureConceptSparqlSchema = z.object({
   templateString: plainString,
   rawTemplateString: plainString,
   variables: uriList,
+  signalConcepts: uriList,
 });
 
 export async function getMeasureConcepts(opts: GetQueryOpts = {}) {
@@ -26,10 +27,10 @@ export async function getMeasureConcepts(opts: GetQueryOpts = {}) {
   const queryStr = /* sparql */ `
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX mobiliteit: <https://data.vlaanderen.be/ns/mobiliteit#>
-    PREFIX mrConcept: <https://data.vlaanderen.be/ns/mobiliteit#Mobiliteitsmaatregelconcept.>
     PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
     PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
     PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+    PREFIX schema: <http://schema.org/>
 
     SELECT 
       ?id 
@@ -38,17 +39,20 @@ export async function getMeasureConcepts(opts: GetQueryOpts = {}) {
       ?rawTemplateString 
       ?templateString 
       (GROUP_CONCAT(str(?variable); SEPARATOR = ',') as ?variables) 
+      (GROUP_CONCAT(str(?signalConcept); SEPARATOR = ',') as ?signalConcepts) 
     WHERE {
       ?uri 
         a mobiliteit:Mobiliteitmaatregelconcept;
         mu:uuid ?id;
         skos:prefLabel ?label;
-        mrConcept:template ?template.
+        mobiliteit:heeftVerkeerstekenLijstItem/schema:item ?signalConcept;
+        mobiliteit:Mobiliteitsmaatregelconcept.template ?template.
       ?template 
         a mobiliteit:Template;
         mobiliteit:variabele ?variable;
         rdf:value ?rawTemplateString;
         ext:preview ?templateString.
+
       ${ids ? idValuesClause(ids) : ''}
       ${uris ? uriValuesClause(uris) : ''}
     } 

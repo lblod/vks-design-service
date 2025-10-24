@@ -26,33 +26,6 @@ export const ZONALITY_OPTIONS = {
 
 export const designMeasureConceptsRouter = Router();
 
-export const RoadSignCategorySchema = z.object({
-  uri: z.string(),
-  label: z.string(),
-});
-export const TrafficSignalConceptSchema = z
-  .object({
-    uri: z.string(),
-    code: z.string(),
-    image: z.string(),
-    zonality: z.enum(ZONALITY_OPTIONS).optional(),
-    position: z.coerce.number().default(-1),
-  })
-  .and(
-    z.discriminatedUnion('type', [
-      z.object({
-        type: z.literal(TRAFFIC_SIGNAL_CONCEPT_TYPES.ROAD_SIGN),
-        categories: z.array(RoadSignCategorySchema).default([]),
-      }),
-      z.object({
-        type: z.enum([
-          TRAFFIC_SIGNAL_CONCEPT_TYPES.ROAD_MARKING,
-          TRAFFIC_SIGNAL_CONCEPT_TYPES.TRAFFIC_LIGHT,
-        ]),
-      }),
-    ]),
-  );
-
 const measureConceptsJsonSchema = jsonApiSchema(
   jsonApiResourceObject({
     type: 'measure-concepts',
@@ -68,6 +41,7 @@ const measureConceptsJsonSchema = jsonApiSchema(
     relationships: z.object({
       design: jsonApiRelationship(),
       variables: jsonApiRelationship(),
+      'signal-concepts': jsonApiRelationship(),
     }),
   }),
 );
@@ -107,6 +81,11 @@ designMeasureConceptsRouter.get(
                 variables: {
                   links: {
                     related: `/measure-concepts/${id.value}/variables`,
+                  },
+                },
+                'signal-concepts': {
+                  links: {
+                    related: `/measure-concepts/${id.value}/signal-concepts`,
                   },
                 },
               },
