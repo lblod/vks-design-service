@@ -39,7 +39,6 @@ const measureConceptsJsonSchema = jsonApiSchema(
       })
       .strict(),
     relationships: z.object({
-      design: jsonApiRelationship(),
       variables: jsonApiRelationship(),
       'signal-concepts': jsonApiRelationship(),
     }),
@@ -73,11 +72,6 @@ designMeasureConceptsRouter.get(
                 'raw-template-string': rawTemplateString.value,
               },
               relationships: {
-                design: {
-                  links: {
-                    related: `/ar-designs/${req.params.id}`,
-                  },
-                },
                 variables: {
                   links: {
                     related: `/measure-concepts/${id.value}/variables`,
