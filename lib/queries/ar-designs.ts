@@ -12,6 +12,7 @@ import {
   type GetQueryOpts,
   uriValuesClause,
 } from './schema-query.ts';
+import { hasVKSRelationship } from '../utils/sparql/vks-relationship-helpers.ts';
 
 const arDesignSparqlSchema = z
   .object({
@@ -48,15 +49,23 @@ export async function getDesigns(opts: GetQueryOpts = {}) {
         arOntwerp:naam ?name;
         dct:issued ?date.
 
-      ?hasMeasureDesignRel 
-        relatie:bron ?uri;
-        a onderdeel:BevatMaatregelOntwerp;
-        relatie:doel ?measureDesign.
+      ${hasVKSRelationship('?uri', '?measureDesign', 'onderdeel:BevatMaatregelOntwerp')}
 
-      ?basedOnRel 
-        relatie:bron ?measureDesign;
-        a onderdeel:IsGebaseerdOp;
-        relatie:doel ?measureConcept.
+      ?measureDesign 
+        a mobiliteit:MobiliteitsmaatregelOntwerp.
+
+      ${hasVKSRelationship('?measureDesign', '?measureConcept', 'onderdeel:IsGebaseerdOp')}
+
+      ?signalisationDesign
+        a mobiliteit:SignalisatieOntwerp.
+
+      ${hasVKSRelationship('?signalisationDesign', '?signalDesign', 'onderdeel:BevatVerkeersteken')}
+
+      ?signalDesign
+        a mobiliteit:OntwerpVerkeersteken.
+
+      ${hasVKSRelationship('?signalDesign', '?uri', 'onderdeel:HeeftOntwerp')}
+
       ${ids ? idValuesClause(ids) : ''}
       ${uris ? uriValuesClause(uris) : ''}
     } 
