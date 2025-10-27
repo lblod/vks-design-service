@@ -2,10 +2,11 @@ import js from '@eslint/js';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 import json from '@eslint/json';
-import { defineConfig } from 'eslint/config';
+import { defineConfig, globalIgnores } from 'eslint/config';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 
 const config: unknown = defineConfig([
+  globalIgnores(['package-lock.json']),
   {
     files: ['**/*.{js,mjs,cjs,ts,mts,cts}'],
     plugins: { js },
@@ -17,6 +18,12 @@ const config: unknown = defineConfig([
     files: ['**/*.json'],
     plugins: { json },
     language: 'json/json',
+    extends: ['json/recommended'],
+  },
+  {
+    files: ['tsconfig.json'],
+    plugins: { json },
+    language: 'json/jsonc',
     extends: ['json/recommended'],
   },
   // eslintConfigPrettier,
