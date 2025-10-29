@@ -1,1 +1,1 @@
-FROM semtech/mu-javascript-template:1.9.1
+FROM piemonkey/mu-javascript-template:endpoint-switching

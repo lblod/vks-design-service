@@ -1,9 +1,13 @@
-import { sparqlEscapeString, sparqlEscapeUri } from 'mu';
+import {
+  query,
+  sparqlEscapeString,
+  sparqlEscapeUri,
+  type UserOptions,
+} from 'mu';
 import * as z from 'zod';
 import { queryResultSchema } from '../database-validation/sparql-result-schema.ts';
 import { plainString } from '../database-validation/sparql-value-schemas.ts';
 import { InvariantError } from '../errors.ts';
-import { wrappedQuery, type WrappedQueryOpts } from './wrapped-query.ts';
 import type { PageOpts } from '../utils/pagination.ts';
 /**
  * Execute a query with validation of the resulting response
@@ -14,9 +18,9 @@ import type { PageOpts } from '../utils/pagination.ts';
 export async function schemaQuery<S extends z.ZodArray>(
   schema: S,
   queryStr: string,
-  opts?: WrappedQueryOpts,
+  opts?: UserOptions,
 ) {
-  const rawResult = await wrappedQuery(queryStr, opts);
+  const rawResult = await query(queryStr, opts);
   const result = queryResultSchema(schema.nonoptional()).parse(rawResult);
   return result.results.bindings;
 }
@@ -25,7 +29,7 @@ export async function schemaQuery<S extends z.ZodArray>(
  * Execute a query which asks for a list of ids
  * @param queryStr The query to send. No validation of the query string takes place
  */
-export async function listQuery(queryStr: string, opts?: WrappedQueryOpts) {
+export async function listQuery(queryStr: string, opts?: UserOptions) {
   const results = await schemaQuery(
     z.array(z.object({ id: plainString }).strict()),
     queryStr,
