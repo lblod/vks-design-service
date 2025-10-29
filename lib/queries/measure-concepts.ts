@@ -1,30 +1,19 @@
 import * as z from 'zod';
 import {
-  plainString,
-  uriList,
-  uriValue,
-} from '../database-validation/sparql-value-schemas.ts';
-import {
   idValuesClause,
-  schemaQuery,
   uriValuesClause,
   type GetQueryOpts,
 } from './schema-query.ts';
 import { getMowEndpoint } from '../environment.ts';
-
-const measureConceptSparqlSchema = z.object({
-  id: plainString,
-  uri: uriValue,
-  label: plainString,
-  templateString: plainString,
-  rawTemplateString: plainString,
-  variables: uriList,
-  signalConcepts: uriList,
-});
+import { wrappedQuery } from './wrapped-query.ts';
+import { measureConceptSchema } from '../schemas/measure-concept.ts';
+import { objectify } from '../utils/sparql.ts';
 
 export async function getMeasureConcepts(opts: GetQueryOpts = {}) {
   const { ids, uris } = opts;
-  const queryStr = /* sparql */ `
+
+  const result = await wrappedQuery(
+    /* sparql */ `
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX mobiliteit: <https://data.vlaanderen.be/ns/mobiliteit#>
     PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
@@ -38,8 +27,6 @@ export async function getMeasureConcepts(opts: GetQueryOpts = {}) {
       ?label
       ?rawTemplateString 
       ?templateString 
-      (GROUP_CONCAT(str(?variable); SEPARATOR = ',') as ?variables) 
-      (GROUP_CONCAT(str(?signalConcept); SEPARATOR = ',') as ?signalConcepts) 
     WHERE {
       ?uri 
         a mobiliteit:Mobiliteitmaatregelconcept;
@@ -57,9 +44,14 @@ export async function getMeasureConcepts(opts: GetQueryOpts = {}) {
       ${uris ? uriValuesClause(uris) : ''}
     } 
     GROUP BY ?id ?uri ?label ?rawTemplateString ?templateString
-  `;
+  `,
+    { endpoint: getMowEndpoint() },
+  );
 
-  return schemaQuery(z.array(measureConceptSparqlSchema), queryStr, {
-    endpoint: getMowEndpoint(),
-  });
+  const bindings = result.results.bindings;
+  return z.array(measureConceptSchema).parse(bindings.map(objectify));
+}
+
+export async function getMeasureConceptByUri(uri: string) {
+  return getMeasureConcepts({ uris: [uri] }).then((concepts) => concepts[0]);
 }

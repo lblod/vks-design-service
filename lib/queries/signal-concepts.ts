@@ -10,7 +10,7 @@ import {
   type GetQueryOpts,
 } from './schema-query.ts';
 import { getMowEndpoint } from '../environment.ts';
-import { TRAFFIC_SIGNAL_CONCEPT_TYPES } from '../routes/ar-designs/measure-concepts.ts';
+import { TRAFFIC_SIGNAL_CONCEPT_TYPES } from '../routes/measure-designs/measure-concept.ts';
 import { sparqlEscapeUri } from 'mu';
 
 const signalConceptSparqlSchema = z.object({

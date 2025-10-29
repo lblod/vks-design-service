@@ -2,7 +2,7 @@ import * as z from 'zod';
 import { Router } from 'express';
 import { jsonApiResourceObject, jsonApiSchema } from '../../jsonapi-schema.ts';
 import { getMeasureConcepts } from '../../queries/measure-concepts.ts';
-import { TRAFFIC_SIGNAL_CONCEPT_TYPES } from '../ar-designs/measure-concepts.ts';
+import { TRAFFIC_SIGNAL_CONCEPT_TYPES } from '../measure-designs/measure-concept.ts';
 import { getSignalConcepts } from '../../queries/signal-concepts.ts';
 export const measureConceptsSignalConceptsRouter = Router();
 

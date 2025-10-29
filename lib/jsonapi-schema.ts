@@ -16,8 +16,8 @@ export function jsonApiResourceObject<
     .object({
       id: z.string(),
       type: z.literal(type),
-      attributes: attributes,
-      relationships: relationships,
+      attributes,
+      relationships,
       links: z.object().optional(),
     })
     .strict();
@@ -25,10 +25,14 @@ export function jsonApiResourceObject<
 /**
  * Defines the scaffolding of a jsonAPI document
  */
-export function jsonApiSchema<R extends z.ZodType>(resourceSchema: R) {
+export function jsonApiSchema<R extends z.ZodType, I extends z.ZodType>(
+  resourceSchema: R,
+  includedSchema: I,
+) {
   return z
     .object({
       data: z.union([z.array(resourceSchema), resourceSchema]),
+      included: includedSchema,
       meta: z.object().optional(),
     })
     .strict();

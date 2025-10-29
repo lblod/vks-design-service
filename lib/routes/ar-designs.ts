@@ -6,7 +6,7 @@ import {
   jsonApiResourceObject,
   jsonApiSchema,
 } from '../jsonapi-schema';
-import { getDesigns } from '../queries/ar-designs.ts';
+import { getARDesigns } from '../queries/ar-designs.ts';
 
 const designJsonSchema = jsonApiSchema(
   jsonApiResourceObject({
@@ -20,31 +20,32 @@ const designJsonSchema = jsonApiSchema(
       .strict(),
     relationships: z
       .object({
-        measures: jsonApiRelationship(),
+        'measure-designs': jsonApiRelationship(),
       })
       .strict(),
   }),
+  z.undefined().optional(),
 );
 
-export const designsRouter = Router();
-designsRouter.get('/ar-designs', async function (_req, res) {
+export const arDesignsRouter = Router();
+arDesignsRouter.get('/ar-designs', async function (_req, res) {
   try {
-    const designs = await getDesigns();
+    const designs = await getARDesigns();
 
     const result = designJsonSchema.decode({
       data: designs.map((design) => {
         const { uri, id, name, date } = design;
         return {
           type: 'ar-designs' as const,
-          id: id.value,
+          id: id,
           attributes: {
-            uri: uri.value,
-            name: name.value,
-            date: stringToDate.encode(date.value),
+            uri: uri,
+            name: name,
+            date: stringToDate.encode(date),
           },
           relationships: {
-            measures: {
-              links: { related: `/ar-designs/${id.value}/measure-concepts` },
+            'measure-designs': {
+              links: { related: `/ar-designs/${id}/measure-designs` },
             },
           },
         };
