@@ -1,13 +1,13 @@
 import * as z from 'zod';
-import {
-  idValuesClause,
-  type GetQueryOpts,
-  uriValuesClause,
-} from './schema-query.ts';
 import { hasVKSRelationship } from '../utils/vks-relationship-helpers.ts';
 import { objectify } from '../utils/sparql.ts';
 import { arDesignSchema } from '../schemas/ar-design.ts';
 import { query } from 'mu';
+import {
+  idValuesClause,
+  uriValuesClause,
+  type GetQueryOpts,
+} from './schema-query.ts';
 
 export async function getARDesigns(opts: GetQueryOpts = {}) {
   const { ids, uris } = opts;

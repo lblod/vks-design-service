@@ -6,7 +6,7 @@ import {
   jsonApiResourceObject,
   jsonApiSchema,
 } from '../jsonapi-schema';
-import { getARDesigns } from '../queries/ar-designs.ts';
+import { getARDesigns } from '../db/ar-designs.ts';
 
 const designJsonSchema = jsonApiSchema(
   jsonApiResourceObject({
