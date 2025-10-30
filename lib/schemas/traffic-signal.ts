@@ -6,3 +6,5 @@ export const trafficSignalSchema = z.strictObject({
   id: z.string(),
   trafficSignalConcept: trafficSignalConceptSchema,
 });
+
+export type TrafficSignal = z.infer<typeof trafficSignalSchema>;

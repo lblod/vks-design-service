@@ -7,3 +7,5 @@ export const variableInstanceSchema = z.strictObject({
   value: z.unknown(),
   variable: variableSchema,
 });
+
+export type VariableInstance = z.infer<typeof variableInstanceSchema>;

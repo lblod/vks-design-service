@@ -12,3 +12,5 @@ export const trafficSignalConceptSchema = z.strictObject({
     TRAFFIC_SIGNAL_CONCEPT_TYPES.TRAFFIC_LIGHT,
   ]),
 });
+
+export type TrafficSignalConcept = z.infer<typeof trafficSignalConceptSchema>;

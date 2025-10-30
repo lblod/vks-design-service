@@ -8,3 +8,5 @@ export const variableSchema = z.strictObject({
   type: z.string(),
   defaultValue: z.unknown(),
 });
+
+export type Variable = z.infer<typeof variableSchema>;

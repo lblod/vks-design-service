@@ -7,3 +7,5 @@ export const measureConceptSchema = z.strictObject({
   templateString: z.string(),
   rawTemplateString: z.string(),
 });
+
+export type MeasureConcept = z.infer<typeof measureConceptSchema>;

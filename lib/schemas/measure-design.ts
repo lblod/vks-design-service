@@ -10,3 +10,5 @@ export const measureDesignSchema = z.strictObject({
   variableInstances: z.array(variableInstanceSchema).default([]),
   trafficSignals: z.array(trafficSignalSchema).default([]),
 });
+
+export type MeasureDesign = z.infer<typeof measureDesignSchema>;
