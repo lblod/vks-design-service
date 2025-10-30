@@ -3,6 +3,7 @@ import { Router } from 'express';
 import { jsonApiResourceObject, jsonApiSchema } from '../../jsonapi-schema.ts';
 import { getARDesignById } from '../../queries/ar-designs.ts';
 import { getMeasureDesigns } from '../../queries/measure-designs.ts';
+import { TRAFFIC_SIGNAL_CONCEPT_TYPES } from '../measure-designs/measure-concept.ts';
 
 export const arDesignMeasureDesignsRouter = Router();
 
@@ -63,6 +64,11 @@ const measureDesignsJsonSchema = jsonApiSchema(
         id: z.string(),
         attributes: z.object({
           uri: z.string(),
+          type: z.literal([
+            TRAFFIC_SIGNAL_CONCEPT_TYPES.ROAD_SIGN,
+            TRAFFIC_SIGNAL_CONCEPT_TYPES.ROAD_MARKING,
+            TRAFFIC_SIGNAL_CONCEPT_TYPES.TRAFFIC_LIGHT,
+          ]),
           meaning: z.string(),
           code: z.string(),
         }),
@@ -145,6 +151,7 @@ arDesignMeasureDesignsRouter.get(
                   id: trafficSignal.trafficSignalConcept.id,
                   attributes: {
                     uri: trafficSignal.trafficSignalConcept.uri,
+                    type: trafficSignal.trafficSignalConcept.type,
                     code: trafficSignal.trafficSignalConcept.code,
                     meaning: trafficSignal.trafficSignalConcept.meaning,
                   },

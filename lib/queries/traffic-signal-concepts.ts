@@ -24,7 +24,7 @@ export async function getTrafficSignalConcepts(opts: GetQueryOpts = {}) {
     SELECT DISTINCT
       ?id
       ?uri
-      # ?type
+      ?type
       ?code
       ?meaning
     WHERE {
