@@ -6,7 +6,7 @@ import {
   jsonApiSchema,
 } from '../../jsonapi-schema.ts';
 import { getMeasureConcepts } from '../../queries/measure-concepts.ts';
-import { getDesignById } from '../../queries/ar-designs.ts';
+import { getARDesignById } from '../../queries/ar-designs.ts';
 
 export const TRAFFIC_SIGNAL_CONCEPT_TYPES = {
   TRAFFIC_SIGNAL:
@@ -38,10 +38,7 @@ const measureConceptsJsonSchema = jsonApiSchema(
         // temporal: z.boolean(),
       })
       .strict(),
-    relationships: z.object({
-      variables: jsonApiRelationship(),
-      'signal-concepts': jsonApiRelationship(),
-    }),
+    relationships: z.object({}),
   }),
 );
 
@@ -49,7 +46,7 @@ designMeasureConceptsRouter.get(
   '/ar-designs/:id/measure-concepts',
   async function (req, res) {
     try {
-      const design = await getDesignById(req.params.id);
+      const design = await getARDesignById(req.params.id);
       if (!design) {
         res.status(404);
         res.send();

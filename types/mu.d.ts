@@ -36,6 +36,7 @@ declare module 'mu' {
   export interface UserOptions {
     sudo?: boolean;
     scope?: string;
+    endpoint?: string;
   }
   export const query: <ObjOrIsAsk extends ObjectToBind | true = ObjectToBind>(
     query: string,
