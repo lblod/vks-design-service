@@ -1,10 +1,10 @@
 import z from 'zod';
-import { variableSchema } from './variable';
+import { stringToVariableValue, variableSchema } from './variable.ts';
 
 export const variableInstanceSchema = z.strictObject({
   uri: z.string(), // generated on-the-fly
   id: z.string(), // generated on-the-fly
-  value: z.unknown(),
+  value: stringToVariableValue.optional(),
   variable: variableSchema,
 });
 

@@ -1,5 +1,5 @@
 import type z from 'zod';
-import type { variableInstanceSchema } from '../schemas/variable-instance';
+import type { variableInstanceSchema } from '../schemas/variable-instance.ts';
 
 type Args = {
   measureDesignUri: string;

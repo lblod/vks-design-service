@@ -31,7 +31,7 @@ export const getARDesigns = async (_req: Request, res: Response) => {
   try {
     const designs = await ARDesignsService.getARDesigns();
 
-    const result = designJsonSchema.decode({
+    const result = designJsonSchema.encode({
       data: designs.map((design) => {
         const { uri, id, name, date } = design;
         return {

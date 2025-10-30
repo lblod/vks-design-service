@@ -9,6 +9,15 @@ export const stringToDate = z.codec(
   },
 );
 
+export const stringToNumber = z.codec(
+  z.string().regex(z.regexes.number),
+  z.number(),
+  {
+    decode: (str) => Number.parseFloat(str),
+    encode: (num) => num.toString(),
+  },
+);
+
 export function typedLiteralResult<V extends z.ZodType, D extends z.ZodType>(
   valueSchema: V,
   dataTypeSchema?: D,

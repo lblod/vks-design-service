@@ -4,6 +4,7 @@ import type { Request, Response } from 'express';
 import { jsonApiResourceObject, jsonApiSchema } from '../../jsonapi-schema.ts';
 import { TRAFFIC_SIGNAL_CONCEPT_TYPES } from '../../constants.ts';
 import MeasureDesignsService from '../../services/measure-designs.ts';
+import { stringToVariableValue } from '../../schemas/variable.ts';
 
 export const arDesignMeasureDesignsRouter = Router();
 
@@ -26,6 +27,14 @@ const measureDesignsJsonSchema = jsonApiSchema(
         data: z.array(
           z.object({
             type: z.literal('traffic-signals'),
+            id: z.string(),
+          }),
+        ),
+      }),
+      'variable-instances': z.object({
+        data: z.array(
+          z.object({
+            type: z.literal('variable-instances'),
             id: z.string(),
           }),
         ),
@@ -73,6 +82,33 @@ const measureDesignsJsonSchema = jsonApiSchema(
           code: z.string(),
         }),
       }),
+      z.object({
+        type: z.literal('variable-instances'),
+        id: z.string(),
+        attributes: z.object({
+          uri: z.string(),
+          value: stringToVariableValue.optional(),
+        }),
+        relationships: z.object({
+          variable: z.object({
+            data: z.object({
+              type: z.literal('variables'),
+              id: z.string(),
+            }),
+          }),
+        }),
+      }),
+      z.object({
+        type: z.literal('variables'),
+        id: z.string(),
+        attributes: z.object({
+          uri: z.string(),
+          label: z.string(),
+          type: z.string(),
+          defaultValue: stringToVariableValue.optional(),
+          codelist: z.string().optional(),
+        }),
+      }),
     ]),
   ),
 );
@@ -91,9 +127,15 @@ const MeasureDesignsController = {
         res.status(404);
         res.send();
       } else {
-        const jsonResponse = measureDesignsJsonSchema.safeDecode({
+        const jsonResponse = measureDesignsJsonSchema.safeEncode({
           data: measureDesigns.map((measureDesign) => {
-            const { id, uri, measureConcept, trafficSignals } = measureDesign;
+            const {
+              id,
+              uri,
+              measureConcept,
+              trafficSignals,
+              variableInstances,
+            } = measureDesign;
             return {
               type: 'measure-designs',
               id: id,
@@ -113,13 +155,20 @@ const MeasureDesignsController = {
                     id: trafficSignal.id,
                   })),
                 },
+                'variable-instances': {
+                  data: variableInstances.map((variableInstance) => ({
+                    type: 'variable-instances',
+                    id: variableInstance.id,
+                  })),
+                },
               },
             };
           }),
-          included: [
-            ...measureDesigns.map((measureDesign) => {
-              const { measureConcept } = measureDesign;
-              return {
+          included: measureDesigns.flatMap((measureDesign) => {
+            const { measureConcept, trafficSignals, variableInstances } =
+              measureDesign;
+            return [
+              {
                 type: 'measure-concepts',
                 id: measureConcept.id,
                 attributes: {
@@ -128,39 +177,70 @@ const MeasureDesignsController = {
                   'template-string': measureConcept.templateString,
                   'raw-template-string': measureConcept.rawTemplateString,
                 },
-              } as const;
-            }),
-            ...measureDesigns.flatMap((measureDesign) => {
-              const { trafficSignals } = measureDesign;
-              return trafficSignals.flatMap((trafficSignal) => [
-                {
-                  type: 'traffic-signals',
-                  id: trafficSignal.id,
-                  attributes: {
-                    uri: trafficSignal.uri,
-                  },
-                  relationships: {
-                    'traffic-signal-concept': {
-                      data: {
-                        type: 'traffic-signal-concepts',
-                        id: trafficSignal.trafficSignalConcept.id,
+              },
+              ...trafficSignals.flatMap((trafficSignal) => {
+                const { trafficSignalConcept } = trafficSignal;
+                return [
+                  {
+                    type: 'traffic-signals',
+                    id: trafficSignal.id,
+                    attributes: {
+                      uri: trafficSignal.uri,
+                    },
+                    relationships: {
+                      'traffic-signal-concept': {
+                        data: {
+                          type: 'traffic-signal-concepts',
+                          id: trafficSignalConcept.id,
+                        },
                       },
                     },
                   },
-                } as const,
-                {
-                  type: 'traffic-signal-concepts',
-                  id: trafficSignal.trafficSignalConcept.id,
-                  attributes: {
-                    uri: trafficSignal.trafficSignalConcept.uri,
-                    type: trafficSignal.trafficSignalConcept.type,
-                    code: trafficSignal.trafficSignalConcept.code,
-                    meaning: trafficSignal.trafficSignalConcept.meaning,
+                  {
+                    type: 'traffic-signal-concepts',
+                    id: trafficSignalConcept.id,
+                    attributes: {
+                      uri: trafficSignalConcept.uri,
+                      type: trafficSignalConcept.type,
+                      code: trafficSignalConcept.code,
+                      meaning: trafficSignalConcept.meaning,
+                    },
                   },
-                } as const,
-              ]);
-            }),
-          ],
+                ] as const;
+              }),
+              ...variableInstances.flatMap((variableInstance) => {
+                const { variable } = variableInstance;
+                return [
+                  {
+                    type: 'variable-instances',
+                    id: variableInstance.id,
+                    attributes: {
+                      uri: variableInstance.uri,
+                      value: variableInstance.value,
+                    },
+                    relationships: {
+                      variable: {
+                        data: {
+                          type: 'variables',
+                          id: variable.id,
+                        },
+                      },
+                    },
+                  },
+                  {
+                    type: 'variables',
+                    id: variable.id,
+                    attributes: {
+                      uri: variable.uri,
+                      label: variable.label,
+                      type: variable.type,
+                      defaultValue: variable.defaultValue,
+                    },
+                  },
+                ] as const;
+              }),
+            ];
+          }),
         });
         if (jsonResponse.success) {
           res.status(200);
