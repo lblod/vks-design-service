@@ -5,10 +5,10 @@ import {
   type GetQueryOpts,
 } from './schema-query.ts';
 import { getMowEndpoint } from '../environment.ts';
-import { TRAFFIC_SIGNAL_CONCEPT_TYPES } from '../routes/measure-designs/measure-concept.ts';
 import { query, sparqlEscapeUri } from 'mu';
 import { trafficSignalConceptSchema } from '../schemas/traffic-signal-concept.ts';
 import { objectify } from '../utils/sparql.ts';
+import { TRAFFIC_SIGNAL_CONCEPT_TYPES } from '../constants.ts';
 
 export async function getTrafficSignalConcepts(opts: GetQueryOpts = {}) {
   const { ids, uris } = opts;

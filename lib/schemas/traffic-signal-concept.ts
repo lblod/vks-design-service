@@ -1,5 +1,5 @@
 import z from 'zod';
-import { TRAFFIC_SIGNAL_CONCEPT_TYPES } from '../routes/measure-designs/measure-concept';
+import { TRAFFIC_SIGNAL_CONCEPT_TYPES } from '../constants';
 
 export const trafficSignalConceptSchema = z.strictObject({
   uri: z.string(),

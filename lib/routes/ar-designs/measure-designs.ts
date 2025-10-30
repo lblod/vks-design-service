@@ -3,7 +3,7 @@ import { Router } from 'express';
 import { jsonApiResourceObject, jsonApiSchema } from '../../jsonapi-schema.ts';
 import { getARDesignById } from '../../queries/ar-designs.ts';
 import { getMeasureDesigns } from '../../queries/measure-designs.ts';
-import { TRAFFIC_SIGNAL_CONCEPT_TYPES } from '../measure-designs/measure-concept.ts';
+import { TRAFFIC_SIGNAL_CONCEPT_TYPES } from '../../constants.ts';
 
 export const arDesignMeasureDesignsRouter = Router();
 
