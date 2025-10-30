@@ -5,13 +5,13 @@ import {
   uriValuesClause,
 } from './schema-query.ts';
 import { hasVKSRelationship } from '../utils/vks-relationship-helpers.ts';
-import { wrappedQuery } from './wrapped-query.ts';
 import { objectify } from '../utils/sparql.ts';
 import { arDesignSchema } from '../schemas/ar-design.ts';
+import { query } from 'mu';
 
 export async function getARDesigns(opts: GetQueryOpts = {}) {
   const { ids, uris } = opts;
-  const result = await wrappedQuery(`
+  const result = await query(`
     PREFIX mobiliteit: <https://data.vlaanderen.be/ns/mobiliteit#>
     PREFIX arOntwerp: <https://data.vlaanderen.be/ns/mobiliteit#AanvullendReglementOntwerp.>
     PREFIX relatie: <https://wegenenverkeer.data.vlaanderen.be/ns/implementatieelement#RelatieObject.>

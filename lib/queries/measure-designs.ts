@@ -4,15 +4,15 @@ import {
   uriValuesClause,
   type GetQueryOpts,
 } from './schema-query.ts';
-import { wrappedQuery } from './wrapped-query.ts';
 import { objectify } from '../utils/sparql.ts';
 import { measureDesignSchema } from '../schemas/measure-design.ts';
 import { getMeasureConceptByUri } from './measure-concepts.ts';
 import { hasVKSRelationship } from '../utils/vks-relationship-helpers.ts';
+import { query } from 'mu';
 
 export async function getMeasureDesigns(opts: GetQueryOpts = {}) {
   const { ids, uris } = opts;
-  const result = await wrappedQuery(/* sparql */ `
+  const result = await query(/* sparql */ `
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX mobiliteit: <https://data.vlaanderen.be/ns/mobiliteit#>
     PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>

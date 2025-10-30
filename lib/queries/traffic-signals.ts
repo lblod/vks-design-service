@@ -4,14 +4,14 @@ import {
   uriValuesClause,
   type GetQueryOpts,
 } from './schema-query.ts';
-import { wrappedQuery } from './wrapped-query.ts';
 import { objectify } from '../utils/sparql.ts';
 import { trafficSignalSchema } from '../schemas/traffic-signal.ts';
+import { query } from 'mu';
 
 export async function getTrafficSignals(opts: GetQueryOpts = {}) {
   const { ids, uris } = opts;
 
-  const result = await wrappedQuery(/* sparql */ `
+  const result = await query(/* sparql */ `
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX mobiliteit: <https://data.vlaanderen.be/ns/mobiliteit#>
     PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>

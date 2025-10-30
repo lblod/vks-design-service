@@ -5,14 +5,14 @@ import {
   type GetQueryOpts,
 } from './schema-query.ts';
 import { getMowEndpoint } from '../environment.ts';
-import { wrappedQuery } from './wrapped-query.ts';
 import { measureConceptSchema } from '../schemas/measure-concept.ts';
 import { objectify } from '../utils/sparql.ts';
+import { query } from 'mu';
 
 export async function getMeasureConcepts(opts: GetQueryOpts = {}) {
   const { ids, uris } = opts;
 
-  const result = await wrappedQuery(
+  const result = await query(
     /* sparql */ `
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX mobiliteit: <https://data.vlaanderen.be/ns/mobiliteit#>
