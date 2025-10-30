@@ -1,5 +1,5 @@
 import * as z from 'zod';
-import { Router } from 'express';
+import type { Request, Response } from 'express';
 import { stringToDate } from '../database-validation/sparql-value-schemas.ts';
 import {
   jsonApiRelationship,
@@ -27,8 +27,7 @@ const designJsonSchema = jsonApiSchema(
   z.undefined().optional(),
 );
 
-export const arDesignsRouter = Router();
-arDesignsRouter.get('/ar-designs', async function (_req, res) {
+export const getArDesigns = async (_req: Request, res: Response) => {
   try {
     const designs = await getARDesigns();
 
@@ -58,4 +57,4 @@ arDesignsRouter.get('/ar-designs', async function (_req, res) {
     res.status(500);
     res.send({ error: 'couldnt parse' });
   }
-});
+};
