@@ -6,11 +6,15 @@ import {
 } from './schema-query.ts';
 import { objectify } from '../utils/sparql.ts';
 import { measureDesignSchema } from '../schemas/measure-design.ts';
-import { getMeasureConceptByUri } from './measure-concepts.ts';
 import { hasVKSRelationship } from '../utils/vks-relationship-helpers.ts';
 import { query } from 'mu';
-import { getTrafficSignals } from './traffic-signals.ts';
 
+const responseSchema = z.array(
+  measureDesignSchema.extend({
+    measureConcept: z.string(),
+    trafficSignals: z.array(z.string()),
+  }),
+);
 export async function getMeasureDesigns(opts: GetQueryOpts = {}) {
   const { ids, uris } = opts;
   const result = await query(/* sparql */ `
@@ -50,41 +54,10 @@ export async function getMeasureDesigns(opts: GetQueryOpts = {}) {
     GROUP BY ?id ?uri ?measureConcept
   `);
   const bindings = result.results.bindings;
-  const measureDesigns = z
-    .array(
-      measureDesignSchema.extend({
-        measureConcept: z.union([
-          measureDesignSchema.shape.measureConcept,
-          z.string(),
-        ]),
-        trafficSignals: z.union([
-          measureDesignSchema.shape.trafficSignals,
-          z.array(z.string()),
-        ]),
-      }),
-    )
-    .parse(
-      bindings.map(objectify).map((obj) => ({
-        ...obj,
-        trafficSignals: obj['trafficSignals']?.split(','),
-      })),
-    );
-
-  for (const measureDesign of measureDesigns) {
-    const measureConcept = await getMeasureConceptByUri(
-      z.string().parse(measureDesign.measureConcept),
-    );
-    measureDesign.measureConcept = measureConcept!;
-
-    const trafficSignals = await getTrafficSignals({
-      uris: measureDesign.trafficSignals as string[],
-    });
-    measureDesign.trafficSignals = trafficSignals;
-  }
-
-  return z.array(measureDesignSchema).parse(measureDesigns);
-
-  // return schemaQuery(z.array(measureDesignSparqlSchema), queryStr, {
-  //   endpoint: getMowEndpoint(),
-  // });
+  return responseSchema.parse(
+    bindings.map(objectify).map((obj) => ({
+      ...obj,
+      trafficSignals: obj['trafficSignals']?.split(','),
+    })),
+  );
 }

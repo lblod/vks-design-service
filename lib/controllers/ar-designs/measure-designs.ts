@@ -3,8 +3,7 @@ import { Router } from 'express';
 import type { Request, Response } from 'express';
 import { jsonApiResourceObject, jsonApiSchema } from '../../jsonapi-schema.ts';
 import { TRAFFIC_SIGNAL_CONCEPT_TYPES } from '../../constants.ts';
-import { getARDesignById } from '../../db/ar-designs.ts';
-import { getMeasureDesigns } from '../../db/measure-designs.ts';
+import MeasureDesignsService from '../../services/measure-designs.ts';
 
 export const arDesignMeasureDesignsRouter = Router();
 
@@ -78,101 +77,105 @@ const measureDesignsJsonSchema = jsonApiSchema(
   ),
 );
 
-export const getMeasureDesignsForArDesign = async (
-  req: Request<{ id: string }>,
-  res: Response,
-) => {
-  try {
-    const design = await getARDesignById(req.params.id);
-    if (!design) {
-      res.status(404);
-      res.send();
-    } else {
-      const measureDesigns = await getMeasureDesigns({
-        uris: design.measureDesigns,
-      });
-      const jsonResponse = measureDesignsJsonSchema.safeDecode({
-        data: measureDesigns.map((measureDesign) => {
-          const { id, uri, measureConcept, trafficSignals } = measureDesign;
-          return {
-            type: 'measure-designs',
-            id: id,
-            attributes: {
-              uri: uri,
-            },
-            relationships: {
-              'measure-concept': {
-                data: {
-                  type: 'measure-concepts',
-                  id: measureConcept.id,
-                },
-              },
-              'traffic-signals': {
-                data: trafficSignals.map((trafficSignal) => ({
-                  type: 'traffic-signals',
-                  id: trafficSignal.id,
-                })),
-              },
-            },
-          };
-        }),
-        included: [
-          ...measureDesigns.map((measureDesign) => {
-            const { measureConcept } = measureDesign;
+const MeasureDesignsController = {
+  getMeasureDesignsForArDesign: async (
+    req: Request<{ id: string }>,
+    res: Response,
+  ) => {
+    try {
+      const measureDesigns =
+        await MeasureDesignsService.getMeasureDesignsForARDesign({
+          arDesignId: req.params.id,
+        });
+      if (!measureDesigns) {
+        res.status(404);
+        res.send();
+      } else {
+        const jsonResponse = measureDesignsJsonSchema.safeDecode({
+          data: measureDesigns.map((measureDesign) => {
+            const { id, uri, measureConcept, trafficSignals } = measureDesign;
             return {
-              type: 'measure-concepts',
-              id: measureConcept.id,
+              type: 'measure-designs',
+              id: id,
               attributes: {
-                uri: measureConcept.uri,
-                label: measureConcept.label,
-                'template-string': measureConcept.templateString,
-                'raw-template-string': measureConcept.rawTemplateString,
+                uri: uri,
               },
-            } as const;
-          }),
-          ...measureDesigns.flatMap((measureDesign) => {
-            const { trafficSignals } = measureDesign;
-            return trafficSignals.flatMap((trafficSignal) => [
-              {
-                type: 'traffic-signals',
-                id: trafficSignal.id,
-                attributes: {
-                  uri: trafficSignal.uri,
-                },
-                relationships: {
-                  'traffic-signal-concept': {
-                    data: {
-                      type: 'traffic-signal-concepts',
-                      id: trafficSignal.trafficSignalConcept.id,
-                    },
+              relationships: {
+                'measure-concept': {
+                  data: {
+                    type: 'measure-concepts',
+                    id: measureConcept.id,
                   },
                 },
-              } as const,
-              {
-                type: 'traffic-signal-concepts',
-                id: trafficSignal.trafficSignalConcept.id,
-                attributes: {
-                  uri: trafficSignal.trafficSignalConcept.uri,
-                  type: trafficSignal.trafficSignalConcept.type,
-                  code: trafficSignal.trafficSignalConcept.code,
-                  meaning: trafficSignal.trafficSignalConcept.meaning,
+                'traffic-signals': {
+                  data: trafficSignals.map((trafficSignal) => ({
+                    type: 'traffic-signals',
+                    id: trafficSignal.id,
+                  })),
                 },
-              } as const,
-            ]);
+              },
+            };
           }),
-        ],
-      });
-      if (jsonResponse.success) {
-        res.status(200);
-        res.send(jsonResponse.data);
-      } else {
-        res.status(500);
-        res.send({ error: 'failed to encode into jsonapi' });
+          included: [
+            ...measureDesigns.map((measureDesign) => {
+              const { measureConcept } = measureDesign;
+              return {
+                type: 'measure-concepts',
+                id: measureConcept.id,
+                attributes: {
+                  uri: measureConcept.uri,
+                  label: measureConcept.label,
+                  'template-string': measureConcept.templateString,
+                  'raw-template-string': measureConcept.rawTemplateString,
+                },
+              } as const;
+            }),
+            ...measureDesigns.flatMap((measureDesign) => {
+              const { trafficSignals } = measureDesign;
+              return trafficSignals.flatMap((trafficSignal) => [
+                {
+                  type: 'traffic-signals',
+                  id: trafficSignal.id,
+                  attributes: {
+                    uri: trafficSignal.uri,
+                  },
+                  relationships: {
+                    'traffic-signal-concept': {
+                      data: {
+                        type: 'traffic-signal-concepts',
+                        id: trafficSignal.trafficSignalConcept.id,
+                      },
+                    },
+                  },
+                } as const,
+                {
+                  type: 'traffic-signal-concepts',
+                  id: trafficSignal.trafficSignalConcept.id,
+                  attributes: {
+                    uri: trafficSignal.trafficSignalConcept.uri,
+                    type: trafficSignal.trafficSignalConcept.type,
+                    code: trafficSignal.trafficSignalConcept.code,
+                    meaning: trafficSignal.trafficSignalConcept.meaning,
+                  },
+                } as const,
+              ]);
+            }),
+          ],
+        });
+        if (jsonResponse.success) {
+          res.status(200);
+          res.send(jsonResponse.data);
+        } else {
+          res.status(500);
+          res.send({ error: 'failed to encode into jsonapi' });
+        }
       }
+    } catch (e) {
+      console.log(e);
+      res.status(500);
+      res.send({ error: e });
     }
-  } catch (e) {
-    console.log(e);
-    res.status(500);
-    res.send({ error: e });
-  }
+  },
 };
+
+export default MeasureDesignsController;

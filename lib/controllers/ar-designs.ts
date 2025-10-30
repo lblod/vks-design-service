@@ -6,7 +6,7 @@ import {
   jsonApiResourceObject,
   jsonApiSchema,
 } from '../jsonapi-schema';
-import { getARDesigns } from '../db/ar-designs.ts';
+import ARDesignsService from '../services/ar-designs.ts';
 
 const designJsonSchema = jsonApiSchema(
   jsonApiResourceObject({
@@ -27,9 +27,9 @@ const designJsonSchema = jsonApiSchema(
   z.undefined().optional(),
 );
 
-export const getArDesigns = async (_req: Request, res: Response) => {
+export const getARDesigns = async (_req: Request, res: Response) => {
   try {
-    const designs = await getARDesigns();
+    const designs = await ARDesignsService.getARDesigns();
 
     const result = designJsonSchema.decode({
       data: designs.map((design) => {
