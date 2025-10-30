@@ -16,13 +16,23 @@ Returns the list of `mobiliteit:MobiliteitsmaatregelOntwerp` connected to `<id>`
 **Attributes**
 - `uri`
 - `id` (based on a generated `mu:uuid`)
-- `label`
-- `template-string` (already fully expanded/resolved)
 - (optional) `status`
 
 **Relationships**
+- `measure-concept` (belongsTo)
 - `variable-instances` (hasMany, not including instruction-variables)
 - `traffic-signals` (hasMany)
+
+### `GET /measure-designs/<id>/measure-concept`
+Return the measure-concept which measure-design `<id>` is based on
+
+**Attributes**
+- `uri`
+- `id`
+- `label`
+- `template-string`
+- `raw-template-string`
+
 
 ### `GET /measure-designs/<id>/variable-instances`
 Returns variable-instance resources for `<id>`.
