@@ -9,6 +9,7 @@ import { measureDesignSchema } from '../schemas/measure-design.ts';
 import { getMeasureConceptByUri } from './measure-concepts.ts';
 import { hasVKSRelationship } from '../utils/vks-relationship-helpers.ts';
 import { query } from 'mu';
+import { getTrafficSignals } from './traffic-signals.ts';
 
 export async function getMeasureDesigns(opts: GetQueryOpts = {}) {
   const { ids, uris } = opts;
@@ -26,16 +27,27 @@ export async function getMeasureDesigns(opts: GetQueryOpts = {}) {
       ?id 
       ?uri
       ?measureConcept
+      (GROUP_CONCAT(str(?trafficSignal); SEPARATOR=",") as ?trafficSignals) 
     WHERE {
       ?uri 
         a mobiliteit:MobiliteitsmaatregelOntwerp;
         mu:uuid ?id.
       ${hasVKSRelationship('?uri', '?measureConcept', 'onderdeel:IsGebaseerdOp')}
 
+      ${hasVKSRelationship('?uri', '?trafficSignal', 'onderdeel:WordtAangeduidDoor')}
+
+      ?trafficSignal a ?signalType.
+
+      VALUES ?signalType { 
+        mobiliteit:VerkeersbordVerkeersteken
+        mobiliteit:WegmarkeringVerkeersteken
+        mobiliteit:VerkeerslichtVerkeersteken
+      }
+      
       ${ids ? idValuesClause(ids) : ''}
       ${uris ? uriValuesClause(uris) : ''}
     } 
-    GROUP BY ?id ?uri
+    GROUP BY ?id ?uri ?measureConcept
   `);
   const bindings = result.results.bindings;
   const measureDesigns = z
@@ -45,15 +57,29 @@ export async function getMeasureDesigns(opts: GetQueryOpts = {}) {
           measureDesignSchema.shape.measureConcept,
           z.string(),
         ]),
+        trafficSignals: z.union([
+          measureDesignSchema.shape.trafficSignals,
+          z.array(z.string()),
+        ]),
       }),
     )
-    .parse(bindings.map(objectify));
+    .parse(
+      bindings.map(objectify).map((obj) => ({
+        ...obj,
+        trafficSignals: obj['trafficSignals']?.split(','),
+      })),
+    );
 
   for (const measureDesign of measureDesigns) {
     const measureConcept = await getMeasureConceptByUri(
       z.string().parse(measureDesign.measureConcept),
     );
     measureDesign.measureConcept = measureConcept!;
+
+    const trafficSignals = await getTrafficSignals({
+      uris: measureDesign.trafficSignals as string[],
+    });
+    measureDesign.trafficSignals = trafficSignals;
   }
 
   return z.array(measureDesignSchema).parse(measureDesigns);

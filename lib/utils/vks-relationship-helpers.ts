@@ -6,7 +6,9 @@ type VKSRelationshipType =
   | 'onderdeel:HeeftOntwerp'
   | '<https://wegenenverkeer.data.vlaanderen.be/ns/onderdeel#HeeftOntwerp>'
   | 'onderdeel:BevatVerkeersteken'
-  | '<https://wegenenverkeer.data.vlaanderen.be/ns/onderdeel#BevatVerkeersteken>';
+  | '<https://wegenenverkeer.data.vlaanderen.be/ns/onderdeel#BevatVerkeersteken>'
+  | 'onderdeel:WordtAangeduidDoor'
+  | '<https://wegenenverkeer.data.vlaanderen.be/ns/onderdeel#WordtAangeduidDoor>';
 
 export function hasVKSRelationship(
   source: string,

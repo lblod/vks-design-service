@@ -21,6 +21,14 @@ const measureDesignsJsonSchema = jsonApiSchema(
           id: z.string(),
         }),
       }),
+      'traffic-signals': z.object({
+        data: z.array(
+          z.object({
+            type: z.literal('traffic-signals'),
+            id: z.string(),
+          }),
+        ),
+      }),
     }),
   }),
   z.array(
@@ -33,6 +41,30 @@ const measureDesignsJsonSchema = jsonApiSchema(
           label: z.string(),
           'template-string': z.string(),
           'raw-template-string': z.string(),
+        }),
+      }),
+      z.object({
+        type: z.literal('traffic-signals'),
+        id: z.string(),
+        attributes: z.object({
+          uri: z.string(),
+        }),
+        relationships: z.object({
+          'traffic-signal-concept': z.object({
+            data: z.object({
+              type: z.literal('traffic-signal-concepts'),
+              id: z.string(),
+            }),
+          }),
+        }),
+      }),
+      z.object({
+        type: z.literal('traffic-signal-concepts'),
+        id: z.string(),
+        attributes: z.object({
+          uri: z.string(),
+          meaning: z.string(),
+          code: z.string(),
         }),
       }),
     ]),
@@ -51,10 +83,9 @@ arDesignMeasureDesignsRouter.get(
         const measureDesigns = await getMeasureDesigns({
           uris: design.measureDesigns,
         });
-        console.log('Measure design uris: ', design.measureDesigns);
         const jsonResponse = measureDesignsJsonSchema.safeDecode({
           data: measureDesigns.map((measureDesign) => {
-            const { id, uri, measureConcept } = measureDesign;
+            const { id, uri, measureConcept, trafficSignals } = measureDesign;
             return {
               type: 'measure-designs',
               id: id,
@@ -68,22 +99,59 @@ arDesignMeasureDesignsRouter.get(
                     id: measureConcept.id,
                   },
                 },
+                'traffic-signals': {
+                  data: trafficSignals.map((trafficSignal) => ({
+                    type: 'traffic-signals',
+                    id: trafficSignal.id,
+                  })),
+                },
               },
             };
           }),
-          included: measureDesigns.map((measureDesign) => {
-            const { measureConcept } = measureDesign;
-            return {
-              type: 'measure-concepts',
-              id: measureConcept.id,
-              attributes: {
-                uri: measureConcept.uri,
-                label: measureConcept.label,
-                'template-string': measureConcept.templateString,
-                'raw-template-string': measureConcept.rawTemplateString,
-              },
-            };
-          }),
+          included: [
+            ...measureDesigns.map((measureDesign) => {
+              const { measureConcept } = measureDesign;
+              return {
+                type: 'measure-concepts',
+                id: measureConcept.id,
+                attributes: {
+                  uri: measureConcept.uri,
+                  label: measureConcept.label,
+                  'template-string': measureConcept.templateString,
+                  'raw-template-string': measureConcept.rawTemplateString,
+                },
+              } as const;
+            }),
+            ...measureDesigns.flatMap((measureDesign) => {
+              const { trafficSignals } = measureDesign;
+              return trafficSignals.flatMap((trafficSignal) => [
+                {
+                  type: 'traffic-signals',
+                  id: trafficSignal.id,
+                  attributes: {
+                    uri: trafficSignal.uri,
+                  },
+                  relationships: {
+                    'traffic-signal-concept': {
+                      data: {
+                        type: 'traffic-signal-concepts',
+                        id: trafficSignal.trafficSignalConcept.id,
+                      },
+                    },
+                  },
+                } as const,
+                {
+                  type: 'traffic-signal-concepts',
+                  id: trafficSignal.trafficSignalConcept.id,
+                  attributes: {
+                    uri: trafficSignal.trafficSignalConcept.uri,
+                    code: trafficSignal.trafficSignalConcept.code,
+                    meaning: trafficSignal.trafficSignalConcept.meaning,
+                  },
+                } as const,
+              ]);
+            }),
+          ],
         });
         if (jsonResponse.success) {
           res.status(200);

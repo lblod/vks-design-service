@@ -7,6 +7,8 @@ import {
 import { objectify } from '../utils/sparql.ts';
 import { trafficSignalSchema } from '../schemas/traffic-signal.ts';
 import { query } from 'mu';
+import { hasVKSRelationship } from '../utils/vks-relationship-helpers.ts';
+import { getTrafficSignalConceptByUri } from './traffic-signal-concepts.ts';
 
 export async function getTrafficSignals(opts: GetQueryOpts = {}) {
   const { ids, uris } = opts;
@@ -24,16 +26,40 @@ export async function getTrafficSignals(opts: GetQueryOpts = {}) {
     SELECT DISTINCT
       ?id 
       ?uri
+      ?trafficSignalConcept
     WHERE {
       ?uri 
-        a mobiliteit:Verkeersteken;
+        a ?type;
         mu:uuid ?id.
+
+      VALUES ?type { 
+        mobiliteit:VerkeersbordVerkeersteken
+        mobiliteit:WegmarkeringVerkeersteken
+        mobiliteit:VerkeerslichtVerkeersteken
+      }
+
+      ${hasVKSRelationship('?uri', '?trafficSignalConcept', 'onderdeel:IsGebaseerdOp')}
 
       ${ids ? idValuesClause(ids) : ''}
       ${uris ? uriValuesClause(uris) : ''}
     } 
-    GROUP BY ?id ?uri
   `);
   const bindings = result.results.bindings;
-  return z.array(trafficSignalSchema).parse(bindings.map(objectify));
+  const trafficSignals = z
+    .array(
+      trafficSignalSchema.extend({
+        trafficSignalConcept: z.union([
+          trafficSignalSchema.shape.trafficSignalConcept,
+          z.string(),
+        ]),
+      }),
+    )
+    .parse(bindings.map(objectify));
+  for (const trafficSignal of trafficSignals) {
+    const concept = await getTrafficSignalConceptByUri(
+      trafficSignal.trafficSignalConcept as string,
+    );
+    trafficSignal.trafficSignalConcept = concept!;
+  }
+  return z.array(trafficSignalSchema).parse(trafficSignals);
 }

@@ -3,7 +3,7 @@ import { Router } from 'express';
 import { jsonApiResourceObject, jsonApiSchema } from '../../jsonapi-schema.ts';
 import { getMeasureConcepts } from '../../queries/measure-concepts.ts';
 import { TRAFFIC_SIGNAL_CONCEPT_TYPES } from '../measure-designs/measure-concept.ts';
-import { getSignalConcepts } from '../../queries/signal-concepts.ts';
+import { getTrafficSignalConcepts } from '../../queries/traffic-signal-concepts.ts';
 export const measureConceptsSignalConceptsRouter = Router();
 
 const signalConceptsJsonSchema = jsonApiSchema(
@@ -30,7 +30,7 @@ measureConceptsSignalConceptsRouter.get(
         res.status(404);
         res.send();
       } else {
-        const signalConcepts = await getSignalConcepts({
+        const signalConcepts = await getTrafficSignalConcepts({
           uris: measure.signalConcepts.value,
         });
         const jsonResponse = signalConceptsJsonSchema.safeDecode({
