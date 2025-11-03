@@ -4,7 +4,6 @@ steps:
     settings:
       repo: "${CI_REPO}"
       tags: latest
-      platforms: linux/amd64,linux/arm64
       username:
         from_secret: docker_username
       password:
