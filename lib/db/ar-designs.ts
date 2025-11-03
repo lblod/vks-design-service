@@ -8,9 +8,11 @@ import {
   uriValuesClause,
   type GetQueryOpts,
 } from './schema-query.ts';
+import { paginationClause } from '../utils/pagination.ts';
 
 export async function getARDesigns(opts: GetQueryOpts = {}) {
-  const { ids, uris } = opts;
+  const { ids, uris, pagination } = opts;
+  // TODO we need a count when paginating...
   const result = await query(`
     PREFIX mobiliteit: <https://data.vlaanderen.be/ns/mobiliteit#>
     PREFIX arOntwerp: <https://data.vlaanderen.be/ns/mobiliteit#AanvullendReglementOntwerp.>
@@ -52,7 +54,8 @@ export async function getARDesigns(opts: GetQueryOpts = {}) {
       ${ids ? idValuesClause(ids) : ''}
       ${uris ? uriValuesClause(uris) : ''}
     } 
-    GROUP BY ?uri ?name ?date ?id`);
+    GROUP BY ?uri ?name ?date ?id
+    ${paginationClause(pagination)}`);
   const bindings = result.results.bindings;
   const objectifiedBindings = bindings.map(objectify).map((obj) => ({
     ...obj,

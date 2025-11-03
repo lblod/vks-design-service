@@ -76,14 +76,19 @@ export function maybeCheckedArray<S extends z.ZodArray>(
     return arraySchema.length(expectedLength);
   }
 }
-export type GetQueryOpts =
-  | ({
-      pagination?: PageOpts;
-    } & {
-      ids?: string[];
-      uris?: never;
-    })
-  | {
-      uris?: string[];
-      ids?: never;
-    };
+
+export type GetQueryMeta = {
+  pagination?: PageOpts;
+};
+
+export type GetQueryOpts = GetQueryMeta &
+  (
+    | {
+        ids?: string[];
+        uris?: never;
+      }
+    | {
+        uris?: string[];
+        ids?: never;
+      }
+  );
