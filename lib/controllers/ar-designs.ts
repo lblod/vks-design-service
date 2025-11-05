@@ -8,6 +8,7 @@ import {
 } from '../jsonapi-schema';
 import ARDesignsService from '../services/ar-designs.ts';
 import { parseQueryParams } from '../utils/query-params.ts';
+import { generateJsonapiLinks } from '../utils/jsonapi-utils.ts';
 
 const designJsonSchema = jsonApiSchema(
   jsonApiResourceObject({
@@ -30,12 +31,15 @@ const designJsonSchema = jsonApiSchema(
 
 export const getARDesigns = async (req: Request, res: Response) => {
   try {
+    const queryParams = parseQueryParams(req.query);
     const designs = await ARDesignsService.getARDesigns({
-      ...parseQueryParams(req.query),
+      ...queryParams,
     });
 
     const result = designJsonSchema.encode({
-      data: designs.map((design) => {
+      meta: designs.meta,
+      ...generateJsonapiLinks(req.route.path, queryParams, designs.meta),
+      data: designs.data.map((design) => {
         const { uri, id, name, date } = design;
         return {
           type: 'ar-designs' as const,

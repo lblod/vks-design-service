@@ -33,7 +33,19 @@ export function jsonApiSchema<R extends z.ZodType, I extends z.ZodType>(
     .object({
       data: z.union([z.array(resourceSchema), resourceSchema]),
       included: includedSchema,
-      meta: z.object().optional(),
+      meta: z
+        .object({
+          count: z.int().optional(),
+        })
+        .optional(),
+      links: z
+        .object({
+          first: z.string().optional(),
+          prev: z.string().optional(),
+          next: z.string().optional(),
+          last: z.string().optional(),
+        })
+        .optional(),
     })
     .strict();
 }
