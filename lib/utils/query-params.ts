@@ -1,37 +1,55 @@
 import z from 'zod';
 import type { Request } from 'express';
-import type { GetQueryMeta } from '../db/schema-query';
-import { PaginationOptionsSchema } from './pagination';
-import { deepAssign, type DeepPartial } from './deep-utils';
+import { deepAssign, type DeepPartial } from './deep-utils.ts';
+import { sortingOptionSchema, type SortOpts } from './sorting.ts';
+import { stringToInteger } from './conversions.ts';
 
-const preprocessIntString = (input: unknown) => {
-  if (typeof input === 'string') {
-    return parseInt(input, 10);
-  }
-  return input;
-};
+const sortRegex = /(?<direction>-?)(?::[^:]+:)*(?<field>[^:]+)/;
+const optionsRegex = /:(?<option>[^:]+):/g;
+export const sortOptionsConvert = z.codec(
+  z.string().regex(sortRegex),
+  sortingOptionSchema,
+  {
+    decode: (str) => {
+      const match = str.match(sortRegex);
+      const options = [...str.matchAll(optionsRegex)].map(
+        (mat) => mat.groups?.option,
+      );
+      if (match) {
+        return {
+          field: match.groups?.field ?? '',
+          direction: match.groups?.direction as SortOpts['direction'],
+          options: options as SortOpts['options'],
+        };
+      } else {
+        throw new Error('Matching the same regex twice should work');
+      }
+    },
+    // FIXME
+    encode: (num) => num.toString(),
+  },
+);
 
-export const QueryParamSchema = z.object({
+export const queryParamSchema = z.object({
   page: z
     .object({
-      number: z.preprocess(preprocessIntString, z.int()).optional(),
-      size: z.preprocess(preprocessIntString, z.int()).optional(),
+      number: stringToInteger.optional(),
+      size: stringToInteger.optional(),
     })
     .optional(),
+  sort: sortOptionsConvert.optional(),
 });
+export type QueryParams = z.infer<typeof queryParamSchema>;
 
-export function parseQueryParams(query: Request['query']): GetQueryMeta {
-  const params = QueryParamSchema.parse(query);
-  return {
-    pagination: PaginationOptionsSchema.parse(params.page),
-  };
+export function parseQueryParams(query: Request['query']): QueryParams {
+  return queryParamSchema.parse(query);
 }
 
 export function urlifyQueryParams(
-  params: GetQueryMeta,
-  overrides: DeepPartial<GetQueryMeta>,
+  params: QueryParams,
+  overrides: DeepPartial<QueryParams>,
 ): string {
-  const combined: GetQueryMeta = deepAssign(params, overrides);
+  const combined: QueryParams = deepAssign(params, overrides);
   // TODO handle this in a less manual way...
-  return `?page[size]=${combined.pagination?.size}&page[number]=${combined.pagination?.number}`;
+  return `?page[size]=${combined.page?.size}&page[number]=${combined.page?.number}`;
 }

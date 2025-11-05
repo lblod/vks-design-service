@@ -10,10 +10,9 @@ import {
   type GetQueryOpts,
 } from './schema-query.ts';
 import { paginationClause } from '../utils/pagination.ts';
-import {
-  stringToNumber,
-  typedLiteralResult,
-} from '../database-validation/sparql-value-schemas.ts';
+import { stringToNumber } from '../utils/conversions.ts';
+import { typedLiteralResult } from '../database-validation/sparql-value-schemas.ts';
+import { sortClause } from '../utils/sorting.ts';
 
 // TODO move
 const countSchema = z.object({
@@ -27,7 +26,7 @@ export type QueryResponseMeta = {
 };
 
 export async function getARDesigns(opts: GetQueryOpts = {}) {
-  const { ids, uris, pagination } = opts;
+  const { ids, uris, page, sort } = opts;
   // TODO remove duplication and clean up
   const count = (
     await schemaQuery(
@@ -112,7 +111,8 @@ export async function getARDesigns(opts: GetQueryOpts = {}) {
       ${uris ? uriValuesClause(uris) : ''}
     } 
     GROUP BY ?uri ?name ?date ?id
-    ${paginationClause(pagination)}`);
+    ${sortClause(sort)}
+    ${paginationClause(page)}`);
   const bindings = result.results.bindings;
   const objectifiedBindings = bindings.map(objectify).map((obj) => ({
     ...obj,

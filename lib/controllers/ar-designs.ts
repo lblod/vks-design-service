@@ -1,11 +1,11 @@
 import * as z from 'zod';
 import type { Request, Response } from 'express';
-import { stringToDate } from '../database-validation/sparql-value-schemas.ts';
+import { isoStringToDate } from '../utils/conversions.ts';
 import {
   jsonApiRelationship,
   jsonApiResourceObject,
   jsonApiSchema,
-} from '../jsonapi-schema';
+} from '../jsonapi-schema.ts';
 import ARDesignsService from '../services/ar-designs.ts';
 import { parseQueryParams } from '../utils/query-params.ts';
 import { generateJsonapiLinks } from '../utils/jsonapi-utils.ts';
@@ -47,7 +47,7 @@ export const getARDesigns = async (req: Request, res: Response) => {
           attributes: {
             uri: uri,
             name: name,
-            date: stringToDate.encode(date),
+            date: isoStringToDate.encode(date),
           },
           relationships: {
             'measure-designs': {

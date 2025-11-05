@@ -1,10 +1,10 @@
 import z from 'zod';
-import { stringToDate } from '../database-validation/sparql-value-schemas';
+import { isoStringToDate } from '../utils/conversions.ts';
 
 export const arDesignSchema = z.strictObject({
   uri: z.string(),
   id: z.string(),
-  date: stringToDate,
+  date: isoStringToDate,
   name: z.string(),
   measureDesigns: z.array(z.string()).default([]), // list of uris (async relationship)
 });

@@ -8,7 +8,8 @@ import * as z from 'zod';
 import { queryResultSchema } from '../database-validation/sparql-result-schema.ts';
 import { plainString } from '../database-validation/sparql-value-schemas.ts';
 import { InvariantError } from '../errors.ts';
-import type { PageOpts } from '../utils/pagination.ts';
+import type { QueryParams } from '../utils/query-params.ts';
+
 /**
  * Execute a query with validation of the resulting response
  * @param schema The zod schema which describes the binding array. Must be an array-schema.
@@ -77,11 +78,7 @@ export function maybeCheckedArray<S extends z.ZodArray>(
   }
 }
 
-export type GetQueryMeta = {
-  pagination?: PageOpts;
-};
-
-export type GetQueryOpts = GetQueryMeta &
+export type GetQueryOpts = QueryParams &
   (
     | {
         ids?: string[];
