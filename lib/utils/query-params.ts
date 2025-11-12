@@ -25,8 +25,8 @@ export const sortOptionsConvert = z.codec(
         throw new Error('Matching the same regex twice should work');
       }
     },
-    // FIXME
-    encode: (num) => num.toString(),
+    encode: (sortObj) =>
+      `${sortObj.direction}${!sortObj.options ? '' : `:${sortObj.options.join(':')}:`}${sortObj.field}`,
   },
 );
 
@@ -50,6 +50,23 @@ export function urlifyQueryParams(
   overrides: DeepPartial<QueryParams>,
 ): string {
   const combined: QueryParams = deepAssign(params, overrides);
-  // TODO handle this in a less manual way...
-  return `?page[size]=${combined.page?.size}&page[number]=${combined.page?.number}`;
+  return `?${new URLSearchParams(Object.fromEntries(toSearchParamEntries(combined))).toString()}`;
+}
+
+function toSearchParamEntries(
+  obj: object,
+  prefix?: string,
+): [string, string][] {
+  return Object.entries(obj).flatMap(([key, val]) => {
+    if (val === null || val === undefined) return [];
+    if (key === 'sort') {
+      return [[key, sortOptionsConvert.encode(val)]];
+    }
+    const prefixedKey = prefix ? `${prefix}[${key}]` : key;
+    if (typeof val !== 'object') {
+      return [[prefixedKey, val.toString()]];
+    } else {
+      return toSearchParamEntries(val, prefixedKey);
+    }
+  });
 }

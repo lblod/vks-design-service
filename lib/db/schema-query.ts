@@ -6,9 +6,23 @@ import {
 } from 'mu';
 import * as z from 'zod';
 import { queryResultSchema } from '../database-validation/sparql-result-schema.ts';
-import { plainString } from '../database-validation/sparql-value-schemas.ts';
+import {
+  plainString,
+  typedLiteralResult,
+} from '../database-validation/sparql-value-schemas.ts';
 import { InvariantError } from '../errors.ts';
 import type { QueryParams } from '../utils/query-params.ts';
+import { stringToNumber } from '../utils/conversions.ts';
+
+export const countSchema = z.object({
+  count: typedLiteralResult(
+    stringToNumber,
+    z.literal('http://www.w3.org/2001/XMLSchema#integer'),
+  ),
+});
+export type QueryResponseMeta = {
+  count?: number;
+};
 
 /**
  * Execute a query with validation of the resulting response

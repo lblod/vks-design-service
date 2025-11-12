@@ -4,26 +4,14 @@ import { objectify } from '../utils/sparql.ts';
 import { arDesignSchema } from '../schemas/ar-design.ts';
 import { query } from 'mu';
 import {
+  countSchema,
   idValuesClause,
   schemaQuery,
   uriValuesClause,
   type GetQueryOpts,
 } from './schema-query.ts';
 import { paginationClause } from '../utils/pagination.ts';
-import { stringToNumber } from '../utils/conversions.ts';
-import { typedLiteralResult } from '../database-validation/sparql-value-schemas.ts';
 import { sortClause } from '../utils/sorting.ts';
-
-// TODO move
-const countSchema = z.object({
-  count: typedLiteralResult(
-    stringToNumber,
-    z.literal('http://www.w3.org/2001/XMLSchema#integer'),
-  ),
-});
-export type QueryResponseMeta = {
-  count?: number;
-};
 
 export async function getARDesigns(opts: GetQueryOpts = {}) {
   const { ids, uris, page, sort } = opts;
