@@ -38,6 +38,11 @@ export const queryParamSchema = z.object({
     })
     .optional(),
   sort: sortOptionsConvert.optional(),
+  filter: z
+    .object({
+      name: z.string().optional(),
+    })
+    .optional(),
 });
 export type QueryParams = z.infer<typeof queryParamSchema>;
 

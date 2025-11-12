@@ -2,7 +2,7 @@ import * as z from 'zod';
 import { hasVKSRelationship } from '../utils/vks-relationship-helpers.ts';
 import { objectify } from '../utils/sparql.ts';
 import { arDesignSchema } from '../schemas/ar-design.ts';
-import { query } from 'mu';
+import { query, sparqlEscapeString } from 'mu';
 import {
   countSchema,
   idValuesClause,
@@ -14,7 +14,10 @@ import { paginationClause } from '../utils/pagination.ts';
 import { sortClause } from '../utils/sorting.ts';
 
 export async function getARDesigns(opts: GetQueryOpts = {}) {
-  const { ids, uris, page, sort } = opts;
+  const { ids, uris, page, sort, filter } = opts;
+  const filterQuery = !filter?.name
+    ? ''
+    : `FILTER(CONTAINS(LCASE(?name), LCASE(${sparqlEscapeString(filter.name)})))`;
   // TODO remove duplication and clean up
   const count = (
     await schemaQuery(
@@ -54,6 +57,7 @@ export async function getARDesigns(opts: GetQueryOpts = {}) {
 
         ${ids ? idValuesClause(ids) : ''}
         ${uris ? uriValuesClause(uris) : ''}
+        ${filterQuery}
       }`,
     )
   )[0]?.count.value;
@@ -97,6 +101,7 @@ export async function getARDesigns(opts: GetQueryOpts = {}) {
 
       ${ids ? idValuesClause(ids) : ''}
       ${uris ? uriValuesClause(uris) : ''}
+      ${filterQuery}
     } 
     GROUP BY ?uri ?name ?date ?id
     ${sortClause(sort)}
