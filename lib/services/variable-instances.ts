@@ -9,9 +9,9 @@ type Args = {
 
 const VariableInstancesService = {
   getVariableInstances: async ({
-    measureDesignUri,
-    trafficSignalUris,
-    measureConceptUri,
+    measureDesignUri: _,
+    trafficSignalUris: __,
+    measureConceptUri: ___,
   }: Args) => {
     const result: z.infer<typeof variableInstanceSchema>[] = [];
     return result;

@@ -12,6 +12,17 @@ const config: unknown = defineConfig([
     plugins: { js },
     extends: ['js/recommended'],
     languageOptions: { globals: globals.node },
+    rules: {
+      ['@typescript-eslint/no-unused-vars']: [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          destructuredArrayIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
+    },
   },
   tseslint.configs.recommended,
   {

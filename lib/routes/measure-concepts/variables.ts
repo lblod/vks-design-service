@@ -83,32 +83,32 @@ const TextVariableSchema = BaseVariableSchema.extend({
   type: z.literal('text'),
   'default-value': z.string().optional(),
 });
-type TextVariable = z.infer<typeof TextVariableSchema>;
+export type TextVariable = z.infer<typeof TextVariableSchema>;
 
 const NumberVariableSchema = BaseVariableSchema.extend({
   type: z.literal('number'),
   'default-value': z.coerce.number().optional(),
 });
-type NumberVariable = z.infer<typeof NumberVariableSchema>;
+export type NumberVariable = z.infer<typeof NumberVariableSchema>;
 
 const DateVariableSchema = BaseVariableSchema.extend({
   type: z.literal('date'),
   'default-value': z.coerce.date().optional(),
 });
-type DateVariable = z.infer<typeof DateVariableSchema>;
+export type DateVariable = z.infer<typeof DateVariableSchema>;
 
 const CodelistVariableSchema = BaseVariableSchema.extend({
   type: z.literal('codelist'),
   'default-value': z.string().optional(),
   'codelist-uri': z.string(),
 });
-type CodelistVariable = z.infer<typeof CodelistVariableSchema>;
+export type CodelistVariable = z.infer<typeof CodelistVariableSchema>;
 
 const LocationVariableSchema = BaseVariableSchema.extend({
   type: z.literal('location'),
   'default-value': z.string().optional(),
 });
-type LocationVariable = z.infer<typeof LocationVariableSchema>;
+export type LocationVariable = z.infer<typeof LocationVariableSchema>;
 
 export const VariableSchema = z.discriminatedUnion('type', [
   TextVariableSchema,
@@ -178,4 +178,4 @@ export const VariableSchema = z.discriminatedUnion('type', [
 //   return result;
 // }
 
-type Variable = z.infer<typeof VariableSchema>;
+export type Variable = z.infer<typeof VariableSchema>;
