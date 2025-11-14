@@ -1,5 +1,5 @@
 import * as z from 'zod';
-import { isoStringToDate } from '../utils/conversions.ts';
+import { isoStringToDate, stringToNumber } from '../utils/conversions.ts';
 
 export function typedLiteralResult<V extends z.ZodType, D extends z.ZodType>(
   valueSchema: V,
@@ -37,3 +37,8 @@ export const uriList = literalResult(
   z.string().transform((strList) => strList.split(',')),
 );
 export const plainString = literalResult(z.string());
+
+export const integerValue = typedLiteralResult(
+  stringToNumber,
+  z.literal('http://www.w3.org/2001/XMLSchema#integer'),
+);

@@ -1,81 +1,31 @@
-import * as z from 'zod';
+import { sparqlEscapeString } from 'mu';
 import { hasVKSRelationship } from '../utils/vks-relationship-helpers.ts';
-import { objectify } from '../utils/sparql.ts';
-import { arDesignSchema } from '../schemas/ar-design.ts';
-import { query, sparqlEscapeString } from 'mu';
-import {
-  countSchema,
-  idValuesClause,
-  schemaQuery,
-  uriValuesClause,
-  type GetQueryOpts,
-} from './schema-query.ts';
-import { paginationClause } from '../utils/pagination.ts';
-import { sortClause } from '../utils/sorting.ts';
+import { arDesignResult } from '../schemas/ar-design.ts';
+import { paginatedQuery, type GetQueryOpts } from './schema-query.ts';
 
 export async function getARDesigns(opts: GetQueryOpts = {}) {
-  const { ids, uris, page, sort, filter } = opts;
-  const filterQuery = !filter?.name
+  const filterQuery = !opts.filter?.name
     ? ''
-    : `FILTER(CONTAINS(LCASE(?name), LCASE(${sparqlEscapeString(filter.name)})))`;
-  // TODO remove duplication and clean up
-  const count = (
-    await schemaQuery(
-      z.array(countSchema),
-      `
-        PREFIX mobiliteit: <https://data.vlaanderen.be/ns/mobiliteit#>
-        PREFIX arOntwerp: <https://data.vlaanderen.be/ns/mobiliteit#AanvullendReglementOntwerp.>
-        PREFIX relatie: <https://wegenenverkeer.data.vlaanderen.be/ns/implementatieelement#RelatieObject.>
-        PREFIX onderdeel: <https://wegenenverkeer.data.vlaanderen.be/ns/onderdeel#>
-        PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
-        PREFIX dct: <http://purl.org/dc/terms/>
+    : `FILTER(CONTAINS(LCASE(?name), LCASE(${sparqlEscapeString(opts.filter.name)})))`;
 
-        SELECT (COUNT(DISTINCT ?uri) as ?count)
-        WHERE {
+  return await paginatedQuery({
+    schema: arDesignResult,
+    params: opts,
+    prefixes: `
+      PREFIX mobiliteit: <https://data.vlaanderen.be/ns/mobiliteit#>
+      PREFIX arOntwerp: <https://data.vlaanderen.be/ns/mobiliteit#AanvullendReglementOntwerp.>
+      PREFIX relatie: <https://wegenenverkeer.data.vlaanderen.be/ns/implementatieelement#RelatieObject.>
+      PREFIX onderdeel: <https://wegenenverkeer.data.vlaanderen.be/ns/onderdeel#>
+      PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
+      PREFIX dct: <http://purl.org/dc/terms/>`,
+    selectClause: `
+      SELECT DISTINCT
         ?uri
-        a mobiliteit:AanvullendReglementOntwerp;
-        mu:uuid ?id;
-        arOntwerp:naam ?name;
-        dct:issued ?date.
-
-        ${hasVKSRelationship('?uri', '?measureDesign', 'onderdeel:BevatMaatregelOntwerp')}
-
-        ?measureDesign
-        a mobiliteit:MobiliteitsmaatregelOntwerp.
-
-        ${hasVKSRelationship('?measureDesign', '?measureConcept', 'onderdeel:IsGebaseerdOp')}
-
-        ?signalisationDesign
-        a mobiliteit:SignalisatieOntwerp.
-
-        ${hasVKSRelationship('?signalisationDesign', '?signalDesign', 'onderdeel:BevatVerkeersteken')}
-
-        ?signalDesign
-        a mobiliteit:OntwerpVerkeersteken.
-
-        ${hasVKSRelationship('?signalDesign', '?uri', 'onderdeel:HeeftOntwerp')}
-
-        ${ids ? idValuesClause(ids) : ''}
-        ${uris ? uriValuesClause(uris) : ''}
-        ${filterQuery}
-      }`,
-    )
-  )[0]?.count.value;
-  const result = await query(`
-    PREFIX mobiliteit: <https://data.vlaanderen.be/ns/mobiliteit#>
-    PREFIX arOntwerp: <https://data.vlaanderen.be/ns/mobiliteit#AanvullendReglementOntwerp.>
-    PREFIX relatie: <https://wegenenverkeer.data.vlaanderen.be/ns/implementatieelement#RelatieObject.>
-    PREFIX onderdeel: <https://wegenenverkeer.data.vlaanderen.be/ns/onderdeel#>
-    PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
-    PREFIX dct: <http://purl.org/dc/terms/>
-
-    SELECT DISTINCT 
-      ?uri 
-      ?name 
-      ?date 
-      ?id 
-      (GROUP_CONCAT(str(?measureDesign); SEPARATOR=",") as ?measureDesigns) 
-    WHERE {
+        ?name
+        ?date
+        ?id
+        (GROUP_CONCAT(str(?measureDesign); SEPARATOR=",") as ?measureDesigns)`,
+    whereClause: `
       ?uri 
         a mobiliteit:AanvullendReglementOntwerp;
         mu:uuid ?id;
@@ -97,24 +47,10 @@ export async function getARDesigns(opts: GetQueryOpts = {}) {
       ?signalDesign
         a mobiliteit:OntwerpVerkeersteken.
 
-      ${hasVKSRelationship('?signalDesign', '?uri', 'onderdeel:HeeftOntwerp')}
-
-      ${ids ? idValuesClause(ids) : ''}
-      ${uris ? uriValuesClause(uris) : ''}
-      ${filterQuery}
-    } 
-    GROUP BY ?uri ?name ?date ?id
-    ${sortClause(sort)}
-    ${paginationClause(page)}`);
-  const bindings = result.results.bindings;
-  const objectifiedBindings = bindings.map(objectify).map((obj) => ({
-    ...obj,
-    measureDesigns: obj['measureDesigns']!.split(','),
-  }));
-  const data = z.array(arDesignSchema).parse(objectifiedBindings);
-  const meta = { count };
-
-  return { data, meta };
+      ${hasVKSRelationship('?signalDesign', '?uri', 'onderdeel:HeeftOntwerp')}`,
+    filterClause: filterQuery,
+    groupByClause: 'GROUP BY ?uri ?name ?date ?id',
+  });
 }
 
 export async function getARDesignById(id: string) {
