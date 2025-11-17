@@ -41,8 +41,8 @@ export function jsonApiSchema<R extends z.ZodType, I extends z.ZodType>(
       links: z
         .object({
           first: z.string().optional(),
-          prev: z.string().optional(),
-          next: z.string().optional(),
+          prev: z.string().optional().nullable(),
+          next: z.string().optional().nullable(),
           last: z.string().optional(),
         })
         .optional(),
