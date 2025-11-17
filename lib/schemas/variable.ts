@@ -1,11 +1,8 @@
 import z from 'zod';
-import {
-  stringToDate,
-  stringToNumber,
-} from '../database-validation/sparql-value-schemas.ts';
+import { isoStringToDate, stringToNumber } from '../utils/conversions.ts';
 
 export const stringToVariableValue = z.union([
-  stringToDate,
+  isoStringToDate,
   stringToNumber,
   z.string(),
 ]);

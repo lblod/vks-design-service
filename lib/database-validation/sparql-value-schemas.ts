@@ -1,22 +1,5 @@
 import * as z from 'zod';
-
-export const stringToDate = z.codec(
-  z.iso.datetime({ offset: true }),
-  z.date(), // output schema: Date object
-  {
-    decode: (isoString) => new Date(isoString), // ISO string → Date
-    encode: (date) => date.toISOString(), // Date → ISO string
-  },
-);
-
-export const stringToNumber = z.codec(
-  z.string().regex(z.regexes.number),
-  z.number(),
-  {
-    decode: (str) => Number.parseFloat(str),
-    encode: (num) => num.toString(),
-  },
-);
+import { isoStringToDate, stringToNumber } from '../utils/conversions.ts';
 
 export function typedLiteralResult<V extends z.ZodType, D extends z.ZodType>(
   valueSchema: V,
@@ -41,7 +24,7 @@ export const uriValue = z.strictObject({
 });
 
 export const dateTimeValue = typedLiteralResult(
-  stringToDate,
+  isoStringToDate,
   z.literal('http://www.w3.org/2001/XMLSchema#dateTime'),
 );
 
@@ -54,3 +37,8 @@ export const uriList = literalResult(
   z.string().transform((strList) => strList.split(',')),
 );
 export const plainString = literalResult(z.string());
+
+export const integerValue = typedLiteralResult(
+  stringToNumber,
+  z.literal('http://www.w3.org/2001/XMLSchema#integer'),
+);

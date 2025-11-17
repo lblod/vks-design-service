@@ -1,12 +1,14 @@
 import * as z from 'zod';
 import type { Request, Response } from 'express';
-import { stringToDate } from '../database-validation/sparql-value-schemas.ts';
+import { isoStringToDate } from '../utils/conversions.ts';
 import {
   jsonApiRelationship,
   jsonApiResourceObject,
   jsonApiSchema,
-} from '../jsonapi-schema';
+} from '../jsonapi-schema.ts';
 import ARDesignsService from '../services/ar-designs.ts';
+import { parseQueryParams } from '../utils/query-params.ts';
+import { generateJsonapiLinks } from '../utils/jsonapi-utils.ts';
 
 const designJsonSchema = jsonApiSchema(
   jsonApiResourceObject({
@@ -27,12 +29,17 @@ const designJsonSchema = jsonApiSchema(
   z.undefined().optional(),
 );
 
-export const getARDesigns = async (_req: Request, res: Response) => {
+export const getARDesigns = async (req: Request, res: Response) => {
   try {
-    const designs = await ARDesignsService.getARDesigns();
+    const queryParams = parseQueryParams(req.query);
+    const designs = await ARDesignsService.getARDesigns({
+      ...queryParams,
+    });
 
     const result = designJsonSchema.encode({
-      data: designs.map((design) => {
+      meta: designs.meta,
+      ...generateJsonapiLinks(req.route.path, queryParams, designs.meta),
+      data: designs.data.map((design) => {
         const { uri, id, name, date } = design;
         return {
           type: 'ar-designs' as const,
@@ -40,7 +47,7 @@ export const getARDesigns = async (_req: Request, res: Response) => {
           attributes: {
             uri: uri,
             name: name,
-            date: stringToDate.encode(date),
+            date: isoStringToDate.encode(date),
           },
           relationships: {
             'measure-designs': {
