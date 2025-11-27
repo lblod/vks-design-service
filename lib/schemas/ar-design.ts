@@ -3,7 +3,6 @@ import { isoStringToDate } from '../utils/conversions.ts';
 import {
   dateTimeValue,
   plainString,
-  stringValue,
   uriList,
   uriValue,
 } from '../database-validation/sparql-value-schemas.ts';
@@ -19,7 +18,7 @@ export const arDesignResult = z.strictObject({
   uri: uriValue,
   id: plainString,
   date: dateTimeValue,
-  name: stringValue,
+  name: plainString,
   measureDesigns: uriList,
 });
 
