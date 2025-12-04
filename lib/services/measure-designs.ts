@@ -2,6 +2,7 @@ import { getARDesignById } from '../db/ar-designs';
 import { getMeasureConceptByUri } from '../db/measure-concepts';
 import { getMeasureDesigns } from '../db/measure-designs';
 import { getTrafficSignals } from '../db/traffic-signals';
+import type { ArDesign } from '../schemas/ar-design';
 import type { MeasureDesign } from '../schemas/measure-design';
 import { isSome } from '../utils/option';
 import VariableInstancesService from './variable-instances';
@@ -12,7 +13,10 @@ type Args = {
 
 const MeasureDesignsService = {
   getMeasureDesignsForARDesign: async ({ arDesignId }: Args) => {
-    const arDesign = await getARDesignById(arDesignId);
+    // TODO: fix types issues of `getARDesignById`
+    const arDesign = (await getARDesignById(arDesignId)) as
+      | ArDesign
+      | undefined;
     if (!arDesign) {
       return;
     }
@@ -33,9 +37,7 @@ const MeasureDesignsService = {
           });
           const variableInstances =
             await VariableInstancesService.getVariableInstances({
-              measureDesignUri: measureDesign.uri,
-              trafficSignalUris: trafficSignalsResolved.map((t) => t.uri),
-              measureConceptUri: measureConceptResolved.uri,
+              measureConcept: measureConceptResolved,
             });
           return {
             ...measureDesign,
