@@ -7,7 +7,8 @@ import {
 import { objectify } from '../utils/sparql.ts';
 import { measureDesignSchema } from '../schemas/measure-design.ts';
 import { hasVKSRelationship } from '../utils/vks-relationship-helpers.ts';
-import { query } from 'mu';
+import { query, sparqlEscapeUri } from 'mu';
+import { Z_SIGN_CONCEPT } from '../constants.ts';
 
 const responseSchema = z.array(
   measureDesignSchema.extend({
@@ -38,10 +39,18 @@ export async function getMeasureDesigns(opts: GetQueryOpts = {}) {
         mu:uuid ?id.
       ${hasVKSRelationship('?uri', '?measureConcept', 'onderdeel:IsGebaseerdOp')}
 
-      ${hasVKSRelationship('?uri', '?trafficSignal', 'onderdeel:WordtAangeduidDoor')}
-
+      {
+        ${hasVKSRelationship('?uri', '?trafficSignal', 'onderdeel:WordtAangeduidDoor')}
+      }
+      UNION 
+      {
+        ${hasVKSRelationship('?uri', '?zSignal', 'onderdeel:WordtAangeduidDoor')}
+        ?zSignal a mobiliteit:VerkeersbordVerkeersteken.
+        ${hasVKSRelationship('?zSignal', '?zSignalConcept', 'onderdeel:IsGebaseerdOp')}
+        FILTER(?zSignalConcept = ${sparqlEscapeUri(Z_SIGN_CONCEPT)})
+        ${hasVKSRelationship('?zSignal', '?trafficSignal', 'onderdeel:BevatVerkeersteken')}
+      }
       ?trafficSignal a ?signalType.
-
       VALUES ?signalType { 
         mobiliteit:VerkeersbordVerkeersteken
         mobiliteit:WegmarkeringVerkeersteken
