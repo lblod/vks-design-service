@@ -149,8 +149,6 @@ async function moveSignalisatieOntwerp(uri) {
       }`;
   const queryResult = await querySudo(graphQuery);
   const adminUnitUuid = queryResult.results.bindings[0]?.adminUnitUuid.value;
-  console.log('ADMIN UNIT FOUND');
-  console.log(adminUnitUuid);
   if (!adminUnitUuid) return;
   const graph = `http://mu.semte.ch/graphs/awv/ldes/${adminUnitUuid}`;
   const moveQuery = `
@@ -216,8 +214,6 @@ async function moveBevatVerkeersteken(uri) {
       }`;
   const queryResult = await querySudo(graphQuery);
   const adminUnitUuid = queryResult.results.bindings[0]?.adminUnitUuid.value;
-  console.log('ADMIN UNIT FOUND');
-  console.log(adminUnitUuid);
   if (!adminUnitUuid) return;
   const graph = `http://mu.semte.ch/graphs/awv/ldes/${adminUnitUuid}`;
   const moveQuery = `
@@ -283,8 +279,6 @@ async function moveOntwerpVerkeersteken(uri) {
       }`;
   const queryResult = await querySudo(graphQuery);
   const adminUnitUuid = queryResult.results.bindings[0]?.adminUnitUuid.value;
-  console.log('ADMIN UNIT FOUND');
-  console.log(adminUnitUuid);
   if (!adminUnitUuid) return;
   const graph = `http://mu.semte.ch/graphs/awv/ldes/${adminUnitUuid}`;
   const moveQuery = `
@@ -352,8 +346,6 @@ async function moveHeeftOntwerp(uri) {
       }`;
   const queryResult = await querySudo(graphQuery);
   const adminUnitUuid = queryResult.results.bindings[0]?.adminUnitUuid.value;
-  console.log('ADMIN UNIT FOUND');
-  console.log(adminUnitUuid);
   if (!adminUnitUuid) return;
   const graph = `http://mu.semte.ch/graphs/awv/ldes/${adminUnitUuid}`;
   const moveQuery = `
@@ -422,8 +414,6 @@ async function moveAanvullendReglementOntwerp(uri) {
       }`;
   const queryResult = await querySudo(graphQuery);
   const adminUnitUuid = queryResult.results.bindings[0]?.adminUnitUuid.value;
-  console.log('ADMIN UNIT FOUND');
-  console.log(adminUnitUuid);
   if (!adminUnitUuid) return;
   const graph = `http://mu.semte.ch/graphs/awv/ldes/${adminUnitUuid}`;
   const moveQuery = `
@@ -494,8 +484,6 @@ async function moveBevatMaatregelOntwerp(uri) {
       }`;
   const queryResult = await querySudo(graphQuery);
   const adminUnitUuid = queryResult.results.bindings[0]?.adminUnitUuid.value;
-  console.log('ADMIN UNIT FOUND');
-  console.log(adminUnitUuid);
   if (!adminUnitUuid) return;
   const graph = `http://mu.semte.ch/graphs/awv/ldes/${adminUnitUuid}`;
   const moveQuery = `
@@ -567,8 +555,6 @@ async function moveMobiliteitsmaatregelOntwerp(uri) {
       }`;
   const queryResult = await querySudo(graphQuery);
   const adminUnitUuid = queryResult.results.bindings[0]?.adminUnitUuid.value;
-  console.log('ADMIN UNIT FOUND');
-  console.log(adminUnitUuid);
   if (!adminUnitUuid) return;
   const graph = `http://mu.semte.ch/graphs/awv/ldes/${adminUnitUuid}`;
   const moveQuery = `
@@ -642,8 +628,6 @@ async function moveWordtAangeduidDoor(uri) {
       }`;
   const queryResult = await querySudo(graphQuery);
   const adminUnitUuid = queryResult.results.bindings[0]?.adminUnitUuid.value;
-  console.log('ADMIN UNIT FOUND');
-  console.log(adminUnitUuid);
   if (!adminUnitUuid) return;
   const graph = `http://mu.semte.ch/graphs/awv/ldes/${adminUnitUuid}`;
   const moveQuery = `
@@ -712,8 +696,6 @@ async function moveVerkeersbordVerkeersteken(uri) {
       }`;
   const queryResult = await querySudo(graphQuery);
   const adminUnitUuid = queryResult.results.bindings[0]?.adminUnitUuid.value;
-  console.log('ADMIN UNIT FOUND');
-  console.log(adminUnitUuid);
   if (!adminUnitUuid) return;
   const graph = `http://mu.semte.ch/graphs/awv/ldes/${adminUnitUuid}`;
   const moveQuery = `
@@ -798,8 +780,6 @@ async function moveHeeftVerkeersteken(uri) {
       }`;
   const queryResult = await querySudo(graphQuery);
   const adminUnitUuid = queryResult.results.bindings[0]?.adminUnitUuid.value;
-  console.log('ADMIN UNIT FOUND');
-  console.log(adminUnitUuid);
   if (!adminUnitUuid) return;
   const graph = `http://mu.semte.ch/graphs/awv/ldes/${adminUnitUuid}`;
   const moveQuery = `
@@ -858,8 +838,6 @@ async function moveVariableInstanceWithLiteralValue(uri) {
       }`;
   const queryResult = await querySudo(graphQuery);
   const adminUnitUuid = queryResult.results.bindings[0]?.adminUnitUuid.value;
-  console.log('ADMIN UNIT FOUND');
-  console.log(adminUnitUuid);
   if (!adminUnitUuid) return;
   const graph = `http://mu.semte.ch/graphs/awv/ldes/${adminUnitUuid}`;
   const moveQuery = `
@@ -920,8 +898,6 @@ async function moveHeeftWaardeVoor(uri) {
       }`;
   const queryResult = await querySudo(graphQuery);
   const adminUnitUuid = queryResult.results.bindings[0]?.adminUnitUuid.value;
-  console.log('ADMIN UNIT FOUND');
-  console.log(adminUnitUuid);
   if (!adminUnitUuid) return;
   const graph = `http://mu.semte.ch/graphs/awv/ldes/${adminUnitUuid}`;
   const moveQuery = `
@@ -959,8 +935,6 @@ async function moveVerkeersbordopstelling(uri) {
       }`;
   const queryResult = await querySudo(graphQuery);
   const adminUnitUuid = queryResult.results.bindings[0]?.adminUnitUuid.value;
-  console.log('ADMIN UNIT FOUND');
-  console.log(adminUnitUuid);
   if (!adminUnitUuid) return;
   const graph = `http://mu.semte.ch/graphs/awv/ldes/${adminUnitUuid}`;
   const moveQuery = `
@@ -998,8 +972,6 @@ async function moveHeeftBetrokkene(uri) {
       }`;
   const queryResult = await querySudo(graphQuery);
   const adminUnitUuid = queryResult.results.bindings[0]?.adminUnitUuid.value;
-  console.log('ADMIN UNIT FOUND');
-  console.log(adminUnitUuid);
   if (!adminUnitUuid) return;
   const graph = `http://mu.semte.ch/graphs/awv/ldes/${adminUnitUuid}`;
   const moveQuery = `
@@ -1037,8 +1009,6 @@ async function moveIsGebaseerdOp(uri) {
       }`;
   const queryResult = await querySudo(graphQuery);
   const adminUnitUuid = queryResult.results.bindings[0]?.adminUnitUuid.value;
-  console.log('ADMIN UNIT FOUND');
-  console.log(adminUnitUuid);
   if (!adminUnitUuid) return;
   const graph = `http://mu.semte.ch/graphs/awv/ldes/${adminUnitUuid}`;
   const moveQuery = `
