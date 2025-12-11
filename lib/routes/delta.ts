@@ -119,10 +119,8 @@ async function moveByType(urisWithType) {
         await moveAanvullendReglementOntwerp(uri);
         break;
 
-      case 'https://wegenenverkeer.data.vlaanderen.be/ns/onderdeel#HeeftWaardeVoor':
-        break;
-
-      case 'variable instance with resource':
+      case 'http://lblod.data.gift/vocabularies/variables/VariableInstanceWithResourceValue':
+        await moveVariableInstanceWithResourceValue(uri);
         break;
     }
   }
@@ -877,6 +875,39 @@ async function moveVariableInstanceWithLiteralValue(uri) {
   for (const uriToMove of urisToMove) {
     await moveHeeftWaardeVoor(uriToMove);
   }
+}
+
+async function moveVariableInstanceWithResourceValue(uri) {
+  const graphQuery = `
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX relatie: <https://wegenenverkeer.data.vlaanderen.be/ns/implementatieelement#RelatieObject.>
+    PREFIX onderdeel: <https://wegenenverkeer.data.vlaanderen.be/ns/onderdeel#>
+     PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
+    select distinct ?adminUnitUuid where {
+          GRAPH ${LDES_GRAPH} {
+            ?relHeeftVerkeersteken a onderdeel:HeeftVerkeersteken ;
+              relatie:bron ${sparqlEscapeUri(uri)};
+              relatie:doel ?verkersteken.
+            ${verkeerstekenQuery}
+          }
+      }`;
+  const queryResult = await querySudo(graphQuery);
+  const adminUnitUuid = queryResult.results.bindings[0]?.adminUnitUuid.value;
+  if (!adminUnitUuid) return;
+  const graph = `http://mu.semte.ch/graphs/awv/ldes/${adminUnitUuid}`;
+  const moveQuery = `
+    INSERT {
+      GRAPH ${sparqlEscapeUri(graph)} {
+        ${sparqlEscapeUri(uri)} ?a ?b
+      }
+    } WHERE {
+     GRAPH ${LDES_GRAPH} {
+        ${sparqlEscapeUri(uri)} ?a ?b
+      }
+    }
+  `;
+  await updateSudo(moveQuery);
 }
 
 async function moveHeeftWaardeVoor(uri) {
