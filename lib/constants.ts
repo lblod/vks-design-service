@@ -14,3 +14,6 @@ export const ZONALITY_OPTIONS = {
   NON_ZONAL:
     'http://lblod.data.gift/concepts/b651931b-923c-477c-8da9-fc7dd841fdcc',
 } as const;
+
+export const Z_SIGN_CONCEPT =
+  'http://data.lblod.info/road-sign-concepts/68E768F053FC4746C00D7A38';
