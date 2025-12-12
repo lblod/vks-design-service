@@ -5,7 +5,8 @@
   "type": "module",
   "main": "app.ts",
   "scripts": {
-    "test": "vitest"
+    "test": "vitest",
+    "lint": "eslint"
   },
   "author": "redpencil.io",
   "license": "MIT",
@@ -28,8 +29,7 @@
     "testcontainers": "^11.7.1",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.45.0",
-    "vitest": "^3.2.4",
-    "zod": "^4.1.11"
+    "vitest": "^3.2.4"
   },
   "dependencies": {
     "mu": "https://github.com/elpoelma/mu-helpers.git",

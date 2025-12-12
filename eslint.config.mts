@@ -6,18 +6,35 @@ import { defineConfig, globalIgnores } from 'eslint/config';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 
 const config: unknown = defineConfig([
-  globalIgnores(['./mu-pkg']),
+  globalIgnores(['package-lock.json']),
   {
     files: ['**/*.{js,mjs,cjs,ts,mts,cts}'],
     plugins: { js },
     extends: ['js/recommended'],
     languageOptions: { globals: globals.node },
+    rules: {
+      ['@typescript-eslint/no-unused-vars']: [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          destructuredArrayIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
+    },
   },
   tseslint.configs.recommended,
   {
     files: ['**/*.json'],
     plugins: { json },
     language: 'json/json',
+    extends: ['json/recommended'],
+  },
+  {
+    files: ['tsconfig.json'],
+    plugins: { json },
+    language: 'json/jsonc',
     extends: ['json/recommended'],
   },
   // eslintConfigPrettier,

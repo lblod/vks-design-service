@@ -1,0 +1,16 @@
+import z from 'zod';
+import { TRAFFIC_SIGNAL_CONCEPT_TYPES } from '../constants';
+
+export const trafficSignalConceptSchema = z.strictObject({
+  uri: z.string(),
+  id: z.string(),
+  meaning: z.string(),
+  code: z.string(),
+  type: z.literal([
+    TRAFFIC_SIGNAL_CONCEPT_TYPES.ROAD_SIGN,
+    TRAFFIC_SIGNAL_CONCEPT_TYPES.ROAD_MARKING,
+    TRAFFIC_SIGNAL_CONCEPT_TYPES.TRAFFIC_LIGHT,
+  ]),
+});
+
+export type TrafficSignalConcept = z.infer<typeof trafficSignalConceptSchema>;

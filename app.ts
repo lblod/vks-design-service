@@ -1,10 +1,10 @@
 import { app } from 'mu';
 import type { Application } from 'express';
-import { designsRouter } from './lib/routes/ar-designs.ts';
-import { designMeasuresRouter } from './lib/routes/ar-designs/measures.ts';
-import { measureVariablesRouter } from './lib/routes/measures/variables.ts';
+import { router } from './lib/router.ts';
 
 export const myapp: Application = app;
-myapp.use(designMeasuresRouter);
-myapp.use(measureVariablesRouter);
-myapp.use(designsRouter);
+
+myapp.use(router);
+// myapp.use(designMeasureConceptsRouter);
+// myapp.use(measureConceptsVariablesRouter);
+// myapp.use(measureConceptsSignalConceptsRouter);
