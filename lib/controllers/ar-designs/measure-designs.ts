@@ -234,6 +234,7 @@ const MeasureDesignsController = {
                       uri: variable.uri,
                       label: variable.label,
                       type: variable.type,
+                      source: variable.source,
                       defaultValue: variable.defaultValue,
                     },
                   },
