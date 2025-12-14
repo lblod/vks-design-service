@@ -1,12 +1,6 @@
 import * as z from 'zod';
 import {
-  literalResult,
-  plainString,
-  uriValue,
-} from '../database-validation/sparql-value-schemas.ts';
-import {
   idValuesClause,
-  schemaQuery,
   uriValuesClause,
   type GetQueryOpts,
 } from './schema-query.ts';
@@ -14,23 +8,6 @@ import { getMowEndpoint } from '../environment.ts';
 import { variableSchema } from '../schemas/variable.ts';
 import { query } from 'mu';
 import { objectify } from '../utils/sparql.ts';
-
-const variableSparqlSchema = z.object({
-  id: plainString,
-  title: plainString,
-  uri: uriValue,
-  type: literalResult(
-    z.literal([
-      'text',
-      'number',
-      'date',
-      'codelist',
-      'location',
-      'instruction',
-    ]),
-  ),
-  codelist: uriValue.optional(),
-});
 
 export async function getVariables(opts: GetQueryOpts = {}) {
   const { uris, ids } = opts;

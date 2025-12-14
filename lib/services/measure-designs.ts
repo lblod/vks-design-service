@@ -13,7 +13,6 @@ type Args = {
 
 const MeasureDesignsService = {
   getMeasureDesignsForARDesign: async ({ arDesignId }: Args) => {
-    // TODO: fix types issues of `getARDesignById`
     const arDesign = (await getARDesignById(arDesignId)) as
       | ArDesign
       | undefined;
