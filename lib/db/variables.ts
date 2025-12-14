@@ -17,6 +17,7 @@ export async function getVariables(opts: GetQueryOpts = {}) {
     PREFIX variable: <http://lblod.data.gift/vocabularies/variables/>
     PREFIX dct: <http://purl.org/dc/terms/>
     PREFIX mobiliteit: <https://data.vlaanderen.be/ns/mobiliteit#>
+    PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
 
     SELECT DISTINCT
       ?uri 
@@ -24,6 +25,7 @@ export async function getVariables(opts: GetQueryOpts = {}) {
       ?label 
       ?type 
       ?codelist 
+      ?correspondingSignVar
     WHERE {
       ?uri 
         a variable:Variable;
@@ -32,6 +34,9 @@ export async function getVariables(opts: GetQueryOpts = {}) {
         dct:title ?label.
       OPTIONAL {
         ?uri mobiliteit:codelijst ?codelist.
+      }
+      OPTIONAL {
+	?correspondingSignVar ext:correspondsTo ?uri.
       }
       ${ids ? idValuesClause(ids) : ''}
       ${uris ? uriValuesClause(uris) : ''}

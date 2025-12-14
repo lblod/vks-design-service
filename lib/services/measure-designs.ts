@@ -37,6 +37,7 @@ const MeasureDesignsService = {
           const variableInstances =
             await VariableInstancesService.getVariableInstances({
               measureConcept: measureConceptResolved,
+              measureDesign,
             });
           return {
             ...measureDesign,
