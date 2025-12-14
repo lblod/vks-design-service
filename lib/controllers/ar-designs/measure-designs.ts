@@ -88,6 +88,7 @@ const measureDesignsJsonSchema = jsonApiSchema(
         attributes: z.object({
           uri: z.string(),
           value: stringToVariableValue.optional(),
+          'value-label': z.string().optional(),
         }),
         relationships: z.object({
           variable: z.object({
@@ -217,6 +218,7 @@ const MeasureDesignsController = {
                     attributes: {
                       uri: variableInstance.uri,
                       value: variableInstance.value,
+                      'value-label': variableInstance.valueLabel,
                     },
                     relationships: {
                       variable: {
