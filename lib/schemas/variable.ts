@@ -14,6 +14,7 @@ export const variableSchema = z.strictObject({
   label: z.string(),
   type: z.string(),
   source: z.string().default(getMowEndpoint()),
+  codelist: z.string().optional(),
   defaultValue: stringToVariableValue.optional(),
 });
 

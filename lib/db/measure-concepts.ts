@@ -28,7 +28,7 @@ export async function getMeasureConcepts(opts: GetQueryOpts = {}) {
       ?label
       ?rawTemplateString 
       ?templateString
-      (GROUP_CONCAT(str(?variable); SEPARATOR=",") as ?variables) 
+      (GROUP_CONCAT(DISTINCT str(?variable); SEPARATOR=",") as ?variables) 
     WHERE {
       ?uri 
         a mobiliteit:Mobiliteitmaatregelconcept;
@@ -38,7 +38,6 @@ export async function getMeasureConcepts(opts: GetQueryOpts = {}) {
         mobiliteit:Mobiliteitsmaatregelconcept.template ?template.
       ?template 
         a mobiliteit:Template;
-        mobiliteit:variabele ?variable;
         rdf:value ?rawTemplateString;
         ext:preview ?templateString.
 

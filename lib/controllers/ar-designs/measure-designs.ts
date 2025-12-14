@@ -236,6 +236,7 @@ const MeasureDesignsController = {
                       type: variable.type,
                       source: variable.source,
                       defaultValue: variable.defaultValue,
+                      codelist: variable.codelist,
                     },
                   },
                 ] as const;
