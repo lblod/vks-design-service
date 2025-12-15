@@ -108,6 +108,7 @@ const measureDesignsJsonSchema = jsonApiSchema(
           type: z.string(),
           defaultValue: stringToVariableValue.optional(),
           codelist: z.string().optional(),
+          source: z.string(),
         }),
       }),
     ]),
