@@ -1,5 +1,11 @@
 # vks-design-service
 
+## 0.1.0
+
+### Minor Changes
+
+- [`1e90df3`](https://github.com/lblod/vks-design-service/commit/1e90df3c3c44753af6d5e61a5059b6d487437919) Thanks [@elpoelma](https://github.com/elpoelma)! - Add support for filling in variables
+
 ## 0.0.1
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "vks-design-service",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Mu-javascript service which implements the VLAG datamodel",
   "type": "module",
   "main": "app.ts",
