@@ -8,7 +8,11 @@ type VKSRelationshipType =
   | 'onderdeel:BevatVerkeersteken'
   | '<https://wegenenverkeer.data.vlaanderen.be/ns/onderdeel#BevatVerkeersteken>'
   | 'onderdeel:WordtAangeduidDoor'
-  | '<https://wegenenverkeer.data.vlaanderen.be/ns/onderdeel#WordtAangeduidDoor>';
+  | '<https://wegenenverkeer.data.vlaanderen.be/ns/onderdeel#WordtAangeduidDoor>'
+  | 'onderdeel:HeeftVerkeersteken'
+  | '<https://wegenenverkeer.data.vlaanderen.be/ns/onderdeel#HeeftVerkeersteken>'
+  | 'onderdeel:HeeftWaardeVoor'
+  | '<https://wegenenverkeer.data.vlaanderen.be/ns/onderdeel#HeeftWaardeVoor>';
 
 export function hasVKSRelationship(
   source: string,

@@ -19,14 +19,14 @@ describe('/ar-designs/:id/measures-concepts route', () => {
   });
   dbtest('route exists if given valid id', async () => {
     const response = await request(myapp).get(
-      '/ar-designs/f9d96c3cba89ed71e9441d929095b7cf/measure-concepts',
+      '/ar-designs/f9d96c3cba89ed71e9441d929095b7cf/measure-designs',
     );
     expect(response.statusCode).toEqual(200);
   });
 
   dbtest('route returns valid jsonApi response', async () => {
     const response = await request(myapp).get(
-      '/ar-designs/f9d96c3cba89ed71e9441d929095b7cf/measure-concepts',
+      '/ar-designs/f9d96c3cba89ed71e9441d929095b7cf/measure-designs',
     );
     const body = response.body;
     expect(response.statusCode).toEqual(200);

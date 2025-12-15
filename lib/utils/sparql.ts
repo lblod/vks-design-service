@@ -1,11 +1,14 @@
-import type { BindingObject, ObjectToBind } from 'mu';
+import * as z from 'zod';
 
-export function objectify<Obj extends ObjectToBind>(
-  binding: BindingObject<Obj>,
-) {
-  return Object.fromEntries(
-    Object.entries(binding).map(([key, term]) => [key, term.value]),
-    // TS doesn't give us 'keyof' from Object.entries() as a subclass could have extra fields,
-    // making this technically not true, but for us we don't care as we'll put it through zod
-  ) as { [Prop in keyof Obj]: string };
+export type ZodBindingRecord = z.ZodType<{
+  [key: string]: { type: 'uri' | 'literal' | 'typed-literal'; value: unknown };
+}>;
+export function objectify<
+  O extends { [key: string]: { type: string; value: unknown } },
+>(thing: O): { [Key in keyof O]: O[Key]['value'] } {
+  const result: Record<string, unknown> = {};
+  for (const key of Object.keys(thing)) {
+    result[key] = thing[key as keyof O]?.value;
+  }
+  return result as { [Key in keyof O]: O[Key]['value'] };
 }

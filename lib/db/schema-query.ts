@@ -12,7 +12,7 @@ import {
 } from '../database-validation/sparql-value-schemas.ts';
 import { InvariantError } from '../errors.ts';
 import type { QueryParams } from '../utils/query-params.ts';
-import { objectify } from '../utils/sparql.ts';
+import { objectify, type ZodBindingRecord } from '../utils/sparql.ts';
 import { sortClause } from '../utils/sorting.ts';
 import { paginationClause } from '../utils/pagination.ts';
 
@@ -29,7 +29,7 @@ export type QueryResponseMeta = {
  * @param queryStr The query which will be sent
  * @param opts
  */
-export async function schemaQuery<S extends z.ZodObject>(
+export async function schemaQuery<S extends z.ZodType>(
   schema: S,
   queryStr: string,
   opts?: UserOptions,
@@ -41,7 +41,7 @@ export async function schemaQuery<S extends z.ZodObject>(
   return result.results.bindings;
 }
 
-interface PaginatedQueryArgs<S extends z.ZodObject> {
+interface PaginatedQueryArgs<S extends ZodBindingRecord> {
   /** The zod schema which describes the results bindings. */
   schema: S;
   /** The list of prefixes used in the SPARQL query */
@@ -63,7 +63,7 @@ interface PaginatedQueryArgs<S extends z.ZodObject> {
  * Execute a query and automatically return pagination metadata if relevant. Also performs
  * validation of the resulting response
  */
-export async function paginatedQuery<S extends z.ZodObject>({
+export async function paginatedQuery<S extends ZodBindingRecord>({
   schema,
   params,
   opts,
@@ -107,7 +107,6 @@ export async function paginatedQuery<S extends z.ZodObject>({
   const [meta, data] = await Promise.all([metaPromise, dataPromise]);
   return {
     meta,
-    // @ts-expect-error Not technically a BindingObject
     data: data.map(objectify),
   };
 }

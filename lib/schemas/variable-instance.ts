@@ -5,6 +5,7 @@ export const variableInstanceSchema = z.strictObject({
   uri: z.string(), // generated on-the-fly
   id: z.string(), // generated on-the-fly
   value: stringToVariableValue.optional(),
+  valueLabel: z.string().optional(),
   variable: variableSchema,
 });
 

@@ -20,13 +20,15 @@ export async function getMeasureConcepts(opts: GetQueryOpts = {}) {
     PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
     PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
     PREFIX schema: <http://schema.org/>
+    PREFIX dct: <http://purl.org/dc/terms/>
 
     SELECT 
       ?id 
       ?uri
       ?label
       ?rawTemplateString 
-      ?templateString 
+      ?templateString
+      (GROUP_CONCAT(DISTINCT str(?variable); SEPARATOR=",") as ?variables) 
     WHERE {
       ?uri 
         a mobiliteit:Mobiliteitmaatregelconcept;
@@ -36,9 +38,18 @@ export async function getMeasureConcepts(opts: GetQueryOpts = {}) {
         mobiliteit:Mobiliteitsmaatregelconcept.template ?template.
       ?template 
         a mobiliteit:Template;
-        mobiliteit:variabele ?variable;
         rdf:value ?rawTemplateString;
         ext:preview ?templateString.
+
+      {
+        ?template mobiliteit:variabele ?variable.
+      }
+      UNION {
+        ?template mobiliteit:variabele/mobiliteit:template/mobiliteit:variabele ?variable.
+      }
+      FILTER NOT EXISTS {
+        ?variable dct:type "instruction".
+      }
 
       ${ids ? idValuesClause(ids) : ''}
       ${uris ? uriValuesClause(uris) : ''}
@@ -49,7 +60,12 @@ export async function getMeasureConcepts(opts: GetQueryOpts = {}) {
   );
 
   const bindings = result.results.bindings;
-  return z.array(measureConceptSchema).parse(bindings.map(objectify));
+  return z.array(measureConceptSchema).parse(
+    bindings.map(objectify).map((obj) => ({
+      ...obj,
+      variables: obj['variables']?.split(','),
+    })),
+  );
 }
 
 export async function getMeasureConceptByUri(uri: string) {
