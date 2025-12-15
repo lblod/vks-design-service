@@ -49,7 +49,13 @@ const VariableInstancesService = {
 };
 export default VariableInstancesService;
 const signVarSchema = z
-  .array(z.object({ signVar: z.string(), value: z.string() }))
+  .array(
+    z.object({
+      signVar: z.string(),
+      value: z.string(),
+      isResource: z.string(),
+    }),
+  )
   .max(1);
 async function getSignVarValue(
   signVarUri: string,
@@ -59,13 +65,19 @@ async function getSignVarValue(
   PREFIX variables: <https://lblod.data.gift/vocabularies/variables/>
   PREFIX onderdeel: <https://wegenenverkeer.data.vlaanderen.be/ns/onderdeel#>
   PREFIX relatie: <https://wegenenverkeer.data.vlaanderen.be/ns/implementatieelement#RelatieObject.>
-  SELECT DISTINCT ?signVar ?value WHERE {
+  SELECT DISTINCT ?signVar ?value ?isResource WHERE {
 
     ${uriValuesClause([signVarUri], '?signVar')}
     ${uriValuesClause(signalInstanceUris, '?signalInstance')}
     ${hasVKSRelationship('?signVarInstance', '?signVar', 'onderdeel:HeeftWaardeVoor')}
     ${hasVKSRelationship('?signVarInstance', '?signalInstance', 'onderdeel:HeeftVerkeersteken')}
+     {
     ?signVarInstance variables:VariableInstanceWithResourceValue.waarde ?value.
+      BIND("true" as ?isResource)
+    } UNION {
+    ?signVarInstance variables:VariableInstanceWithLiteralValue.waarde ?value.
+      BIND("false" as ?isResource)
+    }
   }
   `);
   const bindings = result.results.bindings;
@@ -73,10 +85,7 @@ async function getSignVarValue(
   const parsed = signVarSchema.parse(bindings.map(objectify))[0];
 
   if (!parsed) return;
-  // You might think you can use the sparql type of the binding, e.g. binding.value.type === 'uri'
-  // but because the codelist uri is given to us as a literal, its type is 'typed-literal' and not 'uri'
-  // so we need to manually check for a uri-style string
-  if (z.url().safeParse(parsed.value)) {
+  if (parsed.isResource) {
     const valueLabel = (await getCodelistOptionLabel(parsed.value))[0]?.label;
     return { value: parsed.value, valueLabel };
   }
