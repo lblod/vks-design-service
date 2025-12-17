@@ -18,7 +18,8 @@ const responseSchema = z.array(
 );
 export async function getMeasureDesigns(opts: GetQueryOpts = {}) {
   const { ids, uris } = opts;
-  const result = await query(/* sparql */ `
+  const result = await query(
+    /* sparql */ `
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX mobiliteit: <https://data.vlaanderen.be/ns/mobiliteit#>
     PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
@@ -34,34 +35,38 @@ export async function getMeasureDesigns(opts: GetQueryOpts = {}) {
       ?measureConcept
       (GROUP_CONCAT(str(?trafficSignal); SEPARATOR=",") as ?trafficSignals) 
     WHERE {
-      ?uri 
-        a mobiliteit:MobiliteitsmaatregelOntwerp;
-        mu:uuid ?id.
-      ${hasVKSRelationship('?uri', '?measureConcept', 'onderdeel:IsGebaseerdOp')}
+      GRAPH <http://mu.semte.ch/graphs/awv/ldes> {
+        ?uri 
+          a mobiliteit:MobiliteitsmaatregelOntwerp;
+          mu:uuid ?id.
+        ${hasVKSRelationship('?uri', '?measureConcept', 'onderdeel:IsGebaseerdOp')}
 
-      {
-        ${hasVKSRelationship('?uri', '?trafficSignal', 'onderdeel:WordtAangeduidDoor')}
+        {
+          ${hasVKSRelationship('?uri', '?trafficSignal', 'onderdeel:WordtAangeduidDoor')}
+        }
+        UNION 
+        {
+          ${hasVKSRelationship('?uri', '?zSignal', 'onderdeel:WordtAangeduidDoor')}
+          ?zSignal a mobiliteit:VerkeersbordVerkeersteken.
+          ${hasVKSRelationship('?zSignal', '?zSignalConcept', 'onderdeel:IsGebaseerdOp')}
+          FILTER(?zSignalConcept = ${sparqlEscapeUri(Z_SIGN_CONCEPT)})
+          ${hasVKSRelationship('?zSignal', '?trafficSignal', 'onderdeel:BevatVerkeersteken')}
+        }
+        ?trafficSignal a ?signalType.
+        VALUES ?signalType { 
+          mobiliteit:VerkeersbordVerkeersteken
+          mobiliteit:WegmarkeringVerkeersteken
+          mobiliteit:VerkeerslichtVerkeersteken
+        }
+        
+        ${ids ? idValuesClause(ids) : ''}
+        ${uris ? uriValuesClause(uris) : ''}
       }
-      UNION 
-      {
-        ${hasVKSRelationship('?uri', '?zSignal', 'onderdeel:WordtAangeduidDoor')}
-        ?zSignal a mobiliteit:VerkeersbordVerkeersteken.
-        ${hasVKSRelationship('?zSignal', '?zSignalConcept', 'onderdeel:IsGebaseerdOp')}
-        FILTER(?zSignalConcept = ${sparqlEscapeUri(Z_SIGN_CONCEPT)})
-        ${hasVKSRelationship('?zSignal', '?trafficSignal', 'onderdeel:BevatVerkeersteken')}
-      }
-      ?trafficSignal a ?signalType.
-      VALUES ?signalType { 
-        mobiliteit:VerkeersbordVerkeersteken
-        mobiliteit:WegmarkeringVerkeersteken
-        mobiliteit:VerkeerslichtVerkeersteken
-      }
-      
-      ${ids ? idValuesClause(ids) : ''}
-      ${uris ? uriValuesClause(uris) : ''}
     } 
     GROUP BY ?id ?uri ?measureConcept
-  `);
+  `,
+    { sudo: true },
+  );
   const bindings = result.results.bindings;
   return responseSchema.parse(
     bindings.map(objectify).map((obj) => ({

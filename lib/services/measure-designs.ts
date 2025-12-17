@@ -8,12 +8,16 @@ import { isSome } from '../utils/option';
 import VariableInstancesService from './variable-instances';
 
 type Args = {
+  administrativeUnit: string;
   arDesignId: string;
 };
 
 const MeasureDesignsService = {
-  getMeasureDesignsForARDesign: async ({ arDesignId }: Args) => {
-    const arDesign = (await getARDesignById(arDesignId)) as
+  getMeasureDesignsForARDesign: async ({
+    arDesignId,
+    administrativeUnit,
+  }: Args) => {
+    const arDesign = (await getARDesignById(arDesignId, administrativeUnit)) as
       | ArDesign
       | undefined;
     if (!arDesign) {

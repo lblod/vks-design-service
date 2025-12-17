@@ -27,19 +27,21 @@ export async function getVariables(opts: GetQueryOpts = {}) {
       ?codelist 
       ?correspondingSignVar
     WHERE {
-      ?uri 
-        a variable:Variable;
-        mu:uuid ?id;
-        dct:type ?type;
-        dct:title ?label.
-      OPTIONAL {
-        ?uri mobiliteit:codelijst ?codelist.
+      GRAPH <http://mu.semte.ch/graphs/awv/ldes> {
+        ?uri 
+          a variable:Variable;
+          mu:uuid ?id;
+          dct:type ?type;
+          dct:title ?label.
+        OPTIONAL {
+          ?uri mobiliteit:codelijst ?codelist.
+        }
+        OPTIONAL {
+    ?correspondingSignVar ext:correspondsTo ?uri.
+        }
+        ${ids ? idValuesClause(ids) : ''}
+        ${uris ? uriValuesClause(uris) : ''}
       }
-      OPTIONAL {
-	?correspondingSignVar ext:correspondsTo ?uri.
-      }
-      ${ids ? idValuesClause(ids) : ''}
-      ${uris ? uriValuesClause(uris) : ''}
     }
   `,
     { endpoint: getMowEndpoint() },

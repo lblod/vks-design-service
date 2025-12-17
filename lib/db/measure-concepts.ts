@@ -30,29 +30,31 @@ export async function getMeasureConcepts(opts: GetQueryOpts = {}) {
       ?templateString
       (GROUP_CONCAT(DISTINCT str(?variable); SEPARATOR=",") as ?variables) 
     WHERE {
-      ?uri 
-        a mobiliteit:Mobiliteitmaatregelconcept;
-        mu:uuid ?id;
-        skos:prefLabel ?label;
-        mobiliteit:heeftVerkeerstekenLijstItem/schema:item ?signalConcept;
-        mobiliteit:Mobiliteitsmaatregelconcept.template ?template.
-      ?template 
-        a mobiliteit:Template;
-        rdf:value ?rawTemplateString;
-        ext:preview ?templateString.
+      GRAPH <http://mu.semte.ch/graphs/awv/ldes> {
+        ?uri 
+          a mobiliteit:Mobiliteitmaatregelconcept;
+          mu:uuid ?id;
+          skos:prefLabel ?label;
+          mobiliteit:heeftVerkeerstekenLijstItem/schema:item ?signalConcept;
+          mobiliteit:Mobiliteitsmaatregelconcept.template ?template.
+        ?template 
+          a mobiliteit:Template;
+          rdf:value ?rawTemplateString;
+          ext:preview ?templateString.
 
-      {
-        ?template mobiliteit:variabele ?variable.
-      }
-      UNION {
-        ?template mobiliteit:variabele/mobiliteit:template/mobiliteit:variabele ?variable.
-      }
-      FILTER NOT EXISTS {
-        ?variable dct:type "instruction".
-      }
+        {
+          ?template mobiliteit:variabele ?variable.
+        }
+        UNION {
+          ?template mobiliteit:variabele/mobiliteit:template/mobiliteit:variabele ?variable.
+        }
+        FILTER NOT EXISTS {
+          ?variable dct:type "instruction".
+        }
 
-      ${ids ? idValuesClause(ids) : ''}
-      ${uris ? uriValuesClause(uris) : ''}
+        ${ids ? idValuesClause(ids) : ''}
+        ${uris ? uriValuesClause(uris) : ''}
+      }
     } 
     GROUP BY ?id ?uri ?label ?rawTemplateString ?templateString
   `,
