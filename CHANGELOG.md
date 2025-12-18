@@ -1,5 +1,11 @@
 # vks-design-service
 
+## 0.2.0
+
+### Minor Changes
+
+- [#11](https://github.com/lblod/vks-design-service/pull/11) [`fef154e`](https://github.com/lblod/vks-design-service/commit/fef154e1673597e8170055436c6346d5859ba8f4) Thanks [@elpoelma](https://github.com/elpoelma)! - Add initial support for authentication and authorization
+
 ## 0.1.0
 
 ### Minor Changes
