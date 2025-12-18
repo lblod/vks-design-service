@@ -13,7 +13,8 @@ import { getTrafficSignalConceptByUri } from './traffic-signal-concepts.ts';
 export async function getTrafficSignals(opts: GetQueryOpts = {}) {
   const { ids, uris } = opts;
 
-  const result = await query(/* sparql */ `
+  const result = await query(
+    /* sparql */ `
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX mobiliteit: <https://data.vlaanderen.be/ns/mobiliteit#>
     PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
@@ -28,22 +29,26 @@ export async function getTrafficSignals(opts: GetQueryOpts = {}) {
       ?uri
       ?trafficSignalConcept
     WHERE {
-      ?uri 
-        a ?type;
-        mu:uuid ?id.
+      GRAPH <http://mu.semte.ch/graphs/awv/ldes> {
+        ?uri 
+          a ?type;
+          mu:uuid ?id.
 
-      VALUES ?type { 
-        mobiliteit:VerkeersbordVerkeersteken
-        mobiliteit:WegmarkeringVerkeersteken
-        mobiliteit:VerkeerslichtVerkeersteken
+        VALUES ?type { 
+          mobiliteit:VerkeersbordVerkeersteken
+          mobiliteit:WegmarkeringVerkeersteken
+          mobiliteit:VerkeerslichtVerkeersteken
+        }
+
+        ${hasVKSRelationship('?uri', '?trafficSignalConcept', 'onderdeel:IsGebaseerdOp')}
+
+        ${ids ? idValuesClause(ids) : ''}
+        ${uris ? uriValuesClause(uris) : ''}
       }
-
-      ${hasVKSRelationship('?uri', '?trafficSignalConcept', 'onderdeel:IsGebaseerdOp')}
-
-      ${ids ? idValuesClause(ids) : ''}
-      ${uris ? uriValuesClause(uris) : ''}
     } 
-  `);
+  `,
+    { sudo: true },
+  );
   const bindings = result.results.bindings;
   const trafficSignals = z
     .array(

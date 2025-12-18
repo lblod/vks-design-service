@@ -1,5 +1,5 @@
 import * as z from 'zod';
-import type { Request, Response } from 'express';
+import type { Request } from 'express';
 import { isoStringToDate } from '../utils/conversions.ts';
 import {
   jsonApiRelationship,
@@ -9,6 +9,7 @@ import {
 import ARDesignsService from '../services/ar-designs.ts';
 import { parseQueryParams } from '../utils/query-params.ts';
 import { generateJsonapiLinks } from '../utils/jsonapi-utils.ts';
+import type { AuthenticatedResponse } from '../types.ts';
 
 const designJsonSchema = jsonApiSchema(
   jsonApiResourceObject({
@@ -29,11 +30,16 @@ const designJsonSchema = jsonApiSchema(
   z.undefined().optional(),
 );
 
-export const getARDesigns = async (req: Request, res: Response) => {
+export const getARDesigns = async (
+  req: Request,
+  res: AuthenticatedResponse,
+) => {
   try {
+    const administrativeUnit = res.locals.administrativeUnit;
     const queryParams = parseQueryParams(req.query);
     const designs = await ARDesignsService.getARDesigns({
       ...queryParams,
+      administrativeUnit,
     });
 
     const result = designJsonSchema.encode({

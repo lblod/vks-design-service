@@ -1,10 +1,11 @@
 import * as z from 'zod';
 import { Router } from 'express';
-import type { Request, Response } from 'express';
+import type { Request } from 'express';
 import { jsonApiResourceObject, jsonApiSchema } from '../../jsonapi-schema.ts';
 import { TRAFFIC_SIGNAL_CONCEPT_TYPES } from '../../constants.ts';
 import MeasureDesignsService from '../../services/measure-designs.ts';
 import { stringToVariableValue } from '../../schemas/variable.ts';
+import type { AuthenticatedResponse } from '../../types.ts';
 
 export const arDesignMeasureDesignsRouter = Router();
 
@@ -118,12 +119,14 @@ const measureDesignsJsonSchema = jsonApiSchema(
 const MeasureDesignsController = {
   getMeasureDesignsForArDesign: async (
     req: Request<{ id: string }>,
-    res: Response,
+    res: AuthenticatedResponse,
   ) => {
     try {
+      const administrativeUnit = res.locals.administrativeUnit;
       const measureDesigns =
         await MeasureDesignsService.getMeasureDesignsForARDesign({
           arDesignId: req.params.id,
+          administrativeUnit,
         });
       if (!measureDesigns) {
         res.status(404);
