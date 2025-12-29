@@ -1,7 +1,11 @@
 import { sparqlEscapeString, sparqlEscapeUri } from 'mu';
 import { hasVKSRelationship } from '../utils/vks-relationship-helpers.ts';
-import { arDesignResult } from '../schemas/ar-design.ts';
-import { paginatedQuery, type GetQueryOpts } from './schema-query.ts';
+import { arDesignResult, type ArDesign } from '../schemas/ar-design.ts';
+import {
+  paginatedQuery,
+  type GetQueryOpts,
+  type QueryResponseMeta,
+} from './schema-query.ts';
 
 export type ArDesignsQueryOpts = GetQueryOpts & { administrativeUnit: string };
 export async function getARDesigns(opts: ArDesignsQueryOpts) {
@@ -10,7 +14,7 @@ export async function getARDesigns(opts: ArDesignsQueryOpts) {
     ? ''
     : `FILTER(CONTAINS(LCASE(?name), LCASE(${sparqlEscapeString(opts.filter.name)})))`;
 
-  return await paginatedQuery({
+  return (await paginatedQuery<typeof arDesignResult>({
     schema: arDesignResult,
     params: opts,
     prefixes: `
@@ -61,7 +65,7 @@ export async function getARDesigns(opts: ArDesignsQueryOpts) {
     filterClause: filterQuery,
     groupByClause: 'GROUP BY ?uri ?name ?date ?id',
     opts: { sudo: true },
-  });
+  })) as { meta: QueryResponseMeta; data: ArDesign[] };
 }
 
 export async function getARDesignById(id: string, administrativeUnit: string) {
