@@ -29,6 +29,7 @@ export async function getMeasureConcepts(opts: GetQueryOpts = {}) {
       ?rawTemplateString 
       ?templateString
       (GROUP_CONCAT(DISTINCT str(?variable); SEPARATOR=",") as ?variables) 
+      (GROUP_CONCAT(DISTINCT str(?signalConcept); SEPARATOR=",") as ?signalConcepts)
     WHERE {
       GRAPH <http://mu.semte.ch/graphs/awv/ldes> {
         ?uri 
@@ -66,6 +67,7 @@ export async function getMeasureConcepts(opts: GetQueryOpts = {}) {
     bindings.map(objectify).map((obj) => ({
       ...obj,
       variables: obj['variables']?.split(','),
+      signalConcepts: obj['signalConcepts']?.split(','),
     })),
   );
 }
