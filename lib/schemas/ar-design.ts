@@ -24,3 +24,4 @@ export const arDesignResult = z.strictObject({
 });
 
 export type ArDesign = z.infer<typeof arDesignSchema>;
+export type ArDesignResult = z.infer<typeof arDesignResult>;

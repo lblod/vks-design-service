@@ -32,6 +32,22 @@ const measureDesignsJsonSchema = jsonApiSchema(
           }),
         ),
       }),
+      'unused-signal-concepts': z.object({
+        data: z.array(
+          z.object({
+            type: z.literal('traffic-signal-concepts'),
+            id: z.string(),
+          }),
+        ),
+      }),
+      'un-included-signal-concepts': z.object({
+        data: z.array(
+          z.object({
+            type: z.literal('traffic-signal-concepts'),
+            id: z.string(),
+          }),
+        ),
+      }),
       'variable-instances': z.object({
         data: z.array(
           z.object({
@@ -140,13 +156,13 @@ const MeasureDesignsController = {
               measureConcept,
               trafficSignals,
               variableInstances,
+              unusedSignalConcepts,
+              unIncludedSignalConcepts,
             } = measureDesign;
             return {
               type: 'measure-designs',
-              id: id,
-              attributes: {
-                uri: uri,
-              },
+              id,
+              attributes: { uri },
               relationships: {
                 'measure-concept': {
                   data: {
@@ -160,6 +176,18 @@ const MeasureDesignsController = {
                     id: trafficSignal.id,
                   })),
                 },
+                'unused-signal-concepts': {
+                  data: unusedSignalConcepts.map((signalConcept) => ({
+                    type: 'traffic-signal-concepts',
+                    id: signalConcept.id,
+                  })),
+                },
+                'un-included-signal-concepts': {
+                  data: unIncludedSignalConcepts.map((signalConcept) => ({
+                    type: 'traffic-signal-concepts',
+                    id: signalConcept.id,
+                  })),
+                },
                 'variable-instances': {
                   data: variableInstances.map((variableInstance) => ({
                     type: 'variable-instances',
@@ -170,8 +198,12 @@ const MeasureDesignsController = {
             };
           }),
           included: measureDesigns.flatMap((measureDesign) => {
-            const { measureConcept, trafficSignals, variableInstances } =
-              measureDesign;
+            const {
+              measureConcept,
+              trafficSignals,
+              variableInstances,
+              unusedSignalConcepts,
+            } = measureDesign;
             return [
               {
                 type: 'measure-concepts',
@@ -247,6 +279,19 @@ const MeasureDesignsController = {
                   },
                 ] as const;
               }),
+              ...unusedSignalConcepts.map(
+                (trafficSignalConcept) =>
+                  ({
+                    type: 'traffic-signal-concepts',
+                    id: trafficSignalConcept.id,
+                    attributes: {
+                      uri: trafficSignalConcept.uri,
+                      type: trafficSignalConcept.type,
+                      code: trafficSignalConcept.code,
+                      meaning: trafficSignalConcept.meaning,
+                    },
+                  }) as const,
+              ),
             ];
           }),
         });

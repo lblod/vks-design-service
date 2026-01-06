@@ -133,7 +133,8 @@ export function idValuesClause(ids: string[], variableName = '?id') {
   if (ids[0]?.startsWith('"')) {
     throw new InvariantError('ids should not be sparqlescaped');
   }
-  return `VALUES ${variableName} { ${ids.map((id) => sparqlEscapeString(id)).join(' ')} }`;
+  const uniqueIds = [...new Set(ids).values()];
+  return `VALUES ${variableName} { ${uniqueIds.map((id) => sparqlEscapeString(id)).join(' ')} }`;
 }
 
 /**
@@ -145,7 +146,8 @@ export function uriValuesClause(uris: string[], variableName = '?uri') {
   if (uris[0]?.startsWith('<')) {
     throw new InvariantError('uris should not be sparqlescaped');
   }
-  return `VALUES ${variableName} { ${uris.map((uri) => sparqlEscapeUri(uri)).join(' ')} }`;
+  const uniqueUris = [...new Set(uris).values()];
+  return `VALUES ${variableName} { ${uniqueUris.map((uri) => sparqlEscapeUri(uri)).join(' ')} }`;
 }
 
 /**
