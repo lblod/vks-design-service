@@ -61,7 +61,8 @@ async function getSignVarValue(
   signVarUri: string,
   signalInstanceUris: string[],
 ) {
-  const result = await query(/* SPARQL */ `
+  const result = await query(
+    /* SPARQL */ `
   PREFIX variables: <https://lblod.data.gift/vocabularies/variables/>
   PREFIX onderdeel: <https://wegenenverkeer.data.vlaanderen.be/ns/onderdeel#>
   PREFIX relatie: <https://wegenenverkeer.data.vlaanderen.be/ns/implementatieelement#RelatieObject.>
@@ -79,7 +80,9 @@ async function getSignVarValue(
       BIND("false" as ?isResource)
     }
   }
-  `);
+  `,
+    { sudo: true },
+  );
   const bindings = result.results.bindings;
 
   const parsed = signVarSchema.parse(bindings.map(objectify))[0];
