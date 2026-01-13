@@ -67,17 +67,18 @@ async function getSignVarValue(
   PREFIX onderdeel: <https://wegenenverkeer.data.vlaanderen.be/ns/onderdeel#>
   PREFIX relatie: <https://wegenenverkeer.data.vlaanderen.be/ns/implementatieelement#RelatieObject.>
   SELECT DISTINCT ?signVar ?value ?isResource WHERE {
-
-    ${uriValuesClause([signVarUri], '?signVar')}
-    ${uriValuesClause(signalInstanceUris, '?signalInstance')}
-    ${hasVKSRelationship('?signVarInstance', '?signVar', 'onderdeel:HeeftWaardeVoor')}
-    ${hasVKSRelationship('?signVarInstance', '?signalInstance', 'onderdeel:HeeftVerkeersteken')}
-     {
-    ?signVarInstance variables:VariableInstanceWithResourceValue.waarde ?value.
-      BIND("true" as ?isResource)
-    } UNION {
-    ?signVarInstance variables:VariableInstanceWithLiteralValue.waarde ?value.
-      BIND("false" as ?isResource)
+    GRAPH <http://mu.semte.ch/graphs/awv/ldes> {
+      ${uriValuesClause([signVarUri], '?signVar')}
+      ${uriValuesClause(signalInstanceUris, '?signalInstance')}
+      ${hasVKSRelationship('?signVarInstance', '?signVar', 'onderdeel:HeeftWaardeVoor')}
+      ${hasVKSRelationship('?signVarInstance', '?signalInstance', 'onderdeel:HeeftVerkeersteken')}
+       {
+      ?signVarInstance variables:VariableInstanceWithResourceValue.waarde ?value.
+	BIND("true" as ?isResource)
+      } UNION {
+      ?signVarInstance variables:VariableInstanceWithLiteralValue.waarde ?value.
+	BIND("false" as ?isResource)
+      }
     }
   }
   `,
