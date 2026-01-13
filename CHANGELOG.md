@@ -1,5 +1,15 @@
 # vks-design-service
 
+## 0.3.0
+
+### Minor Changes
+
+- [#12](https://github.com/lblod/vks-design-service/pull/12) [`a7671e2`](https://github.com/lblod/vks-design-service/commit/a7671e2fccd5095e1b0bdd254e321c7dc41988c8) Thanks [@piemonkey](https://github.com/piemonkey)! - Include details of inconsistencies between the signal concepts in designs and in measure concepts
+
+### Patch Changes
+
+- [#13](https://github.com/lblod/vks-design-service/pull/13) [`7fa8fc6`](https://github.com/lblod/vks-design-service/commit/7fa8fc6e9d01101d656ab737a1da02b367c021f1) Thanks [@abeforgit](https://github.com/abeforgit)! - Make sure to fetch variable instance values as a sudo query
+
 ## 0.2.0
 
 ### Minor Changes
