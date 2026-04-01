@@ -6,6 +6,7 @@ export const trafficSignalConceptSchema = z.strictObject({
   id: z.string(),
   meaning: z.string(),
   code: z.string(),
+  regulatoryNotation: z.string().optional(),
   type: z.literal([
     TRAFFIC_SIGNAL_CONCEPT_TYPES.ROAD_SIGN,
     TRAFFIC_SIGNAL_CONCEPT_TYPES.ROAD_MARKING,

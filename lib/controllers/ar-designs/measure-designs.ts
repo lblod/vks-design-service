@@ -97,6 +97,7 @@ const measureDesignsJsonSchema = jsonApiSchema(
           ]),
           meaning: z.string(),
           code: z.string(),
+          'regulatory-notation': z.string().optional(),
         }),
       }),
       z.object({
@@ -240,6 +241,8 @@ const MeasureDesignsController = {
                       uri: trafficSignalConcept.uri,
                       type: trafficSignalConcept.type,
                       code: trafficSignalConcept.code,
+                      'regulatory-notation':
+                        trafficSignalConcept.regulatoryNotation,
                       meaning: trafficSignalConcept.meaning,
                     },
                   },
@@ -288,6 +291,8 @@ const MeasureDesignsController = {
                       uri: trafficSignalConcept.uri,
                       type: trafficSignalConcept.type,
                       code: trafficSignalConcept.code,
+                      'regulatory-notation':
+                        trafficSignalConcept.regulatoryNotation,
                       meaning: trafficSignalConcept.meaning,
                     },
                   }) as const,

@@ -27,24 +27,27 @@ export async function getTrafficSignalConcepts(opts: GetQueryOpts = {}) {
       ?type
       ?code
       ?meaning
+      ?regulatoryNotation
     WHERE {
-      GRAPH <http://mu.semte.ch/graphs/awv/ldes> {
-        ?uri
-          a mobiliteit:Verkeerstekenconcept;
-          mu:uuid ?id;
-          a ?type;
-          skos:prefLabel ?code;
-          skos:scopeNote ?meaning.
+      ?uri
+	a mobiliteit:Verkeerstekenconcept;
+	mu:uuid ?id;
+	a ?type;
+	skos:prefLabel ?code;
+	skos:scopeNote ?meaning.
 
-        VALUES ?type {
-          ${sparqlEscapeUri(TRAFFIC_SIGNAL_CONCEPT_TYPES.ROAD_SIGN)}
-          ${sparqlEscapeUri(TRAFFIC_SIGNAL_CONCEPT_TYPES.ROAD_MARKING)}
-          ${sparqlEscapeUri(TRAFFIC_SIGNAL_CONCEPT_TYPES.TRAFFIC_LIGHT)}
-        }
+	OPTIONAL {
+	  ?uri ext:regulatoryNotation ?regulatoryNotation.
+	}
 
-        ${ids ? idValuesClause(ids) : ''}
-        ${uris ? uriValuesClause(uris) : ''}
+      VALUES ?type {
+	${sparqlEscapeUri(TRAFFIC_SIGNAL_CONCEPT_TYPES.ROAD_SIGN)}
+	${sparqlEscapeUri(TRAFFIC_SIGNAL_CONCEPT_TYPES.ROAD_MARKING)}
+	${sparqlEscapeUri(TRAFFIC_SIGNAL_CONCEPT_TYPES.TRAFFIC_LIGHT)}
       }
+
+      ${ids ? idValuesClause(ids) : ''}
+      ${uris ? uriValuesClause(uris) : ''}
     }
     GROUP BY ?id ?uri ?code
   `,
