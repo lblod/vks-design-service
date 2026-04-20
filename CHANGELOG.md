@@ -1,5 +1,11 @@
 # vks-design-service
 
+## 0.3.1
+
+### Patch Changes
+
+- [#14](https://github.com/lblod/vks-design-service/pull/14) [`c9d557e`](https://github.com/lblod/vks-design-service/commit/c9d557e449f9439867dff2db931031521b972dab) Thanks [@abeforgit](https://github.com/abeforgit)! - fix: include regulatory notation in signal queries
+
 ## 0.3.0
 
 ### Minor Changes
