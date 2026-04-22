@@ -28,6 +28,7 @@ export async function getTrafficSignals(opts: GetQueryOpts = {}) {
       ?id 
       ?uri
       ?trafficSignalConcept
+      ?designStatus
     WHERE {
       GRAPH <http://mu.semte.ch/graphs/awv/ldes> {
         ?uri 
@@ -41,6 +42,11 @@ export async function getTrafficSignals(opts: GetQueryOpts = {}) {
         }
 
         ${hasVKSRelationship('?uri', '?trafficSignalConcept', 'onderdeel:IsGebaseerdOp')}
+        ${hasVKSRelationship('?uri', '?ontwerpVerkeersteken', 'onderdeel:HeeftOntwerp')}
+
+        OPTIONAL {
+          ?ontwerpVerkeersteken mobiliteit:OntwerpVerkeersteken.status ?designStatus.
+        }
 
         ${ids ? idValuesClause(ids) : ''}
         ${uris ? uriValuesClause(uris) : ''}

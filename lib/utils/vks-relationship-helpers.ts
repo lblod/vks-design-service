@@ -14,7 +14,9 @@ type VKSRelationshipType =
   | 'onderdeel:HeeftWaardeVoor'
   | '<https://wegenenverkeer.data.vlaanderen.be/ns/onderdeel#HeeftWaardeVoor>'
   | 'onderdeel:HeeftBetrokkene'
-  | '<https://wegenenverkeer.data.vlaanderen.be/ns/onderdeel#HeeftBetrokkene>';
+  | '<https://wegenenverkeer.data.vlaanderen.be/ns/onderdeel#HeeftBetrokkene>'
+  | 'onderdeel:HeeftOntwerp'
+  | '<https://wegenenverkeer.data.vlaanderen.be/ns/onderdeel#HeeftOntwerp>';
 
 export function hasVKSRelationship(
   source: string,
