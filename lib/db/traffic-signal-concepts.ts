@@ -64,7 +64,6 @@ export async function getTrafficSignalConcepts(opts: GetQueryOpts = {}) {
     concepts.map(async (concept) => {
       if (concept.type === TRAFFIC_SIGNAL_CONCEPT_TYPES.ROAD_SIGN) {
         const categories = await queryRoadSignCategories(concept.uri);
-        console.log(categories);
         return {
           ...concept,
           categories,

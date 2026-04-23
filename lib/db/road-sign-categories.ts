@@ -8,13 +8,16 @@ export async function queryRoadSignCategories(roadSignConceptUri: string) {
     PREFIX mobiliteit: <https://data.vlaanderen.be/ns/mobiliteit#>
     PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
     PREFIX dct: <http://purl.org/dc/terms/>
+    PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
 
     SELECT DISTINCT
       ?uri
       ?label
+      ?id
     WHERE {
       ?uri a mobiliteit:Verkeersbordcategorie;
-          skos:prefLabel ?label.
+            skos:prefLabel ?label;
+            mu:uuid ?id.
 
       ${roadSignConceptUri ? `${sparqlEscapeUri(roadSignConceptUri)} dct:type ?uri` : ''}
     }
