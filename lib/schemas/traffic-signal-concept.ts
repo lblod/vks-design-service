@@ -1,5 +1,6 @@
 import z from 'zod';
 import { TRAFFIC_SIGNAL_CONCEPT_TYPES } from '../constants';
+import { RoadSignCategorySchema } from './road-sign-category';
 
 export const trafficSignalConceptSchema = z.strictObject({
   uri: z.string(),
@@ -12,6 +13,7 @@ export const trafficSignalConceptSchema = z.strictObject({
     TRAFFIC_SIGNAL_CONCEPT_TYPES.ROAD_MARKING,
     TRAFFIC_SIGNAL_CONCEPT_TYPES.TRAFFIC_LIGHT,
   ]),
+  categories: z.array(RoadSignCategorySchema).default([]),
 });
 
 export type TrafficSignalConcept = z.infer<typeof trafficSignalConceptSchema>;
