@@ -100,14 +100,14 @@ const measureDesignsJsonSchema = jsonApiSchema(
           'regulatory-notation': z.string().optional(),
         }),
         relationships: z.object({
-          'road-sign-category': z.array(
-            z.object({
-              data: z.object({
+          categories: z.object({
+            data: z.array(
+              z.object({
                 type: z.literal('road-sign-category'),
                 id: z.string(),
               }),
-            }),
-          ),
+            ),
+          }),
         }),
       }),
       z.object({
@@ -240,14 +240,12 @@ const MeasureDesignsController = {
                 let roadSignCategories;
                 if (trafficSignalConcept.categories.length) {
                   trafficSignalConceptRelationships = {
-                    'road-sign-category': trafficSignalConcept.categories.map(
-                      (category) => ({
-                        data: {
-                          type: 'road-sign-category',
-                          id: category.id,
-                        },
-                      }),
-                    ),
+                    categories: {
+                      data: trafficSignalConcept.categories.map((category) => ({
+                        type: 'road-sign-category',
+                        id: category.id,
+                      })),
+                    },
                   };
                   roadSignCategories = trafficSignalConcept.categories.map(
                     (category) => ({
@@ -331,14 +329,12 @@ const MeasureDesignsController = {
                 let roadSignCategories;
                 if (trafficSignalConcept.categories.length) {
                   trafficSignalConceptRelationships = {
-                    'road-sign-category': trafficSignalConcept.categories.map(
-                      (category) => ({
-                        data: {
-                          type: 'road-sign-category',
-                          id: category.id,
-                        },
-                      }),
-                    ),
+                    categories: {
+                      data: trafficSignalConcept.categories.map((category) => ({
+                        type: 'road-sign-category',
+                        id: category.id,
+                      })),
+                    },
                   };
                   roadSignCategories = trafficSignalConcept.categories.map(
                     (category) => ({
