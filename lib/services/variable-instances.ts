@@ -55,8 +55,7 @@ const signVarSchema = z
       value: z.string(),
       isResource: z.string(),
     }),
-  )
-  .max(1);
+  );
 async function getSignVarValue(
   signVarUri: string,
   signalInstanceUris: string[],
