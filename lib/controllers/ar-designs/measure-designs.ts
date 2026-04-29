@@ -75,6 +75,7 @@ const measureDesignsJsonSchema = jsonApiSchema(
         id: z.string(),
         attributes: z.object({
           uri: z.string(),
+          'design-status': z.string().optional(),
         }),
         relationships: z.object({
           'traffic-signal-concept': z.object({
@@ -224,6 +225,7 @@ const MeasureDesignsController = {
                     id: trafficSignal.id,
                     attributes: {
                       uri: trafficSignal.uri,
+                      'design-status': trafficSignal.designStatus,
                     },
                     relationships: {
                       'traffic-signal-concept': {
