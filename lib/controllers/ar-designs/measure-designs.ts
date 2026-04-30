@@ -100,6 +100,24 @@ const measureDesignsJsonSchema = jsonApiSchema(
           code: z.string(),
           'regulatory-notation': z.string().optional(),
         }),
+        relationships: z.object({
+          categories: z.object({
+            data: z.array(
+              z.object({
+                type: z.literal('road-sign-category'),
+                id: z.string(),
+              }),
+            ),
+          }),
+        }),
+      }),
+      z.object({
+        type: z.literal('road-sign-category'),
+        id: z.string(),
+        attributes: z.object({
+          uri: z.string(),
+          label: stringToVariableValue.optional(),
+        }),
       }),
       z.object({
         type: z.literal('variable-instances'),
@@ -219,6 +237,28 @@ const MeasureDesignsController = {
               },
               ...trafficSignals.flatMap((trafficSignal) => {
                 const { trafficSignalConcept } = trafficSignal;
+                let trafficSignalConceptRelationships;
+                let roadSignCategories;
+                if (trafficSignalConcept.categories.length) {
+                  trafficSignalConceptRelationships = {
+                    categories: {
+                      data: trafficSignalConcept.categories.map((category) => ({
+                        type: 'road-sign-category',
+                        id: category.id,
+                      })),
+                    },
+                  };
+                  roadSignCategories = trafficSignalConcept.categories.map(
+                    (category) => ({
+                      type: 'road-sign-category',
+                      id: category.id,
+                      attributes: {
+                        uri: category.uri,
+                        label: category.label,
+                      },
+                    }),
+                  );
+                }
                 return [
                   {
                     type: 'traffic-signals',
@@ -247,7 +287,9 @@ const MeasureDesignsController = {
                         trafficSignalConcept.regulatoryNotation,
                       meaning: trafficSignalConcept.meaning,
                     },
+                    relationships: trafficSignalConceptRelationships,
                   },
+                  ...roadSignCategories,
                 ] as const;
               }),
               ...variableInstances.flatMap((variableInstance) => {
@@ -284,9 +326,31 @@ const MeasureDesignsController = {
                   },
                 ] as const;
               }),
-              ...unusedSignalConcepts.map(
-                (trafficSignalConcept) =>
-                  ({
+              ...unusedSignalConcepts.flatMap((trafficSignalConcept) => {
+                let trafficSignalConceptRelationships;
+                let roadSignCategories;
+                if (trafficSignalConcept.categories.length) {
+                  trafficSignalConceptRelationships = {
+                    categories: {
+                      data: trafficSignalConcept.categories.map((category) => ({
+                        type: 'road-sign-category',
+                        id: category.id,
+                      })),
+                    },
+                  };
+                  roadSignCategories = trafficSignalConcept.categories.map(
+                    (category) => ({
+                      type: 'road-sign-category',
+                      id: category.id,
+                      attributes: {
+                        uri: category.uri,
+                        label: category.label,
+                      },
+                    }),
+                  );
+                }
+                return [
+                  {
                     type: 'traffic-signal-concepts',
                     id: trafficSignalConcept.id,
                     attributes: {
@@ -297,8 +361,11 @@ const MeasureDesignsController = {
                         trafficSignalConcept.regulatoryNotation,
                       meaning: trafficSignalConcept.meaning,
                     },
-                  }) as const,
-              ),
+                    relationships: trafficSignalConceptRelationships,
+                  },
+                  ...roadSignCategories,
+                ];
+              }),
             ];
           }),
         });

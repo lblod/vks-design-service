@@ -1,4 +1,3 @@
-import * as z from 'zod';
 import {
   idValuesClause,
   uriValuesClause,
@@ -9,6 +8,8 @@ import { query, sparqlEscapeUri } from 'mu';
 import { trafficSignalConceptSchema } from '../schemas/traffic-signal-concept.ts';
 import { objectify } from '../utils/sparql.ts';
 import { TRAFFIC_SIGNAL_CONCEPT_TYPES } from '../constants.ts';
+import { queryRoadSignCategories } from './road-sign-categories';
+import * as z from 'zod';
 
 export async function getTrafficSignalConcepts(opts: GetQueryOpts = {}) {
   const { ids, uris } = opts;
@@ -56,7 +57,23 @@ export async function getTrafficSignalConcepts(opts: GetQueryOpts = {}) {
     },
   );
   const bindings = response.results.bindings;
-  return z.array(trafficSignalConceptSchema).parse(bindings.map(objectify));
+  const concepts = z
+    .array(trafficSignalConceptSchema)
+    .parse(bindings.map(objectify));
+  const conceptsWithCategories = await Promise.all(
+    concepts.map(async (concept) => {
+      if (concept.type === TRAFFIC_SIGNAL_CONCEPT_TYPES.ROAD_SIGN) {
+        const categories = await queryRoadSignCategories(concept.uri);
+        return {
+          ...concept,
+          categories,
+        };
+      } else {
+        return concept;
+      }
+    }),
+  );
+  return conceptsWithCategories;
 }
 
 export async function getTrafficSignalConceptByUri(uri: string) {
