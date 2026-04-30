@@ -48,15 +48,24 @@ const VariableInstancesService = {
   },
 };
 export default VariableInstancesService;
-const signVarSchema = z
-  .array(
-    z.object({
-      signVar: z.string(),
-      value: z.string(),
-      isResource: z.string(),
-    }),
-  )
-  .max(1);
+
+// WARNING: this schema used to check that only one sign-variable instance was available for a given measure-template-variable.
+// We've since discovered that this is a fundamental flaw in the design of the measure-template system:
+// Consider the case where in a single street, 2 signs with a distance limit (aka "You can park for the next X meters") are implemented in 2 spots
+// Normally, a measure that's implemented in 2 places means 1 article, with the 2 locations written out in the "plaatsbeschrijving".
+// However, in this case, that' doesn't work, cause each of the locations may have a different value for X, and the idea falls apart.
+// Luckily this is rare, and there is a workaround by simply making a separate measure article, or by manually adjusting the text as the user sees fit.
+// But it's not ideal. In any case, we can't error on this situation as it may legitimately occur.
+const signVarSchema = z.array(
+  z.object({
+    signVar: z.string(),
+    value: z.string(),
+    isResource: z.string(),
+  }),
+);
+// The zod limit used to look like this:
+//.max(1);
+
 async function getSignVarValue(
   signVarUri: string,
   signalInstanceUris: string[],
