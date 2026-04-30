@@ -1,5 +1,13 @@
 # vks-design-service
 
+## 0.4.0
+
+### Minor Changes
+
+- [#16](https://github.com/lblod/vks-design-service/pull/16) [`354066a`](https://github.com/lblod/vks-design-service/commit/354066af7ab31e740e62065281d5559dacbdce05) Thanks [@lagartoverde](https://github.com/lagartoverde)! - Add roadsigns concepts to the data returned by the service
+
+- [#15](https://github.com/lblod/vks-design-service/pull/15) [`93f392e`](https://github.com/lblod/vks-design-service/commit/93f392ea3ea1284b0cbfbf05e6e9dd69738356cd) Thanks [@piemonkey](https://github.com/piemonkey)! - Add design-status field to traffic signals
+
 ## 0.3.1
 
 ### Patch Changes
