@@ -1,5 +1,11 @@
 # vks-design-service
 
+## 0.4.1
+
+### Patch Changes
+
+- [`d161c5f`](https://github.com/lblod/vks-design-service/commit/d161c5ff8b2e76c3e76e621bf070f5a21a779364) Thanks [@abeforgit](https://github.com/abeforgit)! - Fix crash when a sign has no categories
+
 ## 0.4.0
 
 ### Minor Changes
