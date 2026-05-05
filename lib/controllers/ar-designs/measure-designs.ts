@@ -9,6 +9,26 @@ import type { AuthenticatedResponse } from '../../types.ts';
 
 export const arDesignMeasureDesignsRouter = Router();
 
+const roadSignCategoryData = z.object({
+  type: z.literal('road-sign-category'),
+  id: z.string(),
+  attributes: z.object({
+    uri: z.string(),
+    label: stringToVariableValue.optional(),
+  }),
+});
+type RoadSignCategoryData = z.infer<typeof roadSignCategoryData>;
+const roadSignCategoryRelationshipData = z.object({
+  type: z.literal('road-sign-category'),
+  id: z.string(),
+});
+type RoadSignCategoryRelationshipData = z.infer<
+  typeof roadSignCategoryRelationshipData
+>;
+const roadSignCategoryRelationship = z.object({
+  data: z.array(roadSignCategoryRelationshipData),
+});
+
 const measureDesignsJsonSchema = jsonApiSchema(
   jsonApiResourceObject({
     type: 'measure-designs',
@@ -101,24 +121,10 @@ const measureDesignsJsonSchema = jsonApiSchema(
           'regulatory-notation': z.string().optional(),
         }),
         relationships: z.object({
-          categories: z.object({
-            data: z.array(
-              z.object({
-                type: z.literal('road-sign-category'),
-                id: z.string(),
-              }),
-            ),
-          }),
+          categories: roadSignCategoryRelationship,
         }),
       }),
-      z.object({
-        type: z.literal('road-sign-category'),
-        id: z.string(),
-        attributes: z.object({
-          uri: z.string(),
-          label: stringToVariableValue.optional(),
-        }),
-      }),
+      roadSignCategoryData,
       z.object({
         type: z.literal('variable-instances'),
         id: z.string(),
@@ -151,7 +157,6 @@ const measureDesignsJsonSchema = jsonApiSchema(
     ]),
   ),
 );
-
 const MeasureDesignsController = {
   getMeasureDesignsForArDesign: async (
     req: Request<{ id: string }>,
@@ -237,17 +242,15 @@ const MeasureDesignsController = {
               },
               ...trafficSignals.flatMap((trafficSignal) => {
                 const { trafficSignalConcept } = trafficSignal;
-                let trafficSignalConceptRelationships;
-                let roadSignCategories;
+                let roadSignCategoryRelationships: RoadSignCategoryRelationshipData[] =
+                  [];
+                let roadSignCategories: RoadSignCategoryData[] = [];
                 if (trafficSignalConcept.categories.length) {
-                  trafficSignalConceptRelationships = {
-                    categories: {
-                      data: trafficSignalConcept.categories.map((category) => ({
-                        type: 'road-sign-category',
-                        id: category.id,
-                      })),
-                    },
-                  };
+                  roadSignCategoryRelationships =
+                    trafficSignalConcept.categories.map((category) => ({
+                      type: 'road-sign-category',
+                      id: category.id,
+                    }));
                   roadSignCategories = trafficSignalConcept.categories.map(
                     (category) => ({
                       type: 'road-sign-category',
@@ -287,7 +290,11 @@ const MeasureDesignsController = {
                         trafficSignalConcept.regulatoryNotation,
                       meaning: trafficSignalConcept.meaning,
                     },
-                    relationships: trafficSignalConceptRelationships,
+                    relationships: {
+                      categories: {
+                        data: roadSignCategoryRelationships,
+                      },
+                    },
                   },
                   ...roadSignCategories,
                 ] as const;
@@ -328,7 +335,7 @@ const MeasureDesignsController = {
               }),
               ...unusedSignalConcepts.flatMap((trafficSignalConcept) => {
                 let trafficSignalConceptRelationships;
-                let roadSignCategories;
+                let roadSignCategories: RoadSignCategoryData[] = [];
                 if (trafficSignalConcept.categories.length) {
                   trafficSignalConceptRelationships = {
                     categories: {
