@@ -2,7 +2,7 @@ import z from 'zod';
 import { isoStringToDate, stringToNumber } from '../utils/conversions.ts';
 import { getMowEndpoint } from '../environment.ts';
 import { jsonApiResourceObject } from '../jsonapi-schema.ts';
-
+export const VARIABLE_TYPE = 'variables' as const;
 export const stringToVariableValue = z.union([
   isoStringToDate,
   stringToNumber,
@@ -32,8 +32,8 @@ export const variableSchema = z.strictObject({
 
 export type Variable = z.infer<typeof variableSchema>;
 export const variableJsonSchema = jsonApiResourceObject({
-  type: 'variables',
-  attributes: variableSchema.omit({ id: true }),
+  type: VARIABLE_TYPE,
+  attributes: variableSchema,
   relationships: z.undefined().optional(),
 });
 
@@ -41,7 +41,7 @@ export function variableToJson(
   variable: Variable,
 ): z.infer<typeof variableJsonSchema> {
   return variableJsonSchema.decode({
-    type: 'variables',
+    type: VARIABLE_TYPE,
     id: variable.id,
     attributes: {
       label: variable.label,

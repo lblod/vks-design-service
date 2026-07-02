@@ -1,8 +1,15 @@
-import { kebabKeys, type KebabKeys } from 'string-ts';
+import { kebabKeys, type KebabCase, type KebabKeys } from 'string-ts';
 import * as z from 'zod';
-export function jsonApiRelationshipData<T extends string>(type: T) {
+export function jsonApiRelationshipData<T extends KebabCase<string>>(type: T) {
   return z.object({
     data: z.object({ type: z.literal(type), id: z.string() }),
+  });
+}
+export function jsonApiManyRelationshipData<T extends KebabCase<string>>(
+  type: T,
+) {
+  return z.object({
+    data: z.array(z.object({ type: z.literal(type), id: z.string() })),
   });
 }
 export interface JsonApiResourceConfig<T, A, R> {
@@ -14,7 +21,7 @@ export interface JsonApiResourceConfig<T, A, R> {
  * Defines the shape of the "data" of a jsonAPI document
  */
 export function jsonApiResourceObject<
-  T extends string,
+  T extends KebabCase<string>,
   A extends z.ZodObject,
   R extends z.ZodObject | z.ZodOptional<z.ZodUndefined>,
 >({ type, attributes, relationships }: JsonApiResourceConfig<T, A, R>) {
@@ -22,10 +29,12 @@ export function jsonApiResourceObject<
     .object({
       id: z.string(),
       type: z.literal(type),
-      attributes: z.object(kebabKeys(attributes.shape)) as z.ZodObject<
-        KebabKeys<A['shape']>
-      >,
-      relationships,
+      attributes: z
+        .object(kebabKeys(attributes.shape))
+        .omit({ id: true }) as z.ZodObject<KebabKeys<Omit<A['shape'], 'id'>>>,
+      relationships: relationships as R extends z.ZodObject
+        ? z.ZodObject<KebabKeys<R['shape']>>
+        : R,
       links: z.object().optional(),
     })
     .strict();

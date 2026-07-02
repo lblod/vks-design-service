@@ -1,4 +1,4 @@
-import { RoadSignCategorySchema } from '../schemas/road-sign-category.ts';
+import { roadSignCategorySchema } from '../schemas/road-sign-category.ts';
 import { query, sparqlEscapeUri } from 'mu';
 import { objectify } from '../utils/sparql.ts';
 import { getMowEndpoint } from '../environment.ts';
@@ -26,5 +26,5 @@ export async function queryRoadSignCategories(roadSignConceptUri: string) {
     endpoint: getMowEndpoint(),
   });
   const bindings = queryResult.results.bindings;
-  return RoadSignCategorySchema.array().parse(bindings.map(objectify));
+  return roadSignCategorySchema.array().parse(bindings.map(objectify));
 }
