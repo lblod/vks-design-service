@@ -3,30 +3,18 @@ import { Router } from 'express';
 import type { Request } from 'express';
 import { jsonApiSchema } from '../../jsonapi-schema.ts';
 import MeasureDesignsService from '../../services/measure-designs.ts';
-import { variableJsonSchema, variableToJson } from '../../schemas/variable.ts';
+import { variableJsonSchema } from '../../schemas/variable.ts';
 import type { AuthenticatedResponse } from '../../types.ts';
+import { variableInstanceJsonSchema } from '../../schemas/variable-instance.ts';
+import { trafficSignalConceptJsonSchema } from '../../schemas/traffic-signal-concept.ts';
+import { roadSignCategoryJsonSchema } from '../../schemas/road-sign-category.ts';
+import { trafficSignalJsonSchema } from '../../schemas/traffic-signal.ts';
+import { measureConceptJsonSchema } from '../../schemas/measure-concept.ts';
 import {
-  variableInstanceJsonSchema,
-  variableInstanceToJson,
-} from '../../schemas/variable-instance.ts';
-import {
-  trafficSignalConceptJsonSchema,
-  trafficSignalConceptToJson,
-} from '../../schemas/traffic-signal-concept.ts';
-import {
-  roadSignCategoryJsonSchema,
-  roadSignCategoryToJson,
-  type RoadsignCategoryJson,
-} from '../../schemas/road-sign-category.ts';
-import {
-  trafficSignalJsonSchema,
-  trafficSignalToJson,
-} from '../../schemas/traffic-signal.ts';
-import {
-  measureConceptJsonSchema,
-  measureConceptToJson,
-} from '../../schemas/measure-concept.ts';
-import { measureDesignJsonSchema } from '../../schemas/measure-design.ts';
+  includesForMeasureDesign,
+  measureDesignJsonSchema,
+  measureDesignToJson,
+} from '../../schemas/measure-design.ts';
 
 export const arDesignMeasureDesignsRouter = Router();
 
@@ -60,99 +48,8 @@ const MeasureDesignsController = {
         res.send();
       } else {
         const jsonResponse = measureDesignsJsonSchema.safeEncode({
-          data: measureDesigns.map((measureDesign) => {
-            const {
-              id,
-              uri,
-              measureConcept,
-              trafficSignals,
-              variableInstances,
-              unusedSignalConcepts,
-              unIncludedSignalConcepts,
-            } = measureDesign;
-            return {
-              type: 'measure-designs',
-              id,
-              attributes: { uri },
-              relationships: {
-                'measure-concept': {
-                  data: {
-                    type: 'measure-concepts',
-                    id: measureConcept.id,
-                  },
-                },
-                'traffic-signals': {
-                  data: trafficSignals.map((trafficSignal) => ({
-                    type: 'traffic-signals',
-                    id: trafficSignal.id,
-                  })),
-                },
-                'unused-signal-concepts': {
-                  data: unusedSignalConcepts.map((signalConcept) => ({
-                    type: 'traffic-signal-concepts',
-                    id: signalConcept.id,
-                  })),
-                },
-                'un-included-signal-concepts': {
-                  data: unIncludedSignalConcepts.map((signalConcept) => ({
-                    type: 'traffic-signal-concepts',
-                    id: signalConcept.id,
-                  })),
-                },
-                'variable-instances': {
-                  data: variableInstances.map((variableInstance) => ({
-                    type: 'variable-instances',
-                    id: variableInstance.id,
-                  })),
-                },
-              },
-            };
-          }),
-          included: measureDesigns.flatMap((measureDesign) => {
-            const {
-              measureConcept,
-              trafficSignals,
-              variableInstances,
-              unusedSignalConcepts,
-            } = measureDesign;
-            return [
-              measureConceptToJson(measureConcept),
-              ...trafficSignals.flatMap((trafficSignal) => {
-                const { trafficSignalConcept } = trafficSignal;
-                let roadSignCategories: RoadsignCategoryJson[] = [];
-                if (trafficSignalConcept.categories.length) {
-                  roadSignCategories = trafficSignalConcept.categories.map(
-                    roadSignCategoryToJson,
-                  );
-                }
-                return [
-                  trafficSignalToJson(trafficSignal),
-                  trafficSignalConceptToJson(trafficSignalConcept),
-                  ...roadSignCategories,
-                ] as const;
-              }),
-              ...variableInstances.flatMap((variableInstance) => {
-                const { variable } = variableInstance;
-                const rslt = [
-                  variableInstanceToJson(variableInstance),
-                  variableToJson(variable),
-                ] as const;
-                return rslt;
-              }),
-              ...unusedSignalConcepts.flatMap((trafficSignalConcept) => {
-                let roadSignCategories: RoadsignCategoryJson[] = [];
-                if (trafficSignalConcept.categories.length) {
-                  roadSignCategories = trafficSignalConcept.categories.map(
-                    roadSignCategoryToJson,
-                  );
-                }
-                return [
-                  trafficSignalConceptToJson(trafficSignalConcept),
-                  ...roadSignCategories,
-                ];
-              }),
-            ];
-          }),
+          data: measureDesigns.map(measureDesignToJson),
+          included: measureDesigns.flatMap(includesForMeasureDesign),
         });
         if (jsonResponse.success) {
           res.status(200);

@@ -3,6 +3,7 @@ import { TRAFFIC_SIGNAL_CONCEPT_TYPES } from '../constants';
 import {
   ROAD_SIGN_CATEGORY_TYPE,
   roadSignCategorySchema,
+  roadSignCategoryToJson,
 } from './road-sign-category';
 import {
   jsonApiManyRelationshipData,
@@ -57,4 +58,12 @@ export function trafficSignalConceptToJson(
       },
     },
   });
+}
+export function trafficSignalConceptWithIncludes(
+  trafficSignalConcept: TrafficSignalConcept,
+) {
+  return [
+    trafficSignalConceptToJson(trafficSignalConcept),
+    ...trafficSignalConcept.categories.map(roadSignCategoryToJson),
+  ];
 }

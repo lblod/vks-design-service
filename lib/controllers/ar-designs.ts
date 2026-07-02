@@ -19,6 +19,7 @@ const designJsonSchema = jsonApiSchema(
         name: z.string(),
         date: z.iso.datetime({ offset: true }),
         uri: z.string(),
+        id: z.string(),
       })
       .strict(),
     relationships: z

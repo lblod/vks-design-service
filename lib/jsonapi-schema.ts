@@ -22,19 +22,24 @@ export interface JsonApiResourceConfig<T, A, R> {
  */
 export function jsonApiResourceObject<
   T extends KebabCase<string>,
-  A extends z.ZodObject,
+  A extends z.ZodObject<{ id: z.ZodString } & { [key: string]: z.ZodType }>,
   R extends z.ZodObject | z.ZodOptional<z.ZodUndefined>,
 >({ type, attributes, relationships }: JsonApiResourceConfig<T, A, R>) {
+  const rels = (
+    relationships.type === 'object'
+      ? z.object(kebabKeys(relationships.shape))
+      : relationships
+  ) as R extends z.ZodObject ? z.ZodObject<KebabKeys<R['shape']>> : R;
   return z
     .object({
       id: z.string(),
       type: z.literal(type),
       attributes: z
         .object(kebabKeys(attributes.shape))
-        .omit({ id: true }) as z.ZodObject<KebabKeys<Omit<A['shape'], 'id'>>>,
-      relationships: relationships as R extends z.ZodObject
-        ? z.ZodObject<KebabKeys<R['shape']>>
-        : R,
+        .omit({ id: true }) as unknown as z.ZodObject<
+        KebabKeys<Omit<A['shape'], 'id'>>
+      >,
+      relationships: rels,
       links: z.object().optional(),
     })
     .strict();

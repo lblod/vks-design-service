@@ -1,13 +1,23 @@
 import z from 'zod';
-import { MEASURE_CONCEPT_TYPE, measureConceptSchema } from './measure-concept';
+import {
+  MEASURE_CONCEPT_TYPE,
+  measureConceptSchema,
+  measureConceptToJson,
+} from './measure-concept';
 import {
   VARIABLE_INSTANCE_TYPE,
   variableInstanceSchema,
+  variableInstanceWithIncludes,
 } from './variable-instance';
-import { TRAFFIC_SIGNAL_TYPE, trafficSignalSchema } from './traffic-signal';
+import {
+  TRAFFIC_SIGNAL_TYPE,
+  trafficSignalSchema,
+  trafficSignalWithIncludes,
+} from './traffic-signal';
 import {
   TRAFFIC_SIGNAL_CONCEPT_TYPE,
   trafficSignalConceptSchema,
+  trafficSignalConceptWithIncludes,
 } from './traffic-signal-concept';
 import {
   jsonApiManyRelationshipData,
@@ -48,3 +58,60 @@ export const measureDesignJsonSchema = jsonApiResourceObject({
     ),
   }),
 });
+
+export function measureDesignToJson(measureDesign: MeasureDesign) {
+  return measureDesignJsonSchema.decode({
+    type: MEASURE_DESIGN_TYPE,
+    id: measureDesign.id,
+    attributes: {
+      uri: measureDesign.uri,
+    },
+    relationships: {
+      'measure-concept': {
+        data: {
+          id: measureDesign.measureConcept.id,
+          type: MEASURE_CONCEPT_TYPE,
+        },
+      },
+      'traffic-signals': {
+        data: measureDesign.trafficSignals.map((ts) => ({
+          id: ts.id,
+          type: TRAFFIC_SIGNAL_TYPE,
+        })),
+      },
+      'un-included-signal-concepts': {
+        data: measureDesign.unIncludedSignalConcepts.map((sc) => ({
+          id: sc.id,
+          type: TRAFFIC_SIGNAL_CONCEPT_TYPE,
+        })),
+      },
+      'unused-signal-concepts': {
+        data: measureDesign.unusedSignalConcepts.map((sc) => ({
+          id: sc.id,
+          type: TRAFFIC_SIGNAL_CONCEPT_TYPE,
+        })),
+      },
+      'variable-instances': {
+        data: measureDesign.variableInstances.map((vi) => ({
+          id: vi.id,
+          type: VARIABLE_INSTANCE_TYPE,
+        })),
+      },
+    },
+  });
+}
+
+export function includesForMeasureDesign(measureDesign: MeasureDesign) {
+  const {
+    measureConcept,
+    trafficSignals,
+    variableInstances,
+    unusedSignalConcepts,
+  } = measureDesign;
+  return [
+    measureConceptToJson(measureConcept),
+    ...trafficSignals.flatMap(trafficSignalWithIncludes),
+    ...variableInstances.flatMap(variableInstanceWithIncludes),
+    ...unusedSignalConcepts.flatMap(trafficSignalConceptWithIncludes),
+  ];
+}

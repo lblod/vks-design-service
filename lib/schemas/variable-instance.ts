@@ -4,6 +4,7 @@ import {
   stvCodec,
   VARIABLE_TYPE,
   variableSchema,
+  variableToJson,
 } from './variable.ts';
 import {
   jsonApiRelationshipData,
@@ -52,4 +53,13 @@ export function variableInstanceToJson(
   });
 
   return rslt;
+}
+
+export function variableInstanceWithIncludes(
+  variableInstance: VariableInstance,
+) {
+  return [
+    variableInstanceToJson(variableInstance),
+    variableToJson(variableInstance.variable),
+  ];
 }

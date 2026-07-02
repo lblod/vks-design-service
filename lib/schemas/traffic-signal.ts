@@ -2,6 +2,7 @@ import z from 'zod';
 import {
   TRAFFIC_SIGNAL_CONCEPT_TYPE,
   trafficSignalConceptSchema,
+  trafficSignalConceptWithIncludes,
 } from './traffic-signal-concept';
 import {
   jsonApiRelationshipData,
@@ -42,4 +43,10 @@ export function trafficSignalToJson(trafficSignal: TrafficSignal) {
       },
     },
   });
+}
+export function trafficSignalWithIncludes(trafficSignal: TrafficSignal) {
+  return [
+    trafficSignalToJson(trafficSignal),
+    ...trafficSignalConceptWithIncludes(trafficSignal.trafficSignalConcept),
+  ];
 }
