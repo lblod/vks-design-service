@@ -4,8 +4,12 @@ import type { Request } from 'express';
 import { jsonApiResourceObject, jsonApiSchema } from '../../jsonapi-schema.ts';
 import { TRAFFIC_SIGNAL_CONCEPT_TYPES } from '../../constants.ts';
 import MeasureDesignsService from '../../services/measure-designs.ts';
-import { stringToVariableValue } from '../../schemas/variable.ts';
+import {
+  stringToVariableValue,
+  variableToJson,
+} from '../../schemas/variable.ts';
 import type { AuthenticatedResponse } from '../../types.ts';
+import { variableInstanceToJson } from '../../schemas/variable-instance.ts';
 
 export const arDesignMeasureDesignsRouter = Router();
 
@@ -301,37 +305,11 @@ const MeasureDesignsController = {
               }),
               ...variableInstances.flatMap((variableInstance) => {
                 const { variable } = variableInstance;
-                return [
-                  {
-                    type: 'variable-instances',
-                    id: variableInstance.id,
-                    attributes: {
-                      uri: variableInstance.uri,
-                      value: variableInstance.value,
-                      'value-label': variableInstance.valueLabel,
-                    },
-                    relationships: {
-                      variable: {
-                        data: {
-                          type: 'variables',
-                          id: variable.id,
-                        },
-                      },
-                    },
-                  },
-                  {
-                    type: 'variables',
-                    id: variable.id,
-                    attributes: {
-                      uri: variable.uri,
-                      label: variable.label,
-                      type: variable.type,
-                      source: variable.source,
-                      defaultValue: variable.defaultValue,
-                      codelist: variable.codelist,
-                    },
-                  },
+                const rslt = [
+                  variableInstanceToJson(variableInstance),
+                  variableToJson(variable),
                 ] as const;
+                return rslt;
               }),
               ...unusedSignalConcepts.flatMap((trafficSignalConcept) => {
                 let trafficSignalConceptRelationships;
@@ -380,6 +358,7 @@ const MeasureDesignsController = {
           res.status(200);
           res.send(jsonResponse.data);
         } else {
+          console.log(z.prettifyError(jsonResponse.error));
           res.status(500);
           res.send({ error: 'failed to encode into jsonapi' });
         }

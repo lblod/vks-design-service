@@ -1,4 +1,10 @@
+import { kebabKeys, type KebabKeys } from 'string-ts';
 import * as z from 'zod';
+export function jsonApiRelationshipData<T extends string>(type: T) {
+  return z.object({
+    data: z.object({ type: z.literal(type), id: z.string() }),
+  });
+}
 export interface JsonApiResourceConfig<T, A, R> {
   type: T;
   attributes: A;
@@ -9,14 +15,16 @@ export interface JsonApiResourceConfig<T, A, R> {
  */
 export function jsonApiResourceObject<
   T extends string,
-  A extends z.ZodType,
-  R extends z.ZodType,
+  A extends z.ZodObject,
+  R extends z.ZodObject | z.ZodOptional<z.ZodUndefined>,
 >({ type, attributes, relationships }: JsonApiResourceConfig<T, A, R>) {
   return z
     .object({
       id: z.string(),
       type: z.literal(type),
-      attributes,
+      attributes: z.object(kebabKeys(attributes.shape)) as z.ZodObject<
+        KebabKeys<A['shape']>
+      >,
       relationships,
       links: z.object().optional(),
     })

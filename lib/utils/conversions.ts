@@ -14,7 +14,7 @@ export const stringToNumber = z.codec(
   z.number(),
   {
     decode: (str) => Number.parseFloat(str),
-    encode: (num) => num.toString(),
+    encode: (num) => num.toString(10),
   },
 );
 
@@ -23,6 +23,6 @@ export const stringToInteger = z.codec(
   z.number(),
   {
     decode: (str) => Number.parseInt(str, 10),
-    encode: (num) => num.toString(),
+    encode: (num) => num.toString(10),
   },
 );
