@@ -1,159 +1,33 @@
 import * as z from 'zod';
 import { Router } from 'express';
 import type { Request } from 'express';
-import { jsonApiResourceObject, jsonApiSchema } from '../../jsonapi-schema.ts';
-import { TRAFFIC_SIGNAL_CONCEPT_TYPES } from '../../constants.ts';
+import { jsonApiSchema } from '../../jsonapi-schema.ts';
 import MeasureDesignsService from '../../services/measure-designs.ts';
-import { stringToVariableValue } from '../../schemas/variable.ts';
+import { variableJsonSchema } from '../../schemas/variable.ts';
 import type { AuthenticatedResponse } from '../../types.ts';
+import { variableInstanceJsonSchema } from '../../schemas/variable-instance.ts';
+import { trafficSignalConceptJsonSchema } from '../../schemas/traffic-signal-concept.ts';
+import { roadSignCategoryJsonSchema } from '../../schemas/road-sign-category.ts';
+import { trafficSignalJsonSchema } from '../../schemas/traffic-signal.ts';
+import { measureConceptJsonSchema } from '../../schemas/measure-concept.ts';
+import {
+  includesForMeasureDesign,
+  measureDesignJsonSchema,
+  measureDesignToJson,
+} from '../../schemas/measure-design.ts';
 
 export const arDesignMeasureDesignsRouter = Router();
 
-const roadSignCategoryData = z.object({
-  type: z.literal('road-sign-category'),
-  id: z.string(),
-  attributes: z.object({
-    uri: z.string(),
-    label: stringToVariableValue.optional(),
-  }),
-});
-type RoadSignCategoryData = z.infer<typeof roadSignCategoryData>;
-const roadSignCategoryRelationshipData = z.object({
-  type: z.literal('road-sign-category'),
-  id: z.string(),
-});
-type RoadSignCategoryRelationshipData = z.infer<
-  typeof roadSignCategoryRelationshipData
->;
-const roadSignCategoryRelationship = z.object({
-  data: z.array(roadSignCategoryRelationshipData),
-});
-
 const measureDesignsJsonSchema = jsonApiSchema(
-  jsonApiResourceObject({
-    type: 'measure-designs',
-    attributes: z
-      .object({
-        uri: z.string(),
-      })
-      .strict(),
-    relationships: z.object({
-      'measure-concept': z.object({
-        data: z.object({
-          type: z.literal('measure-concepts'),
-          id: z.string(),
-        }),
-      }),
-      'traffic-signals': z.object({
-        data: z.array(
-          z.object({
-            type: z.literal('traffic-signals'),
-            id: z.string(),
-          }),
-        ),
-      }),
-      'unused-signal-concepts': z.object({
-        data: z.array(
-          z.object({
-            type: z.literal('traffic-signal-concepts'),
-            id: z.string(),
-          }),
-        ),
-      }),
-      'un-included-signal-concepts': z.object({
-        data: z.array(
-          z.object({
-            type: z.literal('traffic-signal-concepts'),
-            id: z.string(),
-          }),
-        ),
-      }),
-      'variable-instances': z.object({
-        data: z.array(
-          z.object({
-            type: z.literal('variable-instances'),
-            id: z.string(),
-          }),
-        ),
-      }),
-    }),
-  }),
+  measureDesignJsonSchema,
   z.array(
     z.union([
-      z.object({
-        type: z.literal('measure-concepts'),
-        id: z.string(),
-        attributes: z.object({
-          uri: z.string(),
-          label: z.string(),
-          'template-string': z.string(),
-          'raw-template-string': z.string(),
-        }),
-      }),
-      z.object({
-        type: z.literal('traffic-signals'),
-        id: z.string(),
-        attributes: z.object({
-          uri: z.string(),
-          'design-status': z.string().optional(),
-        }),
-        relationships: z.object({
-          'traffic-signal-concept': z.object({
-            data: z.object({
-              type: z.literal('traffic-signal-concepts'),
-              id: z.string(),
-            }),
-          }),
-        }),
-      }),
-      z.object({
-        type: z.literal('traffic-signal-concepts'),
-        id: z.string(),
-        attributes: z.object({
-          uri: z.string(),
-          type: z.literal([
-            TRAFFIC_SIGNAL_CONCEPT_TYPES.ROAD_SIGN,
-            TRAFFIC_SIGNAL_CONCEPT_TYPES.ROAD_MARKING,
-            TRAFFIC_SIGNAL_CONCEPT_TYPES.TRAFFIC_LIGHT,
-          ]),
-          meaning: z.string(),
-          code: z.string(),
-          'regulatory-notation': z.string().optional(),
-        }),
-        relationships: z.object({
-          categories: roadSignCategoryRelationship,
-        }),
-      }),
-      roadSignCategoryData,
-      z.object({
-        type: z.literal('variable-instances'),
-        id: z.string(),
-        attributes: z.object({
-          uri: z.string(),
-          value: stringToVariableValue.optional(),
-          'value-label': z.string().optional(),
-        }),
-        relationships: z.object({
-          variable: z.object({
-            data: z.object({
-              type: z.literal('variables'),
-              id: z.string(),
-            }),
-          }),
-        }),
-      }),
-      z.object({
-        type: z.literal('variables'),
-        id: z.string(),
-        attributes: z.object({
-          uri: z.string(),
-          label: z.string(),
-          type: z.string(),
-          defaultValue: stringToVariableValue.optional(),
-          codelist: z.string().optional(),
-          source: z.string(),
-        }),
-      }),
+      measureConceptJsonSchema,
+      trafficSignalJsonSchema,
+      trafficSignalConceptJsonSchema,
+      roadSignCategoryJsonSchema,
+      variableInstanceJsonSchema,
+      variableJsonSchema,
     ]),
   ),
 );
@@ -174,212 +48,14 @@ const MeasureDesignsController = {
         res.send();
       } else {
         const jsonResponse = measureDesignsJsonSchema.safeEncode({
-          data: measureDesigns.map((measureDesign) => {
-            const {
-              id,
-              uri,
-              measureConcept,
-              trafficSignals,
-              variableInstances,
-              unusedSignalConcepts,
-              unIncludedSignalConcepts,
-            } = measureDesign;
-            return {
-              type: 'measure-designs',
-              id,
-              attributes: { uri },
-              relationships: {
-                'measure-concept': {
-                  data: {
-                    type: 'measure-concepts',
-                    id: measureConcept.id,
-                  },
-                },
-                'traffic-signals': {
-                  data: trafficSignals.map((trafficSignal) => ({
-                    type: 'traffic-signals',
-                    id: trafficSignal.id,
-                  })),
-                },
-                'unused-signal-concepts': {
-                  data: unusedSignalConcepts.map((signalConcept) => ({
-                    type: 'traffic-signal-concepts',
-                    id: signalConcept.id,
-                  })),
-                },
-                'un-included-signal-concepts': {
-                  data: unIncludedSignalConcepts.map((signalConcept) => ({
-                    type: 'traffic-signal-concepts',
-                    id: signalConcept.id,
-                  })),
-                },
-                'variable-instances': {
-                  data: variableInstances.map((variableInstance) => ({
-                    type: 'variable-instances',
-                    id: variableInstance.id,
-                  })),
-                },
-              },
-            };
-          }),
-          included: measureDesigns.flatMap((measureDesign) => {
-            const {
-              measureConcept,
-              trafficSignals,
-              variableInstances,
-              unusedSignalConcepts,
-            } = measureDesign;
-            return [
-              {
-                type: 'measure-concepts',
-                id: measureConcept.id,
-                attributes: {
-                  uri: measureConcept.uri,
-                  label: measureConcept.label,
-                  'template-string': measureConcept.templateString,
-                  'raw-template-string': measureConcept.rawTemplateString,
-                },
-              },
-              ...trafficSignals.flatMap((trafficSignal) => {
-                const { trafficSignalConcept } = trafficSignal;
-                let roadSignCategoryRelationships: RoadSignCategoryRelationshipData[] =
-                  [];
-                let roadSignCategories: RoadSignCategoryData[] = [];
-                if (trafficSignalConcept.categories.length) {
-                  roadSignCategoryRelationships =
-                    trafficSignalConcept.categories.map((category) => ({
-                      type: 'road-sign-category',
-                      id: category.id,
-                    }));
-                  roadSignCategories = trafficSignalConcept.categories.map(
-                    (category) => ({
-                      type: 'road-sign-category',
-                      id: category.id,
-                      attributes: {
-                        uri: category.uri,
-                        label: category.label,
-                      },
-                    }),
-                  );
-                }
-                return [
-                  {
-                    type: 'traffic-signals',
-                    id: trafficSignal.id,
-                    attributes: {
-                      uri: trafficSignal.uri,
-                      'design-status': trafficSignal.designStatus,
-                    },
-                    relationships: {
-                      'traffic-signal-concept': {
-                        data: {
-                          type: 'traffic-signal-concepts',
-                          id: trafficSignalConcept.id,
-                        },
-                      },
-                    },
-                  },
-                  {
-                    type: 'traffic-signal-concepts',
-                    id: trafficSignalConcept.id,
-                    attributes: {
-                      uri: trafficSignalConcept.uri,
-                      type: trafficSignalConcept.type,
-                      code: trafficSignalConcept.code,
-                      'regulatory-notation':
-                        trafficSignalConcept.regulatoryNotation,
-                      meaning: trafficSignalConcept.meaning,
-                    },
-                    relationships: {
-                      categories: {
-                        data: roadSignCategoryRelationships,
-                      },
-                    },
-                  },
-                  ...roadSignCategories,
-                ] as const;
-              }),
-              ...variableInstances.flatMap((variableInstance) => {
-                const { variable } = variableInstance;
-                return [
-                  {
-                    type: 'variable-instances',
-                    id: variableInstance.id,
-                    attributes: {
-                      uri: variableInstance.uri,
-                      value: variableInstance.value,
-                      'value-label': variableInstance.valueLabel,
-                    },
-                    relationships: {
-                      variable: {
-                        data: {
-                          type: 'variables',
-                          id: variable.id,
-                        },
-                      },
-                    },
-                  },
-                  {
-                    type: 'variables',
-                    id: variable.id,
-                    attributes: {
-                      uri: variable.uri,
-                      label: variable.label,
-                      type: variable.type,
-                      source: variable.source,
-                      defaultValue: variable.defaultValue,
-                      codelist: variable.codelist,
-                    },
-                  },
-                ] as const;
-              }),
-              ...unusedSignalConcepts.flatMap((trafficSignalConcept) => {
-                let trafficSignalConceptRelationships;
-                let roadSignCategories: RoadSignCategoryData[] = [];
-                if (trafficSignalConcept.categories.length) {
-                  trafficSignalConceptRelationships = {
-                    categories: {
-                      data: trafficSignalConcept.categories.map((category) => ({
-                        type: 'road-sign-category',
-                        id: category.id,
-                      })),
-                    },
-                  };
-                  roadSignCategories = trafficSignalConcept.categories.map(
-                    (category) => ({
-                      type: 'road-sign-category',
-                      id: category.id,
-                      attributes: {
-                        uri: category.uri,
-                        label: category.label,
-                      },
-                    }),
-                  );
-                }
-                return [
-                  {
-                    type: 'traffic-signal-concepts',
-                    id: trafficSignalConcept.id,
-                    attributes: {
-                      uri: trafficSignalConcept.uri,
-                      type: trafficSignalConcept.type,
-                      code: trafficSignalConcept.code,
-                      'regulatory-notation':
-                        trafficSignalConcept.regulatoryNotation,
-                      meaning: trafficSignalConcept.meaning,
-                    },
-                    relationships: trafficSignalConceptRelationships,
-                  },
-                  ...roadSignCategories,
-                ];
-              }),
-            ];
-          }),
+          data: measureDesigns.map(measureDesignToJson),
+          included: measureDesigns.flatMap(includesForMeasureDesign),
         });
         if (jsonResponse.success) {
           res.status(200);
           res.send(jsonResponse.data);
         } else {
+          console.log(z.prettifyError(jsonResponse.error));
           res.status(500);
           res.send({ error: 'failed to encode into jsonapi' });
         }

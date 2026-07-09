@@ -38,6 +38,7 @@
   },
   "dependencies": {
     "mu": "https://github.com/elpoelma/mu-helpers.git",
+    "string-ts": "^2.3.1",
     "zod": "^4.1.11"
   },
   "volta": {
