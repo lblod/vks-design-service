@@ -1,5 +1,11 @@
 # vks-design-service
 
+## 0.4.2
+
+### Patch Changes
+
+- [`bddf7bd`](https://github.com/lblod/vks-design-service/commit/bddf7bd19fb195bd099dd58f4c8fd050f2354b09) Thanks [@piemonkey](https://github.com/piemonkey)! - Refactor zod schemas
+
 ## 0.4.1
 
 ### Patch Changes
