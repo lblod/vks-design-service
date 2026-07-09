@@ -1,5 +1,11 @@
 # vks-design-service
 
+## 0.5.0
+
+### Minor Changes
+
+- [#20](https://github.com/lblod/vks-design-service/pull/20) [`e18e9b6`](https://github.com/lblod/vks-design-service/commit/e18e9b621282084fc55f66b4a8353fe958a87d2c) Thanks [@piemonkey](https://github.com/piemonkey)! - Add configuration option to switch auth method
+
 ## 0.4.2
 
 ### Patch Changes
