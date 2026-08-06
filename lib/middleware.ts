@@ -40,7 +40,7 @@ const queryAdministrativeUnit = async (sessionId: string) => {
             ext:sessionGroup ?administrativeUnit;
             ext:sessionRole ?role.
         FILTER(?role in
-                ("GelinktNotuleren-lezer", "GelinktNotuleren-schrijver", "GelinktNotuleren-publiceerder",  "GelinktNotuleren-ondertekenaar"))
+                ("GelinktNotuleren-lezer", "GelinktNotuleren-schrijver", "GelinktNotuleren-publiceerder",  "GelinktNotuleren-ondertekenaar", "IRGN-schrijver"))
 
         } 
         GRAPH <http://mu.semte.ch/graphs/public> {
