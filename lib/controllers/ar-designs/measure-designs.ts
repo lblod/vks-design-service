@@ -8,6 +8,7 @@ import type { AuthenticatedResponse } from '../../types.ts';
 import { variableInstanceJsonSchema } from '../../schemas/variable-instance.ts';
 import { trafficSignalConceptJsonSchema } from '../../schemas/traffic-signal-concept.ts';
 import { roadSignCategoryJsonSchema } from '../../schemas/road-sign-category.ts';
+import { instructionJsonSchema } from '../../schemas/instruction.ts';
 import { trafficSignalJsonSchema } from '../../schemas/traffic-signal.ts';
 import { measureConceptJsonSchema } from '../../schemas/measure-concept.ts';
 import {
@@ -26,6 +27,7 @@ const measureDesignsJsonSchema = jsonApiSchema(
       trafficSignalJsonSchema,
       trafficSignalConceptJsonSchema,
       roadSignCategoryJsonSchema,
+      instructionJsonSchema,
       variableInstanceJsonSchema,
       variableJsonSchema,
     ]),
