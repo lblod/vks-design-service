@@ -5,12 +5,16 @@ import {
   type GetQueryOpts,
 } from './schema-query.ts';
 import { objectify } from '../utils/sparql.ts';
-import { trafficSignalSchema } from '../schemas/traffic-signal.ts';
+import {
+  trafficSignalSchema,
+  type TrafficSignal,
+} from '../schemas/traffic-signal.ts';
 import { query } from 'mu';
 import { hasVKSRelationship } from '../utils/vks-relationship-helpers.ts';
 import { getTrafficSignalConceptByUri } from './traffic-signal-concepts.ts';
-
-export async function getTrafficSignals(opts: GetQueryOpts = {}) {
+export async function getTrafficSignals(
+  opts: GetQueryOpts = {},
+): Promise<TrafficSignal[]> {
   const { ids, uris } = opts;
 
   const result = await query(

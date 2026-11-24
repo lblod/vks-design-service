@@ -7,11 +7,18 @@ import type { ArDesign } from '../schemas/ar-design';
 import type { MeasureDesign } from '../schemas/measure-design';
 import { isSome } from '../utils/option';
 import VariableInstancesService from './variable-instances';
+import { TRAFFIC_SIGNAL_REMOVAL_STATUSES } from '../constants';
+import type { TrafficSignal } from '../schemas/traffic-signal';
 
 type Args = {
   administrativeUnit: string;
   arDesignId: string;
 };
+function filterRemovedSignals(signal: TrafficSignal): boolean {
+  if (signal.designStatus) {
+    return !TRAFFIC_SIGNAL_REMOVAL_STATUSES.includes(signal.designStatus);
+  } else return true;
+}
 
 const MeasureDesignsService = {
   getMeasureDesignsForARDesign: async ({
@@ -36,8 +43,10 @@ const MeasureDesignsService = {
           const trafficSignalsPromise = getTrafficSignals({
             uris: measureDesign.trafficSignals as string[],
           });
-          const [measureConceptResolved, trafficSignalsResolved] =
+          const [measureConceptResolved, trafficSignalsResolvedUnfiltered] =
             await Promise.all([measureConceptPromise, trafficSignalsPromise]);
+          const trafficSignalsResolved =
+            trafficSignalsResolvedUnfiltered.filter(filterRemovedSignals);
           if (!measureConceptResolved) {
             return;
           }
