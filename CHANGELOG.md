@@ -1,5 +1,11 @@
 # vks-design-service
 
+## 0.5.1
+
+### Patch Changes
+
+- [#22](https://github.com/lblod/vks-design-service/pull/22) [`d95b3cf`](https://github.com/lblod/vks-design-service/commit/d95b3cfbe97c157f8d829b4303ec5a1be9ef027b) Thanks [@abeforgit](https://github.com/abeforgit)! - Filter out removed signs
+
 ## 0.5.0
 
 ### Minor Changes
