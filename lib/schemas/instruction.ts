@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { jsonApiResourceObject } from '../jsonapi-schema';
 
 export const INSTRUCTION_TYPE = 'instruction' as const;
-export const instructionSchema = z.object({
+export const instructionSchema = z.strictObject({
   uri: z.string(),
   value: z.string(),
   preview: z.string(),
