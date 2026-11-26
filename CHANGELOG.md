@@ -1,5 +1,11 @@
 # vks-design-service
 
+## 0.5.2
+
+### Patch Changes
+
+- [#24](https://github.com/lblod/vks-design-service/pull/24) [`8b1131a`](https://github.com/lblod/vks-design-service/commit/8b1131ac1c1d0d2e6bd285db609737c2f49513c9) Thanks [@elpoelma](https://github.com/elpoelma)! - Remove erroneous graph statement from measure-concepts sparql query
+
 ## 0.5.1
 
 ### Patch Changes
