@@ -36,7 +36,10 @@ export const getARDesigns = async (
   res: AuthenticatedResponse,
 ) => {
   try {
-    const administrativeUnit = res.locals.administrativeUnit;
+    // TODO: temporary mock for local testing, remove before merging.
+    // Restore `const administrativeUnit = res.locals.administrativeUnit;`
+    const administrativeUnit =
+      'http://data.lblod.info/id/bestuurseenheden/9574bd4a68b1f9243f10b6e5e5c973f4e957c96cd15f57057d2966036fb1a7fd'; // Hechtel-Eksel
     const queryParams = parseQueryParams(req.query);
     const designs = await ARDesignsService.getARDesigns({
       ...queryParams,

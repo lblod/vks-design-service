@@ -8,6 +8,8 @@ export const identifyAdministrativeUnit = async (
   res: Response,
   next: NextFunction,
 ) => {
+  // MOCK
+  return next();
   const unauthorizedError = new HttpError(
     "You don't have the correct access rights to access this endpoint",
     401,
