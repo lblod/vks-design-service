@@ -7,7 +7,7 @@ export function getMowSparqlEndpoint() {
     process.env.MOW_BASE_URL ??
     process.env.MU_SPARQL_ENDPOINT ??
     'http://database:8890';
-  return `${baseUrl}/sparql`;
+  return new URL('sparql', baseUrl).toString();
 }
 
 // base URL used to construct image download URLs for traffic signal concepts,
