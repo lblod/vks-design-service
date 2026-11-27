@@ -164,7 +164,10 @@ export async function getTrafficSignalConcepts(opts: GetQueryOpts = {}) {
       const { categories, instructions, mainSigns, ...concept } =
         groupedConcept;
       if (concept.type !== TRAFFIC_SIGNAL_CONCEPT_TYPES.ROAD_SIGN) {
-        return concept;
+        return {
+          ...concept,
+          instructions: [...instructions.values()],
+        };
       }
       return {
         ...concept,
