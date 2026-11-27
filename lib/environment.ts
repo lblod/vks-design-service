@@ -13,7 +13,7 @@ export function getMowEndpoint() {
 // base URL used to construct image download URLs for traffic signal concepts,
 // configured through the environment (e.g. in the docker-compose file)
 export function getImageBaseUrl() {
-  return process.env.IMAGE_BASE_URL ?? 'https://dev.roadsigns.lblod.info';
+  return process.env.MOW_ENDPOINT ?? 'https://dev.roadsigns.lblod.info';
 }
 
 const authSchema = z.strictObject({
