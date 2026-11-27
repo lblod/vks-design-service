@@ -2,12 +2,18 @@ import * as z from 'zod';
 
 // needs to be a function to support the tests,
 // which also mess with the env because the mu functions don't take in endpoint arguments
-export function getMowEndpoint() {
-  return (
-    process.env.MOW_ENDPOINT ??
+export function getMowSparqlEndpoint() {
+  const baseUrl =
+    process.env.MOW_BASE_URL ??
     process.env.MU_SPARQL_ENDPOINT ??
-    'http://database:8890/sparql'
-  );
+    'http://database:8890';
+  return new URL('sparql', baseUrl).toString();
+}
+
+// base URL used to construct image download URLs for traffic signal concepts,
+// configured through the environment (e.g. in the docker-compose file)
+export function getImageBaseUrl() {
+  return process.env.MOW_BASE_URL ?? 'https://dev.roadsigns.lblod.info';
 }
 
 const authSchema = z.strictObject({

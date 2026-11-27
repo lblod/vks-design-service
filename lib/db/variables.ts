@@ -4,7 +4,7 @@ import {
   uriValuesClause,
   type GetQueryOpts,
 } from './schema-query.ts';
-import { getMowEndpoint } from '../environment.ts';
+import { getMowSparqlEndpoint } from '../environment.ts';
 import { variableSchema } from '../schemas/variable.ts';
 import { query } from 'mu';
 import { objectify } from '../utils/sparql.ts';
@@ -44,7 +44,7 @@ export async function getVariables(opts: GetQueryOpts = {}) {
       }
     }
   `,
-    { endpoint: getMowEndpoint() },
+    { endpoint: getMowSparqlEndpoint() },
   );
   return z.array(variableSchema).parse(result.results.bindings.map(objectify));
 }

@@ -6,6 +6,11 @@ import {
   roadSignCategoryToJson,
 } from './road-sign-category';
 import {
+  instructionSchema,
+  instructionToJson,
+  INSTRUCTION_TYPE,
+} from './instruction';
+import {
   jsonApiManyRelationshipData,
   jsonApiResourceObject,
 } from '../jsonapi-schema';
@@ -18,21 +23,28 @@ export const trafficSignalConceptSchema = z.strictObject({
   meaning: z.string(),
   code: z.string(),
   regulatoryNotation: z.string().optional(),
+  image: z.string(),
   type: z.literal([
     TRAFFIC_SIGNAL_CONCEPT_TYPES.ROAD_SIGN,
     TRAFFIC_SIGNAL_CONCEPT_TYPES.ROAD_MARKING,
     TRAFFIC_SIGNAL_CONCEPT_TYPES.TRAFFIC_LIGHT,
   ]),
   categories: z.array(roadSignCategorySchema).default([]),
+  instructions: z.array(instructionSchema).default([]),
+  mainSigns: z.array(z.string()).default([]),
 });
 
 export type TrafficSignalConcept = z.infer<typeof trafficSignalConceptSchema>;
 
 export const trafficSignalConceptJsonSchema = jsonApiResourceObject({
   type: TRAFFIC_SIGNAL_CONCEPT_TYPE,
-  attributes: trafficSignalConceptSchema.omit({ categories: true }),
+  attributes: trafficSignalConceptSchema.omit({
+    categories: true,
+    instructions: true,
+  }),
   relationships: z.object({
     categories: jsonApiManyRelationshipData(ROAD_SIGN_CATEGORY_TYPE),
+    instructions: jsonApiManyRelationshipData(INSTRUCTION_TYPE),
   }),
 });
 
@@ -48,12 +60,20 @@ export function trafficSignalConceptToJson(
       type: trafficSignalConcept.type,
       uri: trafficSignalConcept.uri,
       'regulatory-notation': trafficSignalConcept.regulatoryNotation,
+      image: trafficSignalConcept.image,
+      'main-signs': trafficSignalConcept.mainSigns,
     },
     relationships: {
       categories: {
         data: trafficSignalConcept.categories.map((cat) => ({
           type: ROAD_SIGN_CATEGORY_TYPE,
           id: cat.id,
+        })),
+      },
+      instructions: {
+        data: trafficSignalConcept.instructions.map((instruction) => ({
+          type: INSTRUCTION_TYPE,
+          id: instruction.id,
         })),
       },
     },
@@ -65,5 +85,6 @@ export function trafficSignalConceptWithIncludes(
   return [
     trafficSignalConceptToJson(trafficSignalConcept),
     ...trafficSignalConcept.categories.map(roadSignCategoryToJson),
+    ...trafficSignalConcept.instructions.map(instructionToJson),
   ];
 }

@@ -12,7 +12,7 @@ This includes those for [the template it is based on](https://github.com/mu-semt
 
 | variable       | required | default                                                                           | description                                                                                                                            |
 | -------------- | -------- | --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `MOW_ENDPOINT` | no       | defaults to MU_SPARQL_ENDPOINT if it is set, `http://database:8890/sparql` if not | The sparql endpoint where the information about measures is held. Leave empty if this information is in the same stack as this service |
+| `MOW_BASE_URL` | no       | defaults to MU_SPARQL_ENDPOINT if it is set, `http://database:8890/` if not | The base url where the information about measures is held, the /sparql endpoint of this base url will be queried, and it will be used as a base for the images. Leave empty if this information is in the same stack as this service |
 | `AUTH_CHECK_TYPE` | no       | 'session_group' | 'session_group' or 'agent'. Which query to use to determine the administrative unit the caller represents. 'session_group' should work with acm/idm logins and 'agent' is for use with the vendor-login-service. |
 
 
