@@ -3,7 +3,7 @@ import {
   uriValuesClause,
   type GetQueryOpts,
 } from './schema-query.ts';
-import { getMowEndpoint, getImageBaseUrl } from '../environment.ts';
+import { getMowSparqlEndpoint, getImageBaseUrl } from '../environment.ts';
 import {
   query,
   sparqlEscapeString,
@@ -155,7 +155,7 @@ export async function getTrafficSignalConcepts(opts: GetQueryOpts = {}) {
     }
   `,
     {
-      endpoint: getMowEndpoint(),
+      endpoint: getMowSparqlEndpoint(),
     },
   );
   const groupedConcepts = groupBindingsByConcept(response.results.bindings);

@@ -6,7 +6,7 @@ import { getVariables } from '../db/variables.ts';
 import { uriValuesClause } from '../db/schema-query.ts';
 import { hasVKSRelationship } from '../utils/vks-relationship-helpers.ts';
 import { objectify } from '../utils/sparql.ts';
-import { getMowEndpoint } from '../environment.ts';
+import { getMowSparqlEndpoint } from '../environment.ts';
 
 type Args = {
   measureConcept: MeasureConcept;
@@ -114,7 +114,7 @@ async function getCodelistOptionLabel(conceptUri: string) {
     ${uriValuesClause([conceptUri], '?concept')} 
     ?concept skos:prefLabel ?label.
     }`,
-    { endpoint: getMowEndpoint() },
+    { endpoint: getMowSparqlEndpoint() },
   );
   const bindings = result.results.bindings;
   return codeListLabelSchema.parse(bindings.map(objectify));
