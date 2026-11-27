@@ -4,7 +4,7 @@ import {
   uriValuesClause,
   type GetQueryOpts,
 } from './schema-query.ts';
-import { getMowEndpoint } from '../environment.ts';
+import { getMowSparqlEndpoint } from '../environment.ts';
 import { measureConceptSchema } from '../schemas/measure-concept.ts';
 import { objectify } from '../utils/sparql.ts';
 import { query } from 'mu';
@@ -57,7 +57,7 @@ export async function getMeasureConcepts(opts: GetQueryOpts = {}) {
     } 
     GROUP BY ?id ?uri ?label ?rawTemplateString ?templateString
   `,
-    { endpoint: getMowEndpoint() },
+    { endpoint: getMowSparqlEndpoint() },
   );
 
   const bindings = result.results.bindings;

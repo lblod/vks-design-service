@@ -1,6 +1,6 @@
 import z from 'zod';
 import { isoStringToDate, stringToNumber } from '../utils/conversions.ts';
-import { getMowEndpoint } from '../environment.ts';
+import { getMowSparqlEndpoint } from '../environment.ts';
 import { jsonApiResourceObject } from '../jsonapi-schema.ts';
 export const VARIABLE_TYPE = 'variables' as const;
 export const stringToVariableValue = z.union([
@@ -24,7 +24,7 @@ export const variableSchema = z.strictObject({
   id: z.string(),
   label: z.string(),
   type: z.string(),
-  source: z.string().default(getMowEndpoint()),
+  source: z.string().default(getMowSparqlEndpoint()),
   codelist: z.string().optional(),
   correspondingSignVar: z.string().optional(),
   defaultValue: stringToVariableValue.optional(),
